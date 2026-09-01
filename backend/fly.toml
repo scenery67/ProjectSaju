@@ -1,8 +1,5 @@
 # Fly.io app config for the Spring Boot backend.
-# NOTE: 'app' name must be globally unique on Fly — replace before first
-# `flyctl launch` / `flyctl deploy` (e.g. `flyctl apps create <unique-name>`
-# then update this value to match).
-app = "saju-backend"
+app = "dasum-saju-api"
 primary_region = "nrt" # Tokyo — closest Fly region to Korea as of writing; re-check available regions before launch.
 
 [build]
