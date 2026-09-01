@@ -14,7 +14,7 @@ Claude(Claude Code / Cowork)가 이 저장소에서 작업할 때 따르는 규�
 | frontend/ | React 19 + TypeScript + Vite + Tailwind v4 + React Router 7 (lint: oxlint) |
 | backend/ | Spring Boot 4.1 (Java 21) + Spring Data JPA + validation, `cn.6tail:lunar` (만세력) |
 | DB | PostgreSQL (로컬 Docker Compose / 운영 Neon) |
-| 배포 | 프론트 Cloudflare Pages, 백엔드 Fly.io, GitHub Actions |
+| 배포 | 프론트 GitHub Pages, 백엔드 Fly.io, GitHub Actions |
 | 기본 브랜치 | `master` |
 
 주요 API: `POST /api/saju/breakup`, `POST /api/saju/couple-compatibility`

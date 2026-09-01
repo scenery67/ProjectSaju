@@ -137,7 +137,7 @@ chore(deps): vite 8.2.2로 업데이트
 | --- | --- | --- |
 | `.github/workflows/ci.yml` | PR, `master` push | 백엔드 `gradlew build`, 프론트 `lint` + `build`, gitleaks 시크릿 스캔 |
 | `.github/workflows/deploy-backend.yml` | `backend/**` push | Fly.io 배포 |
-| `.github/workflows/deploy-frontend.yml` | `frontend/**` push | Cloudflare Pages 배포 |
+| `.github/workflows/deploy-frontend.yml` | `frontend/**` push | GitHub Pages 배포 |
 
 ### 브랜치 보호 설정 (Settings → Branches → `master`)
 
@@ -154,7 +154,6 @@ chore(deps): vite 8.2.2로 업데이트
 | 이름 | 종류 | 용도 |
 | --- | --- | --- |
 | `FLY_API_TOKEN` | Secret | Fly.io 배포 |
-| `CF_API_TOKEN`, `CF_ACCOUNT_ID` | Secret | Cloudflare Pages 배포 |
 | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Fly secret | 운영 DB 접속 |
 | `VITE_API_BASE_URL` | Actions **Variable** | 프론트 빌드 시 API 주소 (시크릿 아님) |
 

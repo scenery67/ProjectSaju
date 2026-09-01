@@ -46,7 +46,7 @@
   - `flyctl apps create`로 앱 생성, `backend/fly.toml`의 `app` 값 교체
   - Neon 프로젝트 생성 후 `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` 확보
 - **Task 006: GitHub Secrets/Variables 등록 및 첫 배포 실행** - 우선순위: 중간
-  - `FLY_API_TOKEN`, `CF_API_TOKEN`, `CF_ACCOUNT_ID` 시크릿 등록
+  - `FLY_API_TOKEN` 시크릿 등록 (프론트는 GitHub Pages라 저장소 자체 권한만 있으면 됨, 별도 계정/토큰 불필요)
   - `VITE_API_BASE_URL` Actions Variable 등록
   - `deploy-backend.yml` / `deploy-frontend.yml` 첫 실행 확인
 

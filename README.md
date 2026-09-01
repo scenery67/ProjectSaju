@@ -87,13 +87,13 @@ npm run dev
 - "마이페이지" 탭: 로그인 기능 도입 전까지 placeholder
 - 반응형: `#root` 최대폭 480px로 모바일 뷰를 기준으로 하고, 큰 화면에서는 중앙 정렬됨
 
-## 배포 / 인프라 (설계 완료, 계정 연동 및 실배포는 미완)
+## 배포 / 인프라
 
-- 프론트: Cloudflare Pages (`frontend/dist` 정적 배포)
-- 백엔드: Fly.io, Docker 컨테이너 (`backend/Dockerfile`, `backend/fly.toml`)
+- 백엔드: Fly.io 실배포 완료 (`dasum-saju-api`, https://dasum-saju-api.fly.dev) — Neon PostgreSQL 연결 확인됨
+- 프론트: GitHub Pages (`frontend/dist` 정적 배포, `HashRouter` + `base: /ProjectSaju/`) — 저장소 Settings → Pages → Source를 **GitHub Actions**로 한 번 켜야 함 (최초 1회, 수동)
 - DB: Neon PostgreSQL (서버리스, 무료 티어) — 접속 정보는 Fly secrets로 주입 (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`)
 - CI/CD: GitHub Actions (`.github/workflows/deploy-backend.yml`, `deploy-frontend.yml`) — 각각 `backend/`, `frontend/` 경로 변경 시에만 트리거
-- 필요한 GitHub Secrets/Variables: `FLY_API_TOKEN`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`, `VITE_API_BASE_URL`(Actions Variable)
+- 필요한 GitHub Secrets/Variables: `FLY_API_TOKEN`(Secret), `VITE_API_BASE_URL`(Actions Variable, `https://dasum-saju-api.fly.dev/api`) — GitHub Pages 배포는 저장소 자체 권한(`GITHUB_TOKEN`)만 쓰므로 별도 계정/토큰 불필요
 - DB 스키마는 Flyway가 관리 (`backend/src/main/resources/db/migration/`), `ddl-auto: validate`로 Hibernate는 검증만 함
 
 ## TODO / 다음 단계

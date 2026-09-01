@@ -1,4 +1,4 @@
-name: Deploy frontend (Cloudflare Pages)
+name: Deploy frontend (GitHub Pages)
 
 on:
   push:
@@ -8,10 +8,18 @@ on:
       - ".github/workflows/deploy-frontend.yml"
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    concurrency: deploy-frontend-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -31,10 +39,16 @@ jobs:
           # (Settings > Secrets and variables > Actions > Variables), not as a secret.
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: saju-frontend
-          directory: frontend/dist
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
