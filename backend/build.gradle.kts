@@ -19,7 +19,11 @@ repositories {
 }
 
 dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	// 만세력/팔자(사주) 계산 — 절기 기준 정밀 계산 포함. MIT license.
+	// https://github.com/6tail/lunar-java
+	implementation("cn.6tail:lunar:1.7.7")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	compileOnly("org.projectlombok:lombok")

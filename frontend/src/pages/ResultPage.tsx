@@ -1,6 +1,21 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { findPersonaById } from '../data/personas';
-import type { SajuReadingResult } from '../types/saju';
+import type { SajuChart, SajuReadingResult } from '../types/saju';
+
+function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
+  return (
+    <div className="rounded-lg bg-neutral-50 p-3 text-sm">
+      <p className="mb-1 font-semibold text-neutral-700">{label}</p>
+      <p className="text-neutral-600">
+        년주 {chart.yearPillar} · 월주 {chart.monthPillar} · 일주 {chart.dayPillar}
+        {chart.hourPillar ? ` · 시주 ${chart.hourPillar}` : ' (시주 미상)'}
+      </p>
+      <p className="mt-1 text-neutral-600">
+        일간 {chart.dayMaster} · 대표 오행 {chart.dominantFiveElement}
+      </p>
+    </div>
+  );
+}
 
 export default function ResultPage() {
   const { personaId } = useParams<{ personaId: string }>();
@@ -30,6 +45,12 @@ export default function ResultPage() {
         <p className="whitespace-pre-line text-sm text-neutral-600">
           {result.detail}
         </p>
+      </section>
+      <section className="flex flex-col gap-3">
+        <ChartCard label="나의 사주" chart={result.selfChart} />
+        {result.partnerChart && (
+          <ChartCard label="상대방의 사주" chart={result.partnerChart} />
+        )}
       </section>
       <Link
         to="/"

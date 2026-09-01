@@ -32,8 +32,20 @@ export interface CoupleCompatibilityRequest {
   partner: PersonReadingInput;
 }
 
+export interface SajuChart {
+  yearPillar: string;
+  monthPillar: string;
+  dayPillar: string;
+  hourPillar: string | null; // null if birth time is unknown
+  dayMaster: string;
+  fiveElementCounts: Record<string, number>;
+  dominantFiveElement: string;
+}
+
 export interface SajuReadingResult {
   personaType: PersonaType;
   summary: string;
   detail: string;
+  selfChart: SajuChart;
+  partnerChart: SajuChart | null; // null for the breakup (single-person) reading
 }

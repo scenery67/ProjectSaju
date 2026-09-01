@@ -78,13 +78,26 @@ npm run dev
 - 홈: 페르소나 2종(이별사주 / 연인 궁합 사주) 카드 그리드 + 하단 탭바
 - 각 페르소나: 생년월일/시간/양음력/성별 입력 폼 → 결과 화면
 - 백엔드: `POST /api/saju/breakup`, `POST /api/saju/couple-compatibility`
-  — 입력값 검증 후 DB(`reading_record` 테이블)에 기록, **실제 사주 계산 로직은 아직 미구현(TODO)**
+  — 입력값 검증 후 `cn.6tail:lunar` 라이브러리로 실제 사주팔자(년/월/일/시주, 오행, 일간) 계산, DB(`reading_record` 테이블)에 기록
+  — 상세 명리학적 해석(십성/합충형파해 등)은 아직 단순 오행 기반 템플릿 수준 (TODO)
 - 반응형: `#root` 최대폭 480px로 모바일 뷰를 기준으로 하고, 큰 화면에서는 중앙 정렬됨
+
+## 배포 / 인프라 (설계 완료, 계정 연동 및 실배포는 미완)
+
+- 프론트: Cloudflare Pages (`frontend/dist` 정적 배포)
+- 백엔드: Fly.io, Docker 컨테이너 (`backend/Dockerfile`, `backend/fly.toml`)
+- DB: Neon PostgreSQL (서버리스, 무료 티어) — 접속 정보는 Fly secrets로 주입 (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`)
+- CI/CD: GitHub Actions (`.github/workflows/deploy-backend.yml`, `deploy-frontend.yml`) — 각각 `backend/`, `frontend/` 경로 변경 시에만 트리거
+- 필요한 GitHub Secrets/Variables: `FLY_API_TOKEN`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`, `VITE_API_BASE_URL`(Actions Variable)
+- **주의**: 실배포 전 아래 "DB 마이그레이션" 항목 먼저 해결할 것 (현재 `ddl-auto: update`는 로컬 전용)
 
 ## TODO / 다음 단계
 
-- [ ] 실제 사주(사주팔자) 계산 로직 구현 (`SajuReadingService`)
+- [ ] 정밀 명리학 해석 로직 고도화 (십성/합충형파해 반영한 궁합, 대운 등) — 현재는 오행 분포 기반 단순 템플릿
 - [ ] 캐릭터 디자인/네이밍 확정 후 `frontend/src/data/personas.ts` 교체
-- [ ] 배포 대상 클라우드 결정 (백엔드+DB 통합 호스팅) 및 CI/CD 구성
+- [ ] Fly.io 앱 생성(`flyctl apps create`)·Neon 프로젝트 생성 후 실제 배포 실행 및 GitHub Secrets 등록
 - [ ] 인증/결제(프리미엄 상품) 여부 결정
-- [ ] Flyway/Liquibase 도입 (현재 `ddl-auto: update`는 로컬 편의용)
+- [ ] Flyway/Liquibase 도입 (현재 `ddl-auto: update`는 로컬 편의용, 운영 배포 전 필수)
+
+### 알려진 한계
+- `cn.6tail:lunar`의 절기(24節氣) 시각은 전통 동아시아(중국 기원) 만세력 기준이며 한국 경도 기준으로 재계산하지 않음 — 절기 경계 부근 출생자는 월주/년주가 미세하게 어긋날 수 있음
