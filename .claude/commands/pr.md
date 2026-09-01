@@ -37,12 +37,7 @@ allowed-tools:
 
 ### PR 제목
 
-커밋 컨벤션과 동일하게 **Conventional Commits, 한국어 subject, 이모지 없이**:
-
-```
-<type>(<scope>): <subject>
-```
-
+커밋 컨벤션([CONTRIBUTING.md](../../CONTRIBUTING.md) 2장)과 동일한 포맷을 쓴다.
 브랜치명에서 type을 유추하되, 커밋 히스토리와 실제 변경 내용이 우선한다.
 
 ```
