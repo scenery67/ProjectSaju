@@ -6,6 +6,7 @@ import {
 } from '../api/sajuApi';
 import PersonInputForm from '../components/PersonInputForm';
 import { findPersonaById } from '../data/personas';
+import { saveReadingToHistory } from '../lib/sajuHistory';
 import type { PersonReadingInput } from '../types/saju';
 
 const emptyPerson = (): PersonReadingInput => ({
@@ -41,6 +42,7 @@ export default function PersonaDetailPage() {
       const result = isCouple
         ? await requestCoupleCompatibilityReading({ self, partner })
         : await requestBreakupReading({ self });
+      saveReadingToHistory(persona.id, result);
       navigate(`/persona/${persona.id}/result`, { state: { result } });
     } catch {
       setError('결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
