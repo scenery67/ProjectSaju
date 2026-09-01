@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 보안 취약점 신고 / Security issue
+    url: https://github.com/scenery67/ProjectSaju/security/advisories/new
+    about: 취약점은 공개 이슈가 아니라 비공개 보안 신고로 알려주세요.
