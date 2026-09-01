@@ -3,7 +3,7 @@
 `/update-roadmap` 명령어로 진행 상황을 관리합니다. Task 번호는 3자리(001, 002, ...).
 
 **📅 최종 업데이트**: 2026-09-01
-**📊 진행 상황**: Phase 1 진행 중 (0/8 Tasks 완료)
+**📊 진행 상황**: Phase 1 진행 중 (1/8 Tasks 완료)
 
 ---
 
@@ -13,10 +13,10 @@
   - 십성(十神) 계산을 궁합/이별사주 해석에 반영
   - 합충형파해를 반영한 궁합 스코어링 (현재는 오행 상생상극만 반영)
   - 대운(大運) 계산 및 표시
-- **Task 002: 절기 경계 케이스 테스트 보강** - 우선순위: 높음
-  - 자시/조자시(23:00~01:00) 경계 테스트
-  - 절기 경계일(월주가 바뀌는 날) 테스트 고정
-  - 윤년 2/29 케이스 테스트
+- **Task 002: 절기 경계 케이스 테스트 보강** ✅ - 완료
+  - ✅ 자시/야자시(23:00~01:00) 경계 테스트 (`lateZiHourKeepsCurrentDayPillarUnderDefaultSect`)
+  - ✅ 절기 경계일(년주가 바뀌는 날) 테스트 고정 — 2024 입춘 기준 라이브러리가 실제보다 약 59분 이르게 전환됨을 실측·고정 (`yearPillarChangesAtSolarTermBoundaryNotLunarNewYear`)
+  - ✅ 윤년 2/29 케이스 테스트 (`leapDayFebruary29DoesNotThrow`)
 - **Task 003: 캐릭터 디자인/네이밍 확정** - 우선순위: 중간
   - `frontend/src/data/personas.ts`의 placeholder 캐릭터 교체
   - 참고 사이트(foxbunny.io/saju)와 겹치지 않는 독자 캐릭터로 확정

@@ -101,3 +101,5 @@ npm run dev
 
 ### 알려진 한계
 - `cn.6tail:lunar`의 절기(24節氣) 시각은 전통 동아시아(중국 기원) 만세력 기준이며 한국 경도 기준으로 재계산하지 않음 — 절기 경계 부근 출생자는 월주/년주가 미세하게 어긋날 수 있음
+  - 실측(2024년 입춘 기준): 실제 한국 입춘은 17:27 KST인데 라이브러리는 16:27~16:28 사이에서 년주를 전환함 — 약 59분 이르게 절기가 바뀜 (`SajuChartCalculatorTest.yearPillarChangesAtSolarTermBoundaryNotLunarNewYear`로 고정)
+  - 자시/야자시(23:00~01:00) 경계는 라이브러리 기본 유파(sect=2, 야자시=당일)를 그대로 사용 (`SajuChartCalculatorTest.lateZiHourKeepsCurrentDayPillarUnderDefaultSect`로 고정)
