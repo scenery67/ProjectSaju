@@ -2,10 +2,24 @@
 app = "dasum-saju-api"
 primary_region = "nrt" # Tokyo — closest Fly region to Korea as of writing; re-check available regions before launch.
 
+# On stop (deploy, autostop, host migration), Fly sends kill_signal to PID 1
+# and waits kill_timeout before SIGKILL. 25s gives Spring's graceful shutdown
+# (server.shutdown=graceful, timeout-per-shutdown-phase=20s) room to drain
+# in-flight requests instead of the 5s default cutting them off mid-response.
+kill_signal = "SIGTERM"
+kill_timeout = "25s"
+
 [build]
 
 [env]
   PORT = "8080"
+
+[deploy]
+  # Replace machines one at a time, only after the new one passes its health
+  # check — the old machine keeps serving until then. This is what actually
+  # makes a deploy zero-downtime (having 2+ machines is necessary but not
+  # sufficient without this + a real health check + graceful shutdown).
+  strategy = "rolling"
 
 [http_service]
   internal_port = 8080

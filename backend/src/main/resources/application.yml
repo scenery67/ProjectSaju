@@ -1,6 +1,10 @@
 spring:
   application:
     name: saju-backend
+  lifecycle:
+    # Give in-flight requests time to finish during a Fly.io rolling deploy
+    # before the old machine's context is force-closed.
+    timeout-per-shutdown-phase: 20s
   datasource:
     # Local Postgres started via `docker-compose up -d` at repo root.
     # 저장소 루트의 docker-compose로 띄우는 로컬 Postgres 접속 정보.
@@ -22,6 +26,10 @@ spring:
 
 server:
   port: 8080
+  # On SIGTERM, stop accepting new requests but let in-flight ones finish
+  # (up to spring.lifecycle.timeout-per-shutdown-phase) instead of cutting
+  # them off immediately — required for zero-downtime rolling deploys.
+  shutdown: graceful
 
 # Frontend origin allowed for local CORS (Vite dev server default port).
 app:
