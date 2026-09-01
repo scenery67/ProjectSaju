@@ -39,6 +39,16 @@ public class UserAccount {
     @Column(nullable = false)
     private Instant lastLoginAt;
 
+    // 원장(io.sj.saju.billing.CreditTransaction)이 실제 근거이고, 이 컬럼은
+    // 빠른 조회용 캐시다 — 직접 대입하지 말고 항상 CreditService를 통해 바꾼다.
+    @Column(nullable = false)
+    private int creditBalance;
+
+    // 결제 내역 조회, 환불/크레딧 수동 지급 같은 관리자 조치를 할 수 있는지 여부.
+    // 지금은 관리자 화면이 없어 DB에서 직접 true로 바꿔야 한다.
+    @Column(name = "is_admin", nullable = false)
+    private boolean admin;
+
     protected UserAccount() {
         // JPA
     }
@@ -78,5 +88,13 @@ public class UserAccount {
 
     public Instant getLastLoginAt() {
         return lastLoginAt;
+    }
+
+    public int getCreditBalance() {
+        return creditBalance;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 }
