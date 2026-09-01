@@ -7,6 +7,60 @@ interface Props {
   onChange: (value: PersonReadingInput) => void;
 }
 
+function isoToYymmdd(iso: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
+  return iso.slice(2, 4) + iso.slice(5, 7) + iso.slice(8, 10);
+}
+
+// 네이티브 <input type="date">는 모바일에서 연도 스크롤이 오래 걸려 생년
+// 입력이 불편했다(사용자 리포트). "260901"처럼 6자리 숫자(YY MM DD)를 받아
+// 직접 YYYY-MM-DD로 조합한다. 2자리 연도는 현재 연도의 뒤 두 자리보다 크면
+// 1900년대, 작거나 같으면 2000년대로 판단한다(주민등록번호 앞자리와 같은
+// 흔한 관례).
+function BirthDateInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [raw, setRaw] = useState(() => isoToYymmdd(value));
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setRaw(digits);
+
+    if (digits.length === 6) {
+      const yy = Number(digits.slice(0, 2));
+      const month = Number(digits.slice(2, 4));
+      const day = Number(digits.slice(4, 6));
+      const currentYy = new Date().getFullYear() % 100;
+      const year = (yy <= currentYy ? 2000 : 1900) + yy;
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        const mm = String(month).padStart(2, '0');
+        const dd = String(day).padStart(2, '0');
+        onChange(`${year}-${mm}-${dd}`);
+        return;
+      }
+    }
+    onChange('');
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      maxLength={6}
+      placeholder="260901"
+      required
+      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+      value={raw}
+      onChange={handleChange}
+    />
+  );
+}
+
 // 네이티브 <input type="time">은 브라우저/OS 로케일에 따라 오전/오후 선택기가
 // 붙으면서 폭이 늘어나 분(分) 입력란을 가리는 문제가 있었다. "2040"처럼
 // 24시간제 4자리 숫자를 그대로 입력받아 직접 HH:mm으로 조합한다.
@@ -76,12 +130,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       <div className="flex gap-2">
         <label className="flex flex-1 flex-col gap-1.5 text-xs font-medium text-neutral-500">
           생년월일
-          <input
-            type="date"
-            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+          <BirthDateInput
             value={value.birthDate}
-            onChange={(e) => set('birthDate', e.target.value)}
-            required
+            onChange={(v) => set('birthDate', v)}
           />
         </label>
         <label className="flex w-28 flex-col gap-1.5 text-xs font-medium text-neutral-500">
