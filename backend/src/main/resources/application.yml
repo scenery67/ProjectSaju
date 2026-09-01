@@ -12,8 +12,9 @@ spring:
     password: ${DB_PASSWORD:saju}
   jpa:
     hibernate:
-      # `update` is convenient for local dev only; use migrations (Flyway/Liquibase) before production.
-      ddl-auto: update
+      # Flyway owns the schema now. Hibernate only validates the entities
+      # match what Flyway created — it never alters the schema itself.
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:

@@ -3,7 +3,7 @@
 `/update-roadmap` 명령어로 진행 상황을 관리합니다. Task 번호는 3자리(001, 002, ...).
 
 **📅 최종 업데이트**: 2026-09-01
-**📊 진행 상황**: Phase 1 진행 중 (2/9 Tasks 완료)
+**📊 진행 상황**: Phase 2 진행 중 (3/9 Tasks 완료)
 
 ---
 
@@ -23,8 +23,7 @@
 - **Task 003: 캐릭터 디자인/네이밍 확정** - 부분 완료 (일러스트 아트는 다음으로 미룸)
   - ✅ 캐릭터명·정체성(톤) 확정 — "다정한 위로형": 이별사주 "다숨", 궁합사주 "설레" (`frontend/src/data/personas.ts`)
   - ✅ UI 완성도 개선 — 참고 사이트(foxbunny.io/saju) 수준의 타이포(Pretendard 실제 로드)·여백·카드 그림자/라운드 적용, 우리 톤은 유지 (색상 팔레트는 안 바꿈)
-  - 캐릭터 일러스트(썸네일 이미지)는 여전히 placeholder(🔮) — 실제 아트 제작은 미착수
-  - 일러스트/아트는 아직 placeholder(🔮, accentColor) — 참고 사이트(foxbunny.io/saju)와 겹치지 않는 독자 아트로 추후 제작
+  - 캐릭터 일러스트(썸네일 이미지)는 여전히 placeholder(🔮) — 참고 사이트(foxbunny.io/saju)와 겹치지 않는 독자 아트로 추후 제작, 실제 아트 제작은 미착수
 - **Task 009: "내 사주" 로컬 히스토리 화면** ✅ - 완료
   - ✅ 식별 방식 결정: 서버 저장 없이 이 기기 `localStorage`에만 최근 20건 보관 (계정 도입 전 임시 방편) — Task 007 참고
   - ✅ 결과 조회 시 자동 저장(`saveReadingToHistory`), 목록/재조회/삭제 구현(`MySajuPage`)
@@ -32,9 +31,12 @@
 
 ### Phase 2: 배포
 
-- **Task 004: Flyway 마이그레이션 도입** - 우선순위: 높음 (배포 선결 조건)
-  - `ddl-auto: update` 제거
-  - 초기 스키마 마이그레이션 스크립트 작성 (`reading_record` 테이블)
+- **Task 004: Flyway 마이그레이션 도입** ✅ - 완료
+  - ✅ `ddl-auto: update` → `validate`로 변경, Flyway가 스키마 소유
+  - ✅ 초기 마이그레이션 작성 (`V1__create_reading_record.sql`)
+  - ✅ 겸사겸사 `detail` 컬럼을 `@Lob`(Postgres `oid`)에서 `text`로 수정 — `oid`는 대용량 객체용이라 일반 텍스트 저장엔 부적합했음
+  - ✅ 로컬 DB를 완전히 새로 만들어 마이그레이션이 빈 스키마에서 정상 적용되는지, 전체 API가 새 스키마로도 잘 동작하는지 확인
+  - 참고: Spring Boot 4는 `flyway-core`만으로는 오토컨피그가 안 되고 `spring-boot-starter-flyway`가 따로 필요함(예외 없이 조용히 무시되는 함정) — `build.gradle.kts` 주석에 남겨둠
 - **Task 005: Fly.io 앱 / Neon DB 실제 프로비저닝** - 우선순위: 높음
   - `flyctl apps create`로 앱 생성, `backend/fly.toml`의 `app` 값 교체
   - Neon 프로젝트 생성 후 `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` 확보

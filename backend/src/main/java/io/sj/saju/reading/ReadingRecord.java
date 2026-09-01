@@ -7,7 +7,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
@@ -33,8 +32,10 @@ public class ReadingRecord {
     @Column(nullable = false)
     private String summary;
 
-    @Lob
-    @Column(nullable = false)
+    // Plain Postgres `text` column, not @Lob — @Lob maps String to `oid`
+    // (large object) on Postgres, which needs special handling and doesn't
+    // dump/query like normal text. `text` has no length cap either way.
+    @Column(nullable = false, columnDefinition = "text")
     private String detail;
 
     @Column(nullable = false)

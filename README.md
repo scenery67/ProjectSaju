@@ -93,7 +93,7 @@ npm run dev
 - DB: Neon PostgreSQL (서버리스, 무료 티어) — 접속 정보는 Fly secrets로 주입 (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`)
 - CI/CD: GitHub Actions (`.github/workflows/deploy-backend.yml`, `deploy-frontend.yml`) — 각각 `backend/`, `frontend/` 경로 변경 시에만 트리거
 - 필요한 GitHub Secrets/Variables: `FLY_API_TOKEN`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`, `VITE_API_BASE_URL`(Actions Variable)
-- **주의**: 실배포 전 아래 "DB 마이그레이션" 항목 먼저 해결할 것 (현재 `ddl-auto: update`는 로컬 전용)
+- DB 스키마는 Flyway가 관리 (`backend/src/main/resources/db/migration/`), `ddl-auto: validate`로 Hibernate는 검증만 함
 
 ## TODO / 다음 단계
 
@@ -101,9 +101,8 @@ npm run dev
 - [ ] 십성 기반 심층 성격 해석 고도화 (현재는 대표 오행 1개 + 월간 십성 1개만 평문 설명으로 노출, 년/시 십성은 결과 데이터에만 있고 해석 문장엔 아직 미반영)
 - [ ] 캐릭터 일러스트/아트 제작 (이름·정체성은 확정: 이별사주 "다숨", 궁합사주 "설레" — `frontend/src/data/personas.ts` 참고)
 - [ ] Fly.io 앱 생성(`flyctl apps create`)·Neon 프로젝트 생성 후 실제 배포 실행 및 GitHub Secrets 등록
-- [ ] OAuth 소셜 로그인 도입 (방식은 결정됨) — 도입 시 `reading_record`에 사용자 식별자 컬럼 추가 필요
+- [ ] OAuth 소셜 로그인 도입 (방식은 결정됨) — 도입 시 `reading_record`에 사용자 식별자 컬럼을 추가하는 신규 Flyway 마이그레이션 작성
 - [ ] 결제(프리미엄 상품) 여부 결정
-- [ ] Flyway/Liquibase 도입 (현재 `ddl-auto: update`는 로컬 편의용, 운영 배포 전 필수)
 
 ### 알려진 한계
 - `cn.6tail:lunar`의 절기(24節氣) 시각은 전통 동아시아(중국 기원) 만세력 기준이며 한국 경도 기준으로 재계산하지 않음 — 절기 경계 부근 출생자는 월주/년주가 미세하게 어긋날 수 있음
