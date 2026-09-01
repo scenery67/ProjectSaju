@@ -13,7 +13,9 @@
   - ✅ 십성(十神) 계산을 궁합/이별사주 해석에 반영 — `LunarUtil.SHI_SHEN` 기반, 전 10종 관계를 교과서적 오행/음양 정의와 대조 검증(`tenGodOfGanCoversAllTenCategoriesRelativeToGap`)
   - ✅ 육합/충을 궁합에 반영 — 일지(배우자궁) 기준, 지지 인덱스 구조로 유도(`EarthlyBranchRelation`)
   - 형(刑)/파(破)/해(害) 반영 — 구조적으로 유도되지 않는 개별 규칙이라 오류 검증 부담이 커서 보류. 정확한 표를 확보하면 진행
-  - ✅ 대운(大運) 계산 및 표시 — 성별 기준 8개 주기(`daYunPeriods`)
+  - ✅ 대운(大運) 계산 및 표시 — 성별 기준 8개 주기(`daYunPeriods`), 생년월일 기준 "지금 지나고 있는 대운"을 계산해 텍스트로 설명
+  - ✅ 원본 데이터 그대로 노출하던 결과 문구를 평문 해석으로 교체 — `FiveElementTraits`/`TenGodTraits`로 오행·십성을 성향 문장으로 풀어씀(2026-09-01, 실사용 중 "일반인은 이해 못 한다" 피드백 반영)
+  - 년/시 십성은 아직 해석 문장에 미반영 (데이터에는 있음, `SajuChart.yearTenGod`/`timeTenGod`)
 - **Task 002: 절기 경계 케이스 테스트 보강** ✅ - 완료
   - ✅ 자시/야자시(23:00~01:00) 경계 테스트 (`lateZiHourKeepsCurrentDayPillarUnderDefaultSect`)
   - ✅ 절기 경계일(년주가 바뀌는 날) 테스트 고정 — 2024 입춘 기준 라이브러리가 실제보다 약 59분 이르게 전환됨을 실측·고정 (`yearPillarChangesAtSolarTermBoundaryNotLunarNewYear`)
