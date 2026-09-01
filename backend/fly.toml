@@ -1,0 +1,29 @@
+# Fly.io app config for the Spring Boot backend.
+# NOTE: 'app' name must be globally unique on Fly — replace before first
+# `flyctl launch` / `flyctl deploy` (e.g. `flyctl apps create <unique-name>`
+# then update this value to match).
+app = "saju-backend"
+primary_region = "nrt" # Tokyo — closest Fly region to Korea as of writing; re-check available regions before launch.
+
+[build]
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/actuator/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
