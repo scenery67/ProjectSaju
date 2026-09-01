@@ -32,6 +32,12 @@ export interface CoupleCompatibilityRequest {
   partner: PersonReadingInput;
 }
 
+export interface DaYunPeriod {
+  startAge: number;
+  endAge: number;
+  pillar: string;
+}
+
 export interface SajuChart {
   yearPillar: string;
   monthPillar: string;
@@ -40,6 +46,10 @@ export interface SajuChart {
   dayMaster: string;
   fiveElementCounts: Record<string, number>;
   dominantFiveElement: string;
+  yearTenGod: string;
+  monthTenGod: string;
+  timeTenGod: string | null; // null if birth time is unknown
+  daYunPeriods: DaYunPeriod[];
 }
 
 export interface SajuReadingResult {

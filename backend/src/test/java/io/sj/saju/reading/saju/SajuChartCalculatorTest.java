@@ -104,6 +104,58 @@ class SajuChartCalculatorTest {
         assertPillar(chart.dayPillar());
     }
 
+    @Test
+    void tenGodOfGanCoversAllTenCategoriesRelativeToGap() {
+        // 일간을 '갑'(양목)으로 고정하고 나머지 9개 천간과의 관계를 전수 확인한다.
+        // 오행 생극(목생화, 목극토, 금극목, 수생목)과 음양 동일 여부로 직접 검증할 수 있어
+        // cn.6tail:lunar의 LunarUtil.SHI_SHEN 표가 교과서적 정의와 일치하는지 대조하는 셈이다.
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "갑")).isEqualTo("비견"); // 동일 오행, 동일 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "을")).isEqualTo("겁재"); // 동일 오행, 다른 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "병")).isEqualTo("식신"); // 목생화, 동일 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "정")).isEqualTo("상관"); // 목생화, 다른 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "무")).isEqualTo("편재"); // 목극토, 동일 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "기")).isEqualTo("정재"); // 목극토, 다른 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "경")).isEqualTo("편관"); // 금극목, 동일 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "신")).isEqualTo("정관"); // 금극목, 다른 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "임")).isEqualTo("편인"); // 수생목, 동일 음양
+        assertThat(SajuChartCalculator.tenGodOfGan("갑", "계")).isEqualTo("정인"); // 수생목, 다른 음양
+    }
+
+    @Test
+    void chartExposesPerPillarTenGodsExceptDay() {
+        PersonInput input = new PersonInput(
+                "테스트", LocalDate.of(1990, 5, 20), "14:30", CalendarType.SOLAR, false, Gender.FEMALE);
+
+        SajuChart chart = SajuChartCalculator.calculate(input);
+
+        assertThat(chart.yearTenGod()).isNotBlank();
+        assertThat(chart.monthTenGod()).isNotBlank();
+        assertThat(chart.timeTenGod()).isNotBlank();
+    }
+
+    @Test
+    void daYunPeriodsAreConsecutiveTenYearSpans() {
+        PersonInput input = new PersonInput(
+                "테스트", LocalDate.of(1990, 5, 20), "14:30", CalendarType.SOLAR, false, Gender.FEMALE);
+
+        SajuChart chart = SajuChartCalculator.calculate(input);
+
+        assertThat(chart.daYunPeriods()).isNotEmpty();
+        for (var period : chart.daYunPeriods()) {
+            assertPillar(period.pillar());
+            assertThat(period.endAge()).isEqualTo(period.startAge() + 9);
+        }
+    }
+
+    @Test
+    void earthlyBranchRelationDetectsYukhapAndChung() {
+        assertThat(EarthlyBranchRelation.of('자', '축')).isEqualTo(EarthlyBranchRelation.YUKHAP);
+        assertThat(EarthlyBranchRelation.of('오', '미')).isEqualTo(EarthlyBranchRelation.YUKHAP);
+        assertThat(EarthlyBranchRelation.of('자', '오')).isEqualTo(EarthlyBranchRelation.CHUNG);
+        assertThat(EarthlyBranchRelation.of('묘', '유')).isEqualTo(EarthlyBranchRelation.CHUNG);
+        assertThat(EarthlyBranchRelation.of('자', '인')).isEqualTo(EarthlyBranchRelation.NONE);
+    }
+
     private static String nextDayInSixtyCycle(String pillar) {
         int ganIndex = (GAN.indexOf(pillar.charAt(0)) + 1) % GAN.length();
         int zhiIndex = (ZHI.indexOf(pillar.charAt(1)) + 1) % ZHI.length();

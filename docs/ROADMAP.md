@@ -9,10 +9,11 @@
 
 ### Phase 1: 핵심 기능 완성
 
-- **Task 001: 정밀 명리학 해석 로직 고도화** - 우선순위: 높음
-  - 십성(十神) 계산을 궁합/이별사주 해석에 반영
-  - 합충형파해를 반영한 궁합 스코어링 (현재는 오행 상생상극만 반영)
-  - 대운(大運) 계산 및 표시
+- **Task 001: 정밀 명리학 해석 로직 고도화** - 부분 완료 (형/파/해 남음)
+  - ✅ 십성(十神) 계산을 궁합/이별사주 해석에 반영 — `LunarUtil.SHI_SHEN` 기반, 전 10종 관계를 교과서적 오행/음양 정의와 대조 검증(`tenGodOfGanCoversAllTenCategoriesRelativeToGap`)
+  - ✅ 육합/충을 궁합에 반영 — 일지(배우자궁) 기준, 지지 인덱스 구조로 유도(`EarthlyBranchRelation`)
+  - 형(刑)/파(破)/해(害) 반영 — 구조적으로 유도되지 않는 개별 규칙이라 오류 검증 부담이 커서 보류. 정확한 표를 확보하면 진행
+  - ✅ 대운(大運) 계산 및 표시 — 성별 기준 8개 주기(`daYunPeriods`)
 - **Task 002: 절기 경계 케이스 테스트 보강** ✅ - 완료
   - ✅ 자시/야자시(23:00~01:00) 경계 테스트 (`lateZiHourKeepsCurrentDayPillarUnderDefaultSect`)
   - ✅ 절기 경계일(년주가 바뀌는 날) 테스트 고정 — 2024 입춘 기준 라이브러리가 실제보다 약 59분 이르게 전환됨을 실측·고정 (`yearPillarChangesAtSolarTermBoundaryNotLunarNewYear`)

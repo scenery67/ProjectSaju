@@ -13,6 +13,18 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
       <p className="mt-1 text-neutral-600">
         일간 {chart.dayMaster} · 대표 오행 {chart.dominantFiveElement}
       </p>
+      <p className="mt-1 text-neutral-600">
+        십성 — 년 {chart.yearTenGod} · 월 {chart.monthTenGod}
+        {chart.timeTenGod ? ` · 시 ${chart.timeTenGod}` : ''}
+      </p>
+      {chart.daYunPeriods.length > 0 && (
+        <p className="mt-1 text-neutral-500">
+          대운:{' '}
+          {chart.daYunPeriods
+            .map((p) => `${p.startAge}~${p.endAge}세 ${p.pillar}`)
+            .join(' · ')}
+        </p>
+      )}
     </div>
   );
 }
