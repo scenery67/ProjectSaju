@@ -20,6 +20,27 @@ jobs:
   backend:
     name: backend
     runs-on: ubuntu-latest
+    # Flyway runs real migrations against the datasource on context startup
+    # (and SajuBackendApplicationTests loads the full context), so the build
+    # needs an actual Postgres to talk to — not just JDBC on the classpath.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: saju
+          POSTGRES_USER: saju
+          POSTGRES_PASSWORD: saju
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U saju"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/saju
+      DB_USERNAME: saju
+      DB_PASSWORD: saju
     steps:
       - uses: actions/checkout@v4
 
