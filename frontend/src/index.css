@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* Mobile-first base layout. Desktop just caps the width and centers it. */
+/* 모바일 우선 기본 레이아웃. 데스크톱에서는 폭만 제한하고 중앙 정렬한다. */
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #fdf6f0;
+  font-family:
+    'Pretendard', system-ui, -apple-system, 'Malgun Gothic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: #fffaf5;
+  display: flex;
+  flex-direction: column;
+  /* iOS safe-area for notch/home-indicator devices */
+  padding-bottom: env(safe-area-inset-bottom);
+}

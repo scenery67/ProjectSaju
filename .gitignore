@@ -1,0 +1,18 @@
+# Project-local JDK / tool downloads — each dev fetches their own via scripts/setup-jdk21.*
+tools/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Backend build output (backend/ also has its own .gitignore from Spring Initializr)
+backend/build/
+backend/.gradle/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
