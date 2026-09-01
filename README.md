@@ -96,7 +96,7 @@ npm run dev
 
 - [ ] 형(刑)/파(破)/해(害) 반영한 정밀 궁합 스코어링 — 육합/충까지는 반영됨, 나머지는 구조적으로 유도되지 않는 개별 규칙이라 보류
 - [ ] 십성 기반 심층 성격 해석 (현재는 대표 십성 1개만 짧은 설명으로 노출)
-- [ ] 캐릭터 디자인/네이밍 확정 후 `frontend/src/data/personas.ts` 교체
+- [ ] 캐릭터 일러스트/아트 제작 (이름·정체성은 확정: 이별사주 "다숨", 궁합사주 "설레" — `frontend/src/data/personas.ts` 참고)
 - [ ] Fly.io 앱 생성(`flyctl apps create`)·Neon 프로젝트 생성 후 실제 배포 실행 및 GitHub Secrets 등록
 - [ ] 인증/결제(프리미엄 상품) 여부 결정
 - [ ] Flyway/Liquibase 도입 (현재 `ddl-auto: update`는 로컬 편의용, 운영 배포 전 필수)

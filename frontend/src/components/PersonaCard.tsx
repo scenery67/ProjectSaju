@@ -22,6 +22,7 @@ export default function PersonaCard({ persona }: { persona: SajuPersona }) {
           {persona.title}
         </span>
         <span className="text-xs text-neutral-500">{persona.subtitle}</span>
+        <span className="text-[11px] text-neutral-400">{persona.personality}</span>
         <span
           className="mt-1 self-start rounded-full px-2 py-0.5 text-[11px] font-medium"
           style={{

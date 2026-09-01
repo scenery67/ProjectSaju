@@ -54,6 +54,9 @@ export default function PersonaDetailPage() {
       <section className="flex flex-col gap-1">
         <h2 className="text-xl font-bold text-neutral-800">{persona.title}</h2>
         <p className="text-sm text-neutral-500">{persona.subtitle}</p>
+        <p className="text-xs text-neutral-400">
+          {persona.characterName} · {persona.personality}
+        </p>
       </section>
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

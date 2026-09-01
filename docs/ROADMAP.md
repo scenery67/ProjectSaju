@@ -18,9 +18,9 @@
   - ✅ 자시/야자시(23:00~01:00) 경계 테스트 (`lateZiHourKeepsCurrentDayPillarUnderDefaultSect`)
   - ✅ 절기 경계일(년주가 바뀌는 날) 테스트 고정 — 2024 입춘 기준 라이브러리가 실제보다 약 59분 이르게 전환됨을 실측·고정 (`yearPillarChangesAtSolarTermBoundaryNotLunarNewYear`)
   - ✅ 윤년 2/29 케이스 테스트 (`leapDayFebruary29DoesNotThrow`)
-- **Task 003: 캐릭터 디자인/네이밍 확정** - 우선순위: 중간
-  - `frontend/src/data/personas.ts`의 placeholder 캐릭터 교체
-  - 참고 사이트(foxbunny.io/saju)와 겹치지 않는 독자 캐릭터로 확정
+- **Task 003: 캐릭터 디자인/네이밍 확정** - 부분 완료 (아트는 다음으로 미룸)
+  - ✅ 캐릭터명·정체성(톤) 확정 — "다정한 위로형": 이별사주 "다숨", 궁합사주 "설레" (`frontend/src/data/personas.ts`)
+  - 일러스트/아트는 아직 placeholder(🔮, accentColor) — 참고 사이트(foxbunny.io/saju)와 겹치지 않는 독자 아트로 추후 제작
 
 ### Phase 2: 배포
 

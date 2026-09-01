@@ -8,6 +8,7 @@ export interface SajuPersona {
   title: string;
   subtitle: string;
   characterName: string;
+  personality: string; // one-line tone/identity blurb, not the character's visual design
   isPremium: boolean;
   accentColor: string;
 }
