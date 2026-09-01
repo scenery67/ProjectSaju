@@ -50,7 +50,7 @@ master ──●──●──────●──────●──   (항
 <footer>
 ```
 
-- **subject**: 영어, 명령형 현재시제, 50자 이내, 마침표 없음. (`add`, `fix` — `added`, `fixes` 아님)
+- **subject**: 한국어, 명령형 현재시제, 50자 이내, 마침표 없음. (`추가`, `수정` — `추가함`, `수정했음` 아님)
 - **body**: 한국어로 *왜* 바꿨는지. 72자에서 줄바꿈. 선택이지만 로직 변경에는 권장.
 - **footer**: `Refs: #12`, `Closes: #12`, 호환성 깨짐이면 `BREAKING CHANGE: ...`.
 
@@ -65,7 +65,7 @@ master ──●──●──────●──────●──   (항
 ### 예시
 
 ```
-feat(saju): add five-element distribution scoring
+feat(saju): 오행 분포 점수 산출 로직 추가
 
 오행 분포를 0~100 점수로 환산해 궁합 결과에 노출한다.
 기존 텍스트 템플릿 분기는 그대로 두고 점수만 추가.
@@ -74,7 +74,7 @@ Refs: #12
 ```
 
 ```
-fix(api): reject lunar dates that do not exist
+fix(api): 존재하지 않는 음력 날짜 거부
 
 윤달이 없는 달에 leapMonth=true가 들어오면 500이 나던 문제.
 LunarDateValidator에서 400으로 거른다.
@@ -83,7 +83,7 @@ Closes: #18
 ```
 
 ```
-chore(deps): bump vite to 8.2.2
+chore(deps): vite 8.2.2로 업데이트
 ```
 
 ### 커밋 위생

@@ -145,10 +145,10 @@ public record BreakupSajuRequest(
 
 ## 5. 커밋 / PR
 
-Conventional Commits. 제목은 영어, 본문은 한국어. 상세는 [CONTRIBUTING.md](CONTRIBUTING.md).
+Conventional Commits. 제목·본문 모두 한국어. 상세는 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```
-feat(saju): validate leap-month lunar birth dates
+feat(saju): 윤달 음력 생년월일 검증 추가
 
 윤달 입력 시 존재하지 않는 날짜가 통과되던 문제를 막기 위해
 LunarDateValidator를 추가.

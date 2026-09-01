@@ -37,7 +37,7 @@ allowed-tools:
 
 ### PR 제목
 
-커밋 컨벤션과 동일하게 **Conventional Commits, 이모지 없이**:
+커밋 컨벤션과 동일하게 **Conventional Commits, 한국어 subject, 이모지 없이**:
 
 ```
 <type>(<scope>): <subject>
@@ -46,8 +46,8 @@ allowed-tools:
 브랜치명에서 type을 유추하되, 커밋 히스토리와 실제 변경 내용이 우선한다.
 
 ```
-feat/12-couple-compatibility-score → feat(saju): add five-element compatibility scoring
-fix/18-leap-month-validation       → fix(api): reject lunar dates that do not exist
+feat/12-couple-compatibility-score → feat(saju): 오행 궁합 점수 산출 기능 추가
+fix/18-leap-month-validation       → fix(api): 존재하지 않는 음력 날짜 거부
 ```
 
 ### PR 본문
