@@ -1,9 +1,51 @@
+import { useState } from 'react';
 import type { PersonReadingInput } from '../types/saju';
 
 interface Props {
   label: string;
   value: PersonReadingInput;
   onChange: (value: PersonReadingInput) => void;
+}
+
+// 네이티브 <input type="time">은 브라우저/OS 로케일에 따라 오전/오후 선택기가
+// 붙으면서 폭이 늘어나 분(分) 입력란을 가리는 문제가 있었다. "2040"처럼
+// 24시간제 4자리 숫자를 그대로 입력받아 직접 HH:mm으로 조합한다.
+function BirthTimeInput({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (value: string | null) => void;
+}) {
+  const [raw, setRaw] = useState(() => (value ?? '').replace(':', ''));
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setRaw(digits);
+
+    if (digits.length === 4) {
+      const hour = Number(digits.slice(0, 2));
+      const minute = Number(digits.slice(2, 4));
+      if (hour <= 23 && minute <= 59) {
+        onChange(`${digits.slice(0, 2)}:${digits.slice(2, 4)}`);
+        return;
+      }
+    }
+    onChange(null);
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      maxLength={4}
+      placeholder="2040"
+      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+      value={raw}
+      onChange={handleChange}
+    />
+  );
 }
 
 // Reusable birth-info form used for both the "self" and "partner" inputs.
@@ -44,11 +86,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
         </label>
         <label className="flex w-28 flex-col gap-1.5 text-xs font-medium text-neutral-500">
           태어난 시간
-          <input
-            type="time"
-            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
-            value={value.birthTime ?? ''}
-            onChange={(e) => set('birthTime', e.target.value || null)}
+          <BirthTimeInput
+            value={value.birthTime}
+            onChange={(v) => set('birthTime', v)}
           />
         </label>
       </div>
