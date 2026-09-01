@@ -2,6 +2,10 @@
 // 얇은 fetch 래퍼. 배포 환경별 API 주소는 코드 수정 없이 env로 분리한다.
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api';
 
+// OAuth2 login endpoints (/oauth2/authorization/{provider}) live at the
+// backend's root, not under /api — derive it once from BASE_URL.
+export const API_ROOT_URL = BASE_URL.replace(/\/api\/?$/, '');
+
 export class ApiError extends Error {
   status: number;
 

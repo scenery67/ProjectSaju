@@ -32,6 +32,13 @@ dependencies {
 	implementation("cn.6tail:lunar:1.7.7")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	// OAuth2 소셜 로그인(카카오/구글/네이버) — 프론트(GitHub Pages)와 백엔드(Fly.io)가
+	// 서로 다른 오리진이라 쿠키 세션 대신 로그인 성공 후 자체 JWT를 발급해 프론트로 넘긴다.
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")

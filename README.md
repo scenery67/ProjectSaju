@@ -83,8 +83,8 @@ npm run dev
   — 결과는 원본 데이터(간지/오행 카운트 등)를 그대로 노출하지 않고, 오행/십성 성향 설명(`FiveElementTraits`/`TenGodTraits`)과 생년월일 기준 현재 대운을 계산해 평문으로 풀어 설명
   — 기본 성격·연애·직업·재물·대인관계 5개 항목(`PersonalityProfile`)을 십성 5대 분류로 계산, 지장간·12운성·세운(현재 대운 10년)까지 노출 — 프론트에 참고 사이트 스타일 4주 표 + 오행 분포 막대 그래프로 표시
   — 12신살/도화살 등 개별 신살, 신강/신약 지수, 용신, 형(刑)/파(破)/해(害)는 아직 미구현 (TODO)
-- "내 사주" 탭: 로그인 없이 이 기기 `localStorage`에만 최근 결과 20건 보관 (서버 미저장) — 계정(OAuth) 도입 전 임시 방편
-- "마이페이지" 탭: 로그인 기능 도입 전까지 placeholder
+- "내 사주" 탭: 로그인 없이 이 기기 `localStorage`에만 최근 결과 20건 보관 (서버 미저장)
+- "마이페이지" 탭: 카카오/구글/네이버 OAuth2 로그인 **동작만 검증된 상태** — 백엔드가 로그인 성공 시 자체 JWT를 발급해 프론트로 넘기고(`user_account` 테이블), 프론트는 `localStorage`에 토큰을 보관한다. 아직 다른 기능(사주 기록 등)과는 연결하지 않았고 실사용에도 안 열어뒀다 — 카카오/구글/네이버 개발자 콘솔에 실제 앱 등록 전이라 `client-id`가 `placeholder`임
 - 반응형: `#root` 최대폭 480px로 모바일 뷰를 기준으로 하고, 큰 화면에서는 중앙 정렬됨
 
 ## 배포 / 인프라
@@ -95,15 +95,20 @@ npm run dev
 - CI/CD: GitHub Actions (`.github/workflows/deploy-backend.yml`, `deploy-frontend.yml`) — 각각 `backend/`, `frontend/` 경로 변경 시에만 트리거
 - 필요한 GitHub Secrets/Variables: `FLY_API_TOKEN`(Secret), `VITE_API_BASE_URL`(Actions Variable, `https://dasum-saju-api.fly.dev/api`) — GitHub Pages 배포는 저장소 자체 권한(`GITHUB_TOKEN`)만 쓰므로 별도 계정/토큰 불필요
 - DB 스키마는 Flyway가 관리 (`backend/src/main/resources/db/migration/`), `ddl-auto: validate`로 Hibernate는 검증만 함
+- **주의**: 프로덕션 Fly 앱에는 아직 `JWT_SECRET`/`FRONTEND_URL`/`KAKAO_CLIENT_ID` 등 OAuth 관련 Fly secrets를 등록하지 않았음 — 로그인은 현재 로컬에서만 동작 검증됨(README "현재 구현 범위" 참고)
 
 ## TODO / 다음 단계
 
-- [ ] 형(刑)/파(破)/해(害) 반영한 정밀 궁합 스코어링 — 육합/충까지는 반영됨, 나머지는 구조적으로 유도되지 않는 개별 규칙이라 보류
-- [ ] 십성 기반 심층 성격 해석 고도화 (현재는 대표 오행 1개 + 월간 십성 1개만 평문 설명으로 노출, 년/시 십성은 결과 데이터에만 있고 해석 문장엔 아직 미반영)
-- [ ] 캐릭터 일러스트/아트 제작 (이름·정체성은 확정: 이별사주 "다숨", 궁합사주 "설레" — `frontend/src/data/personas.ts` 참고)
-- [ ] Fly.io 앱 생성(`flyctl apps create`)·Neon 프로젝트 생성 후 실제 배포 실행 및 GitHub Secrets 등록
-- [ ] OAuth 소셜 로그인 도입 (방식은 결정됨) — 도입 시 `reading_record`에 사용자 식별자 컬럼을 추가하는 신규 Flyway 마이그레이션 작성
-- [ ] 결제(프리미엄 상품) 여부 결정
+앞으로 진행 순서(2026-09-01 합의): **사주 내용 개선 → 로그인 → 마이페이지 → 과금 구조 → 화면 개선(2차)**. 상세는 [docs/ROADMAP.md](docs/ROADMAP.md) 참고.
+
+- [ ] 형(刑)/파(破)/해(害), 12신살/개별 신살(도화살·역마살 등), 신강/신약, 용신 — 라이브러리 미지원 확인함, 직접 구현 시 출처 검증 부담 큼(특히 신강신약·용신은 유파마다 계산법이 갈림)
+- [ ] 년/시 십성을 해석 문장에도 반영 (현재는 4주 표에만 노출)
+- [ ] OAuth 소셜 로그인 실제 연동 — 카카오/구글/네이버 개발자 콘솔에 앱 등록 후 `KAKAO_CLIENT_ID`/`KAKAO_CLIENT_SECRET` 등 Fly secrets 등록, `JWT_SECRET`/`FRONTEND_URL`도 운영값으로 설정 필요
+- [ ] 로그인을 실제 기능(내 사주 서버 저장 등)과 연결
+- [ ] LLM 기반 사주 상담 기능 — 계산된 사주 데이터를 LLM에 입력해 상담 응답 생성, **질문 횟수 기준 과금** 예정 (2026-09-01 방향 확정, 과금 구조 설계 시 사용량 카운팅 스키마부터 고려)
+- [ ] 로그인 연동 마이페이지 (현재는 로그인 없는 `localStorage` 기반 "내 사주"만 있음)
+- [ ] 결제(프리미엄 상품) 도입 — 이 시점에 캐릭터 일러스트/아트 제작도 함께 검토
+- [ ] 종합 UI/UX 리뉴얼(2차) — 로그인/마이페이지/과금까지 포함해서
 
 ### 알려진 한계
 - `cn.6tail:lunar`의 절기(24節氣) 시각은 전통 동아시아(중국 기원) 만세력 기준이며 한국 경도 기준으로 재계산하지 않음 — 절기 경계 부근 출생자는 월주/년주가 미세하게 어긋날 수 있음

@@ -23,6 +23,41 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID:placeholder}
+            client-secret: ${KAKAO_CLIENT_SECRET:placeholder}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: profile_nickname
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:placeholder}
+            client-secret: ${GOOGLE_CLIENT_SECRET:placeholder}
+            scope: [openid, profile]
+          naver:
+            client-id: ${NAVER_CLIENT_ID:placeholder}
+            client-secret: ${NAVER_CLIENT_SECRET:placeholder}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: [name]
+        # 카카오/네이버는 Spring Security의 기본 제공 provider 목록(CommonOAuth2Provider)에
+        # 없어서 엔드포인트를 직접 지정해야 한다. 구글은 기본 제공이라 registration만 있으면 된다.
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+          naver:
+            authorization-uri: https://nid.naver.com/oauth2.0/authorize
+            token-uri: https://nid.naver.com/oauth2.0/token
+            user-info-uri: https://openapi.naver.com/v1/nid/me
+            # 네이버 응답은 실제 필드가 response 하위에 한 번 더 감싸져 있다.
+            user-name-attribute: response
 
 server:
   port: 8080
@@ -35,6 +70,14 @@ server:
 app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  # Where the OAuth2 login redirect hands the issued JWT back to (HashRouter,
+  # so the path goes after '#'). Local dev default matches Vite's port; real
+  # deploys must override via FRONTEND_URL.
+  frontend-url: ${FRONTEND_URL:http://localhost:5173/}
+  jwt:
+    # Local-dev-only default — never used as-is in any real environment.
+    # A real deploy must override via JWT_SECRET (32+ bytes, HS256 requires it).
+    secret: ${JWT_SECRET:local-dev-only-jwt-secret-please-change-me-0123456789}
 
 management:
   endpoints:
