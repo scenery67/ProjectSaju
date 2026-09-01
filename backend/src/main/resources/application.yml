@@ -4,8 +4,10 @@ spring:
   datasource:
     # Local Postgres started via `docker-compose up -d` at repo root.
     # 저장소 루트의 docker-compose로 띄우는 로컬 Postgres 접속 정보.
+    # Host port is 5433 (not the default 5432) to avoid clashing with a
+    # natively-installed PostgreSQL service some machines already run there.
     # Any real (cloud) environment must override these via env vars — never commit real credentials.
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/saju}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/saju}
     username: ${DB_USERNAME:saju}
     password: ${DB_PASSWORD:saju}
   jpa:

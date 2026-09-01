@@ -6,7 +6,9 @@ services:
       POSTGRES_USER: saju
       POSTGRES_PASSWORD: saju
     ports:
-      - "5432:5432"
+      # 호스트 5433 -> 컨테이너 5432. 5432를 그대로 쓰면 로컬에 네이티브
+      # PostgreSQL 서비스가 떠 있는 환경과 포트가 충돌할 수 있어 피한다.
+      - "5433:5432"
     volumes:
       - saju_pgdata:/var/lib/postgresql/data
 
