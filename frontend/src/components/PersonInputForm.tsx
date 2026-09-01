@@ -15,15 +15,15 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
   ) => onChange({ ...value, [key]: v });
 
   return (
-    <fieldset className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4">
-      <legend className="px-1 text-sm font-semibold text-neutral-700">
+    <fieldset className="flex flex-col gap-3.5 rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
+      <legend className="px-1 text-sm font-bold text-neutral-800">
         {label}
       </legend>
 
-      <label className="flex flex-col gap-1 text-xs text-neutral-500">
+      <label className="flex flex-col gap-1.5 text-xs font-medium text-neutral-500">
         이름
         <input
-          className="rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-800"
+          className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
           required
@@ -32,21 +32,21 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       </label>
 
       <div className="flex gap-2">
-        <label className="flex flex-1 flex-col gap-1 text-xs text-neutral-500">
+        <label className="flex flex-1 flex-col gap-1.5 text-xs font-medium text-neutral-500">
           생년월일
           <input
             type="date"
-            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-800"
+            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
             value={value.birthDate}
             onChange={(e) => set('birthDate', e.target.value)}
             required
           />
         </label>
-        <label className="flex w-28 flex-col gap-1 text-xs text-neutral-500">
+        <label className="flex w-28 flex-col gap-1.5 text-xs font-medium text-neutral-500">
           태어난 시간
           <input
             type="time"
-            className="rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-800"
+            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
             value={value.birthTime ?? ''}
             onChange={(e) => set('birthTime', e.target.value || null)}
           />
@@ -54,8 +54,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       </div>
 
       <div className="flex gap-4">
-        <label className="flex items-center gap-1 text-xs text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
+            className="accent-rose-500"
             type="radio"
             name={`${label}-calendar`}
             checked={value.calendarType === 'SOLAR'}
@@ -63,8 +64,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           양력
         </label>
-        <label className="flex items-center gap-1 text-xs text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
+            className="accent-rose-500"
             type="radio"
             name={`${label}-calendar`}
             checked={value.calendarType === 'LUNAR'}
@@ -72,8 +74,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           음력
         </label>
-        <label className="flex items-center gap-1 text-xs text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
+            className="accent-rose-500"
             type="radio"
             name={`${label}-gender`}
             checked={value.gender === 'FEMALE'}
@@ -81,8 +84,9 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           여성
         </label>
-        <label className="flex items-center gap-1 text-xs text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
+            className="accent-rose-500"
             type="radio"
             name={`${label}-gender`}
             checked={value.gender === 'MALE'}

@@ -52,9 +52,11 @@ export default function PersonaDetailPage() {
   };
 
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4">
-      <section className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold text-neutral-800">{persona.title}</h2>
+    <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
+      <section className="flex flex-col gap-1.5">
+        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+          {persona.title}
+        </h2>
         <p className="text-sm text-neutral-500">{persona.subtitle}</p>
         <p className="text-xs text-neutral-400">
           {persona.characterName} · {persona.personality}
@@ -71,12 +73,12 @@ export default function PersonaDetailPage() {
           />
         )}
 
-        {error && <p className="text-xs text-rose-500">{error}</p>}
+        {error && <p className="text-xs font-medium text-rose-500">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-xl bg-rose-500 py-3 text-sm font-semibold text-white disabled:opacity-50"
+          className="rounded-full bg-rose-500 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(244,63,94,0.6)] disabled:opacity-50"
         >
           {submitting ? '풀이 중...' : '사주 풀이 시작하기 →'}
         </button>

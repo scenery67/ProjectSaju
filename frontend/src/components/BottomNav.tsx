@@ -10,19 +10,19 @@ const TABS = [
 // 모바일 화면에서 주 내비게이션으로 쓰는 하단 고정 탭바.
 export default function BottomNav() {
   return (
-    <nav className="sticky bottom-0 z-10 flex border-t border-neutral-200 bg-white/95 backdrop-blur">
+    <nav className="sticky bottom-0 z-10 flex bg-white/95 pb-1 pt-1.5 shadow-[0_-1px_0_rgba(0,0,0,0.06)] backdrop-blur">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
           to={tab.to}
           end={tab.to === '/'}
           className={({ isActive }) =>
-            `flex flex-1 flex-col items-center gap-0.5 py-2 text-xs ${
+            `flex flex-1 flex-col items-center gap-1 py-2 text-[11px] font-medium transition-colors ${
               isActive ? 'text-rose-500' : 'text-neutral-400'
             }`
           }
         >
-          <span className="text-lg leading-none">{tab.icon}</span>
+          <span className="text-xl leading-none">{tab.icon}</span>
           {tab.label}
         </NavLink>
       ))}

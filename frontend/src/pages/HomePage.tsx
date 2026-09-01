@@ -3,9 +3,9 @@ import { PERSONAS } from '../data/personas';
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 flex-col gap-4 p-4">
-      <section className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold text-neutral-800">
+    <main className="flex flex-1 flex-col gap-6 px-4 pb-6 pt-5">
+      <section className="flex flex-col gap-1.5">
+        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
           사주 상품 한눈에 보기
         </h2>
         <p className="text-sm text-neutral-500">
@@ -13,7 +13,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      <section className="grid grid-cols-2 gap-3">
+      <section className="grid grid-cols-2 gap-4">
         {PERSONAS.map((persona) => (
           <PersonaCard key={persona.id} persona={persona} />
         ))}
