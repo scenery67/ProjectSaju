@@ -28,6 +28,13 @@ class SajuChartCalculatorTest {
         assertThat(GAN).contains(chart.dayMaster());
         assertThat(chart.fiveElementCounts().values().stream().mapToInt(Integer::intValue).sum()).isEqualTo(8);
         assertThat(chart.dominantFiveElement()).isIn("목", "화", "토", "금", "수");
+
+        var profile = chart.personalityProfile();
+        assertThat(profile.personality()).isNotBlank();
+        assertThat(profile.love()).isNotBlank();
+        assertThat(profile.career()).isNotBlank();
+        assertThat(profile.wealth()).isNotBlank();
+        assertThat(profile.relationships()).isNotBlank();
     }
 
     @Test
@@ -148,6 +155,54 @@ class SajuChartCalculatorTest {
     }
 
     @Test
+    void chartExposesHideGanAndTwelveStagePerPillar() {
+        PersonInput input = new PersonInput(
+                "테스트", LocalDate.of(1990, 5, 20), "14:30", CalendarType.SOLAR, false, Gender.FEMALE);
+
+        SajuChart chart = SajuChartCalculator.calculate(input);
+
+        assertHideGan(chart.yearHideGan());
+        assertHideGan(chart.monthHideGan());
+        assertHideGan(chart.dayHideGan());
+        assertHideGan(chart.timeHideGan());
+
+        assertTwelveStage(chart.yearTwelveStage());
+        assertTwelveStage(chart.monthTwelveStage());
+        assertTwelveStage(chart.dayTwelveStage());
+        assertTwelveStage(chart.timeTwelveStage());
+    }
+
+    @Test
+    void unknownBirthTimeOmitsTimeHideGanAndTwelveStage() {
+        PersonInput input = new PersonInput(
+                "테스트", LocalDate.of(1990, 5, 20), null, CalendarType.SOLAR, false, Gender.MALE);
+
+        SajuChart chart = SajuChartCalculator.calculate(input);
+
+        assertThat(chart.timeHideGan()).isNull();
+        assertThat(chart.timeTwelveStage()).isNull();
+    }
+
+    @Test
+    void currentLiuNianCoversTenConsecutiveYears() {
+        PersonInput input = new PersonInput(
+                "테스트", LocalDate.of(1990, 5, 20), "14:30", CalendarType.SOLAR, false, Gender.FEMALE);
+
+        SajuChart chart = SajuChartCalculator.calculate(input);
+
+        assertThat(chart.currentLiuNian()).isNotEmpty();
+        int previousYear = -1;
+        for (var period : chart.currentLiuNian()) {
+            assertPillar(period.pillar());
+            assertThat(period.tenGod()).isNotBlank();
+            if (previousYear != -1) {
+                assertThat(period.year()).isEqualTo(previousYear + 1);
+            }
+            previousYear = period.year();
+        }
+    }
+
+    @Test
     void earthlyBranchRelationDetectsYukhapAndChung() {
         assertThat(EarthlyBranchRelation.of('자', '축')).isEqualTo(EarthlyBranchRelation.YUKHAP);
         assertThat(EarthlyBranchRelation.of('오', '미')).isEqualTo(EarthlyBranchRelation.YUKHAP);
@@ -166,5 +221,16 @@ class SajuChartCalculatorTest {
         assertThat(pillar).hasSize(2);
         assertThat(GAN).contains(String.valueOf(pillar.charAt(0)));
         assertThat(ZHI).contains(String.valueOf(pillar.charAt(1)));
+    }
+
+    private static void assertHideGan(java.util.List<String> hideGan) {
+        assertThat(hideGan).isNotEmpty();
+        for (String gan : hideGan) {
+            assertThat(GAN).contains(gan);
+        }
+    }
+
+    private static void assertTwelveStage(String stage) {
+        assertThat(stage).isIn("장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양");
     }
 }

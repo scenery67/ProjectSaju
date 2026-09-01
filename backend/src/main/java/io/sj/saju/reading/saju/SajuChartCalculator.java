@@ -4,15 +4,20 @@ import com.nlf.calendar.EightChar;
 import com.nlf.calendar.Lunar;
 import com.nlf.calendar.Solar;
 import com.nlf.calendar.eightchar.DaYun;
+import com.nlf.calendar.eightchar.LiuNian;
 import com.nlf.calendar.util.LunarUtil;
 import io.sj.saju.reading.CalendarType;
 import io.sj.saju.reading.Gender;
 import io.sj.saju.reading.dto.DaYunPeriod;
+import io.sj.saju.reading.dto.LiuNianPeriod;
 import io.sj.saju.reading.dto.PersonInput;
+import io.sj.saju.reading.dto.PersonalityProfile;
 import io.sj.saju.reading.dto.SajuChart;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +49,19 @@ public final class SajuChartCalculator {
         "비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"
     };
 
+    // 12운성(長生十二神). 실제로 라이브러리가 반환하는 한자 12개를 실측해서 확정했다
+    // (표준 순서: 长生=장생, 临官은 관행상 '건록'으로 표기).
+    private static final String[] TWELVE_STAGE_HANJA = {
+        "长生", "沐浴", "冠带", "临官", "帝旺", "衰", "病", "死", "墓", "绝", "胎", "养"
+    };
+    private static final String[] TWELVE_STAGE_HANGUL = {
+        "장생", "목욕", "관대", "건록", "제왕", "쇠", "병", "사", "묘", "절", "태", "양"
+    };
+
     // 표시할 대운 개수 (10년 단위 8개 = 80세까지).
     private static final int DA_YUN_COUNT = 8;
+    // 세운(歲運)은 현재 지나고 있는 대운 구간의 10년만 보여준다.
+    private static final int LIU_NIAN_COUNT = 10;
 
     private SajuChartCalculator() {
     }
@@ -72,18 +88,65 @@ public final class SajuChartCalculator {
                 .map(Map.Entry::getKey)
                 .orElse(null);
 
+        String dayMaster = toHangul(eightChar.getDayGan().charAt(0), GAN_HANJA, GAN_HANGUL);
+        String yearTenGod = toHangulTenGod(eightChar.getYearShiShenGan());
+        String monthTenGod = toHangulTenGod(eightChar.getMonthShiShenGan());
+        String timeTenGod = hasBirthTime ? toHangulTenGod(eightChar.getTimeShiShenGan()) : null;
+
+        int genderCode = input.gender() == Gender.MALE ? 1 : 0;
+        DaYun[] daYuns = eightChar.getYun(genderCode).getDaYun(DA_YUN_COUNT);
+
         return new SajuChart(
                 toHangulPillar(eightChar.getYear()),
                 toHangulPillar(eightChar.getMonth()),
                 toHangulPillar(eightChar.getDay()),
                 hasBirthTime ? toHangulPillar(eightChar.getTime()) : null,
-                toHangul(eightChar.getDayGan().charAt(0), GAN_HANJA, GAN_HANGUL),
+                dayMaster,
                 fiveElementCounts,
                 dominant,
-                toHangulTenGod(eightChar.getYearShiShenGan()),
-                toHangulTenGod(eightChar.getMonthShiShenGan()),
-                hasBirthTime ? toHangulTenGod(eightChar.getTimeShiShenGan()) : null,
-                daYunPeriods(eightChar, input.gender()));
+                yearTenGod,
+                monthTenGod,
+                timeTenGod,
+                toHangulHideGan(eightChar.getYearHideGan()),
+                toHangulHideGan(eightChar.getMonthHideGan()),
+                toHangulHideGan(eightChar.getDayHideGan()),
+                hasBirthTime ? toHangulHideGan(eightChar.getTimeHideGan()) : null,
+                toHangulTwelveStage(eightChar.getYearDiShi()),
+                toHangulTwelveStage(eightChar.getMonthDiShi()),
+                toHangulTwelveStage(eightChar.getDayDiShi()),
+                hasBirthTime ? toHangulTwelveStage(eightChar.getTimeDiShi()) : null,
+                toDaYunPeriods(daYuns),
+                currentLiuNian(daYuns, dayMaster, input.birthDate()),
+                buildPersonalityProfile(dayMaster, yearTenGod, monthTenGod, timeTenGod));
+    }
+
+    /**
+     * 성격은 일간(日干) 자체의 오행으로, 연애·직업·재물·대인관계는 십성
+     * 5대 분류(TenGodGroup)의 등장 여부로 설명한다 — 지어낸 매핑이 아니라
+     * 명리학에서 각 분류가 대응하는 삶의 영역을 그대로 따른 것이다.
+     * 인성(학문/안정)은 이 5개 항목에 딱 맞는 영역이 없어 여기선 쓰지 않는다.
+     */
+    private static PersonalityProfile buildPersonalityProfile(
+            String dayMaster, String yearTenGod, String monthTenGod, String timeTenGod) {
+        Map<TenGodGroup, Integer> counts = new EnumMap<>(TenGodGroup.class);
+        for (TenGodGroup group : TenGodGroup.values()) {
+            counts.put(group, 0);
+        }
+        for (String tenGod : new String[] {yearTenGod, monthTenGod, timeTenGod}) {
+            if (tenGod != null) {
+                counts.merge(TenGodGroup.of(tenGod), 1, Integer::sum);
+            }
+        }
+
+        int dayMasterGanIndex = GAN_HANGUL.indexOf(dayMaster.charAt(0));
+        String dayMasterElement = String.valueOf(WUXING_HANGUL.charAt(dayMasterGanIndex / 2));
+
+        return new PersonalityProfile(
+                FiveElementTraits.describe(dayMasterElement),
+                TenGodGroupTraits.describe(TenGodGroup.SIKSANG, counts.get(TenGodGroup.SIKSANG) > 0),
+                TenGodGroupTraits.describe(TenGodGroup.GWANSEONG, counts.get(TenGodGroup.GWANSEONG) > 0),
+                TenGodGroupTraits.describe(TenGodGroup.JAESEONG, counts.get(TenGodGroup.JAESEONG) > 0),
+                TenGodGroupTraits.describe(TenGodGroup.BIGYEOP, counts.get(TenGodGroup.BIGYEOP) > 0));
     }
 
     /**
@@ -98,9 +161,7 @@ public final class SajuChartCalculator {
         return hanja == null ? null : toHangulTenGod(hanja);
     }
 
-    private static List<DaYunPeriod> daYunPeriods(EightChar eightChar, Gender gender) {
-        int genderCode = gender == Gender.MALE ? 1 : 0;
-        DaYun[] daYuns = eightChar.getYun(genderCode).getDaYun(DA_YUN_COUNT);
+    private static List<DaYunPeriod> toDaYunPeriods(DaYun[] daYuns) {
         List<DaYunPeriod> periods = new ArrayList<>(daYuns.length);
         for (DaYun daYun : daYuns) {
             String ganZhi = daYun.getGanZhi();
@@ -108,6 +169,36 @@ public final class SajuChartCalculator {
                 continue; // 첫 항목은 대운 시작 전 구간이라 간지가 비어 있을 수 있다.
             }
             periods.add(new DaYunPeriod(daYun.getStartAge(), daYun.getEndAge(), toHangulPillar(ganZhi)));
+        }
+        return periods;
+    }
+
+    /**
+     * 오늘 기준 나이가 속한 대운 구간을 찾아 그 구간의 세운(연도별 운세) 10년을
+     * 반환한다. describeCurrentDaYun(SajuReadingService)와 같은 "지금 나와 무슨
+     * 상관인지" 원칙 — 전체 목록 대신 지금 걸리는 구간만 보여준다.
+     */
+    private static List<LiuNianPeriod> currentLiuNian(DaYun[] daYuns, String dayMaster, LocalDate birthDate) {
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        DaYun current = null;
+        for (DaYun daYun : daYuns) {
+            String ganZhi = daYun.getGanZhi();
+            if (ganZhi != null && !ganZhi.isEmpty() && age >= daYun.getStartAge() && age <= daYun.getEndAge()) {
+                current = daYun;
+                break;
+            }
+        }
+        if (current == null) {
+            return List.of();
+        }
+
+        LiuNian[] liuNians = current.getLiuNian(LIU_NIAN_COUNT);
+        List<LiuNianPeriod> periods = new ArrayList<>(liuNians.length);
+        for (LiuNian liuNian : liuNians) {
+            String ganZhi = liuNian.getGanZhi();
+            String ganHangul = toHangul(ganZhi.charAt(0), GAN_HANJA, GAN_HANGUL);
+            periods.add(new LiuNianPeriod(
+                    liuNian.getYear(), liuNian.getAge(), toHangulPillar(ganZhi), tenGodOfGan(dayMaster, ganHangul)));
         }
         return periods;
     }
@@ -155,5 +246,22 @@ public final class SajuChartCalculator {
             }
         }
         return hanjaTenGod;
+    }
+
+    private static String toHangulTwelveStage(String hanjaStage) {
+        for (int i = 0; i < TWELVE_STAGE_HANJA.length; i++) {
+            if (TWELVE_STAGE_HANJA[i].equals(hanjaStage)) {
+                return TWELVE_STAGE_HANGUL[i];
+            }
+        }
+        return hanjaStage;
+    }
+
+    private static List<String> toHangulHideGan(List<String> hanjaGanList) {
+        List<String> result = new ArrayList<>(hanjaGanList.size());
+        for (String hanja : hanjaGanList) {
+            result.add(toHangul(hanja.charAt(0), GAN_HANJA, GAN_HANGUL));
+        }
+        return result;
     }
 }

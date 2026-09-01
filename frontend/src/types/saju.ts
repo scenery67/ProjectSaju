@@ -39,6 +39,21 @@ export interface DaYunPeriod {
   pillar: string;
 }
 
+export interface LiuNianPeriod {
+  year: number;
+  age: number;
+  pillar: string;
+  tenGod: string;
+}
+
+export interface PersonalityProfile {
+  personality: string;
+  love: string;
+  career: string;
+  wealth: string;
+  relationships: string;
+}
+
 export interface SajuChart {
   yearPillar: string;
   monthPillar: string;
@@ -50,7 +65,17 @@ export interface SajuChart {
   yearTenGod: string;
   monthTenGod: string;
   timeTenGod: string | null; // null if birth time is unknown
+  yearHideGan: string[];
+  monthHideGan: string[];
+  dayHideGan: string[];
+  timeHideGan: string[] | null; // null if birth time is unknown
+  yearTwelveStage: string;
+  monthTwelveStage: string;
+  dayTwelveStage: string;
+  timeTwelveStage: string | null; // null if birth time is unknown
   daYunPeriods: DaYunPeriod[];
+  currentLiuNian: LiuNianPeriod[];
+  personalityProfile: PersonalityProfile;
 }
 
 export interface SajuReadingResult {

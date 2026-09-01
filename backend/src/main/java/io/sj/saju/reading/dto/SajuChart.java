@@ -21,5 +21,15 @@ public record SajuChart(
         String yearTenGod,
         String monthTenGod,
         String timeTenGod,
-        List<DaYunPeriod> daYunPeriods) {
+        List<String> yearHideGan,
+        List<String> monthHideGan,
+        List<String> dayHideGan,
+        List<String> timeHideGan,
+        String yearTwelveStage,
+        String monthTwelveStage,
+        String dayTwelveStage,
+        String timeTwelveStage,
+        List<DaYunPeriod> daYunPeriods,
+        List<LiuNianPeriod> currentLiuNian,
+        PersonalityProfile personalityProfile) {
 }
