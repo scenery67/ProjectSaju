@@ -42,6 +42,7 @@ export function clearAuthToken(): void {
 export interface CurrentUser {
   provider: string;
   nickname: string;
+  isAdmin: boolean;
 }
 
 /** Returns null if not logged in or the token is no longer valid. */

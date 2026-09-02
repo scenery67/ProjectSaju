@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import BottomNav from './components/BottomNav';
 import Header from './components/Header';
+import AdminPage from './pages/AdminPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import HomePage from './pages/HomePage';
 import MyPage from './pages/MyPage';
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/persona/:personaId/result" element={<ResultPage />} />
         <Route path="/my-saju" element={<MySajuPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
       </Routes>
       <BottomNav />

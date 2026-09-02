@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   clearAuthToken,
   fetchCurrentUser,
@@ -102,6 +103,14 @@ export default function MyPage() {
               <span className="font-bold">{user.nickname || '(닉네임 없음)'}</span>
               님, {user.provider} 계정으로 로그인됐어요.
             </p>
+            {user.isAdmin && (
+              <Link
+                to="/admin"
+                className="rounded-full border border-neutral-800 bg-neutral-900 py-3 text-center text-sm font-semibold text-white"
+              >
+                관리자 화면
+              </Link>
+            )}
             <button
               type="button"
               className="rounded-full border border-neutral-200 py-3 text-sm font-semibold text-neutral-500"

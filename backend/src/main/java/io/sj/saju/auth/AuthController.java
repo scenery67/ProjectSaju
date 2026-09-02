@@ -52,7 +52,7 @@ public class AuthController {
         }
         return userAccountRepository.findById(userAccountId)
                 .map(account -> ResponseEntity.ok(
-                        new MeResponse(account.getProvider().name(), account.getNickname())))
+                        new MeResponse(account.getProvider().name(), account.getNickname(), account.isAdmin())))
                 .orElseGet(() -> ResponseEntity.status(401).build());
     }
 
@@ -110,6 +110,6 @@ public class AuthController {
                 devAdminBypassSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public record MeResponse(String provider, String nickname) {
+    public record MeResponse(String provider, String nickname, boolean isAdmin) {
     }
 }
