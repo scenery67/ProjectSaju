@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,16 +29,19 @@ public class AuthController {
     private final JwtService jwtService;
     private final String frontendUrl;
     private final boolean devAdminBypassEnabled;
+    private final String devAdminBypassSecret;
 
     public AuthController(
             UserAccountRepository userAccountRepository,
             JwtService jwtService,
             @Value("${app.frontend-url}") String frontendUrl,
-            @Value("${app.dev-admin-bypass.enabled:false}") boolean devAdminBypassEnabled) {
+            @Value("${app.dev-admin-bypass.enabled:false}") boolean devAdminBypassEnabled,
+            @Value("${app.dev-admin-bypass.secret:}") String devAdminBypassSecret) {
         this.userAccountRepository = userAccountRepository;
         this.jwtService = jwtService;
         this.frontendUrl = frontendUrl;
         this.devAdminBypassEnabled = devAdminBypassEnabled;
+        this.devAdminBypassSecret = devAdminBypassSecret;
     }
 
     /** For the frontend to check "am I logged in" and show a nickname — nothing else. */
@@ -54,12 +59,18 @@ public class AuthController {
     /**
      * 실제 OAuth 앱 등록 전에 팀이 관리자 권한으로 써볼 수 있게 하는 임시
      * 우회 로그인. app.dev-admin-bypass.enabled(ADMIN_BYPASS_ENABLED)가
-     * true일 때만 동작하고, 기본값은 false — 상용화 시점에 반드시 꺼야 한다.
-     * 인증 없이 관리자 계정을 내주는 기능이라 매 사용을 로그로 남긴다.
+     * true이고, 쿼리파라미터 key가 app.dev-admin-bypass.secret(ADMIN_BYPASS_SECRET)과
+     * 일치할 때만 동작한다 — permitAll 경로라 URL만 알면 누구나 호출할 수
+     * 있어서, 비밀값 없이는 절대 열리지 않게 이중으로 막는다(플래그만으로는
+     * URL을 아는 사람 누구나 관리자가 될 수 있었다). 시크릿을 아예 설정 안
+     * 했으면(빈 문자열) 플래그를 켜도 항상 막힌다 — 잠금을 깜빡하는 실수보다
+     * 안전한 쪽으로 fail closed. 상용화 시점엔 반드시 꺼야 한다. 인증 없이
+     * 관리자 계정을 내주는 기능이라 매 사용을 로그로 남긴다.
      */
     @GetMapping("/api/auth/dev-admin-login")
-    public void devAdminLogin(HttpServletResponse response) throws IOException {
-        if (!devAdminBypassEnabled) {
+    public void devAdminLogin(
+            @RequestParam(required = false) String key, HttpServletResponse response) throws IOException {
+        if (!devAdminBypassEnabled || !secretMatches(key)) {
             // sendError()가 아니라 setStatus() — sendError()는 컨테이너의
             // /error 포워딩을 태우는데, /error는 permitAll 목록에 없어서
             // Spring Security가 그 요청을 다시 막고 401로 덮어써 버린다
@@ -84,6 +95,19 @@ public class AuthController {
         String token = jwtService.issueToken(account.getId());
         String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
         response.sendRedirect(frontendUrl + "#/auth/callback?token=" + encodedToken);
+    }
+
+    // 타이밍 공격으로 시크릿을 한 글자씩 추측하지 못하게 상수 시간 비교를
+    // 쓴다. 시크릿을 아예 설정 안 했으면(빈 문자열) 무조건 실패시킨다 —
+    // key도 안 보냈을 때 "빈 문자열 == 빈 문자열"로 통과해 버리는 것을 막는다.
+    private boolean secretMatches(String key) {
+        if (devAdminBypassSecret.isEmpty()) {
+            return false;
+        }
+        String provided = key == null ? "" : key;
+        return MessageDigest.isEqual(
+                provided.getBytes(StandardCharsets.UTF_8),
+                devAdminBypassSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     public record MeResponse(String provider, String nickname) {

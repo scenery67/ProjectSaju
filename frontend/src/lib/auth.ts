@@ -11,11 +11,9 @@ export function loginUrl(provider: OAuthProvider): string {
   return `${API_ROOT_URL}/oauth2/authorization/${provider}`;
 }
 
-// Only responds while the backend's ADMIN_BYPASS_ENABLED is on (404 otherwise) —
-// a stopgap for using the app as an admin before real OAuth apps are registered.
-export function devAdminLoginUrl(): string {
-  return `${API_ROOT_URL}/api/auth/dev-admin-login`;
-}
+// Deliberately not linked from any page: /api/auth/dev-admin-login requires a
+// ?key= secret (ADMIN_BYPASS_SECRET) that must never ship in the frontend
+// bundle — the team hits it directly (e.g. a private bookmark), not via the UI.
 
 export function getAuthToken(): string | null {
   try {

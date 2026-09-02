@@ -83,6 +83,11 @@ app:
     # 임시 우회 로그인(/api/auth/dev-admin-login) 활성화 여부. 기본값 false —
     # 상용화 시점엔 반드시 이 값을 켜지 않은 채로 둬야 한다(또는 Fly secret 제거).
     enabled: ${ADMIN_BYPASS_ENABLED:false}
+    # 위 enabled가 true여도 요청의 ?key= 값이 이 값과 일치해야만 동작한다 —
+    # /api/auth/dev-admin-login은 permitAll이라 URL만 알면 누구나 부를 수
+    # 있어서, enabled 플래그 하나만으로는 "아무나 관리자가 되는" 문제가 있었다.
+    # 비워두면(기본값) enabled를 켜도 항상 막힌다.
+    secret: ${ADMIN_BYPASS_SECRET:}
 
 management:
   endpoints:

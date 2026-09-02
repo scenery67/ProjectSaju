@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   clearAuthToken,
-  devAdminLoginUrl,
   fetchCurrentUser,
   getAuthToken,
   loginUrl,
@@ -93,12 +92,6 @@ export default function MyPage() {
               {p.label}
             </a>
           ))}
-          <a
-            href={devAdminLoginUrl()}
-            className="mt-2 rounded-full border border-dashed border-amber-300 bg-amber-50 py-3 text-center text-xs font-bold text-amber-700"
-          >
-            [개발용] 관리자로 로그인
-          </a>
         </section>
       )}
 
