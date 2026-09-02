@@ -1,4 +1,4 @@
-import type { SajuPersona } from '../types/saju';
+import type { PersonaType, SajuPersona } from '../types/saju';
 
 // 캐릭터명/정체성(personality)은 확정됨 — 톤은 "다정한 위로형".
 // 일러스트/아트는 아직 placeholder(🔮, accentColor 배경)이고 추후 자체 제작 예정
@@ -30,4 +30,8 @@ export const PERSONAS: SajuPersona[] = [
 
 export function findPersonaById(id: string): SajuPersona | undefined {
   return PERSONAS.find((p) => p.id === id);
+}
+
+export function findPersonaByType(type: PersonaType): SajuPersona | undefined {
+  return PERSONAS.find((p) => p.type === type);
 }

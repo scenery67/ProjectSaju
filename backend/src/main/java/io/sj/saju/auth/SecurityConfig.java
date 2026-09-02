@@ -58,6 +58,11 @@ public class SecurityConfig {
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                         PathPatternRequestMatcher.withDefaults().matcher("/api/**")))
                 .authorizeHttpRequests(auth -> auth
+                        // /api/saju/**보다 먼저 와야 한다 — authorizeHttpRequests는
+                        // 선언 순서대로 첫 매치를 쓰므로, 더 구체적인 규칙을 넓은
+                        // permitAll(/api/saju/**)보다 앞에 둬야 여기만 인증을 요구한다.
+                        // 로그인 사용자의 서버 저장 기록이라 비로그인으로 열람 못 하게 막는다.
+                        .requestMatchers("/api/saju/history").authenticated()
                         // /error도 permitAll — 아니면 permitAll 경로에서 발생한 에러가
                         // 컨테이너의 /error 포워딩을 타는 순간 Security가 그 요청(인증
                         // 안 된 /error 요청)을 다시 막아 원래 상태 코드(404/405 등) 대신

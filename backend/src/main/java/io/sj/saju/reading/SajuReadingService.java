@@ -5,6 +5,7 @@ import io.sj.saju.reading.dto.BreakupReadingRequest;
 import io.sj.saju.reading.dto.CoupleCompatibilityRequest;
 import io.sj.saju.reading.dto.DaYunPeriod;
 import io.sj.saju.reading.dto.PersonInput;
+import io.sj.saju.reading.dto.ReadingHistoryEntry;
 import io.sj.saju.reading.dto.SajuChart;
 import io.sj.saju.reading.dto.SajuReadingResult;
 import io.sj.saju.reading.saju.EarthlyBranchRelation;
@@ -15,9 +16,16 @@ import io.sj.saju.reading.saju.TenGodTraits;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Computes the 사주팔자 chart via {@link SajuChartCalculator} and turns it into
@@ -30,15 +38,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class SajuReadingService {
 
+    private static final Logger log = LoggerFactory.getLogger(SajuReadingService.class);
     private static final String FIVE_ELEMENT_ORDER = "목화토금수";
 
     private final ReadingRecordRepository readingRecordRepository;
+    private final ObjectMapper objectMapper;
 
-    public SajuReadingService(ReadingRecordRepository readingRecordRepository) {
+    public SajuReadingService(ReadingRecordRepository readingRecordRepository, ObjectMapper objectMapper) {
         this.readingRecordRepository = readingRecordRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public SajuReadingResult readBreakup(BreakupReadingRequest request) {
+    public SajuReadingResult readBreakup(BreakupReadingRequest request, UUID userAccountId) {
         PersonInput self = request.self();
         SajuChart chart = SajuChartCalculator.calculate(self);
 
@@ -67,10 +78,51 @@ public class SajuReadingService {
                         chart.monthTenGod(), TenGodTraits.describe(chart.monthTenGod()),
                         describeCurrentDaYun(chart, self.birthDate()));
 
+        SajuReadingResult result = new SajuReadingResult(PersonaType.BREAKUP, summary, detail, chart, null);
         readingRecordRepository.save(new ReadingRecord(
-                PersonaType.BREAKUP, self.name(), null, summary, detail));
+                PersonaType.BREAKUP, self.name(), null, summary, detail,
+                userAccountId, resultJsonFor(userAccountId, result)));
 
-        return new SajuReadingResult(PersonaType.BREAKUP, summary, detail, chart, null);
+        return result;
+    }
+
+    /**
+     * 로그인 사용자 기록에만 전체 결과를 JSON으로 남긴다 — "내 사주"에서 다시
+     * 열어볼 때 필요하다. 비로그인 요청(userAccountId == null)은 계속 null.
+     * 직렬화가 실패해도 사주 풀이 자체는 이미 끝난 요청이라 실패시키지 않고
+     * 기록만 요약 텍스트로 남긴다.
+     */
+    private String resultJsonFor(UUID userAccountId, SajuReadingResult result) {
+        if (userAccountId == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(result);
+        } catch (JacksonException e) {
+            log.warn("failed to serialize reading result for history, saving without it", e);
+            return null;
+        }
+    }
+
+    /** 로그인한 사용자의 서버 저장 사주 기록 — "내 사주" 화면에서 최신순으로 보여준다. */
+    public List<ReadingHistoryEntry> history(UUID userAccountId) {
+        return readingRecordRepository.findByUserAccountIdOrderByCreatedAtDesc(userAccountId).stream()
+                .map(this::toHistoryEntry)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private ReadingHistoryEntry toHistoryEntry(ReadingRecord record) {
+        if (record.getResultJson() == null) {
+            return null;
+        }
+        try {
+            SajuReadingResult result = objectMapper.readValue(record.getResultJson(), SajuReadingResult.class);
+            return new ReadingHistoryEntry(record.getId(), record.getCreatedAt(), result);
+        } catch (JacksonException e) {
+            log.warn("failed to deserialize stored reading result, skipping from history", e);
+            return null;
+        }
     }
 
     /**
@@ -118,7 +170,7 @@ public class SajuReadingService {
                 .formatted(current.startAge(), current.endAge(), current.pillar());
     }
 
-    public SajuReadingResult readCoupleCompatibility(CoupleCompatibilityRequest request) {
+    public SajuReadingResult readCoupleCompatibility(CoupleCompatibilityRequest request, UUID userAccountId) {
         PersonInput self = request.self();
         PersonInput partner = request.partner();
         SajuChart selfChart = SajuChartCalculator.calculate(self);
@@ -167,9 +219,12 @@ public class SajuReadingService {
                         self.name(), partner.name(), partnerAsSeenBySelf, TenGodTraits.describe(partnerAsSeenBySelf),
                         partner.name(), self.name(), selfAsSeenByPartner, TenGodTraits.describe(selfAsSeenByPartner));
 
+        SajuReadingResult result = new SajuReadingResult(
+                PersonaType.COUPLE_COMPATIBILITY, summary, detail, selfChart, partnerChart);
         readingRecordRepository.save(new ReadingRecord(
-                PersonaType.COUPLE_COMPATIBILITY, self.name(), partner.name(), summary, detail));
+                PersonaType.COUPLE_COMPATIBILITY, self.name(), partner.name(), summary, detail,
+                userAccountId, resultJsonFor(userAccountId, result)));
 
-        return new SajuReadingResult(PersonaType.COUPLE_COMPATIBILITY, summary, detail, selfChart, partnerChart);
+        return result;
     }
 }

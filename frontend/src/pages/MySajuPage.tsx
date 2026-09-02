@@ -1,13 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { findPersonaById } from '../data/personas';
+import { findPersonaByType, findPersonaById } from '../data/personas';
+import { getAuthToken } from '../lib/auth';
+import { fetchServerHistory, type ServerHistoryEntry } from '../lib/readingHistory';
 import { clearHistory, getHistory } from '../lib/sajuHistory';
+import type { SajuReadingResult } from '../types/saju';
+
+interface DisplayEntry {
+  key: string;
+  source: 'server' | 'local';
+  title: string;
+  summary: string;
+  createdAt: string;
+  personaId: string;
+  result: SajuReadingResult;
+}
+
+function toDisplayEntries(serverEntries: ServerHistoryEntry[]): DisplayEntry[] {
+  return serverEntries.flatMap((entry) => {
+    const persona = findPersonaByType(entry.result.personaType);
+    if (!persona) return [];
+    return [{
+      key: `server-${entry.id}`,
+      source: 'server' as const,
+      title: persona.title,
+      summary: entry.result.summary,
+      createdAt: entry.createdAt,
+      personaId: persona.id,
+      result: entry.result,
+    }];
+  });
+}
 
 export default function MySajuPage() {
   const navigate = useNavigate();
-  const [entries, setEntries] = useState(getHistory);
+  const [localEntries, setLocalEntries] = useState(getHistory);
+  // undefined = not checked yet / not logged in, so only local entries render.
+  const [serverEntries, setServerEntries] = useState<ServerHistoryEntry[] | undefined>(undefined);
 
-  if (entries.length === 0) {
+  useEffect(() => {
+    if (!getAuthToken()) return;
+    fetchServerHistory().then((entries) => setServerEntries(entries ?? []));
+  }, []);
+
+  const displayEntries: DisplayEntry[] = [
+    ...(serverEntries ? toDisplayEntries(serverEntries) : []),
+    ...localEntries.map((entry) => ({
+      key: `local-${entry.id}`,
+      source: 'local' as const,
+      title: findPersonaById(entry.personaId)?.title ?? entry.personaType,
+      summary: entry.result.summary,
+      createdAt: entry.createdAt,
+      personaId: entry.personaId,
+      result: entry.result,
+    })),
+  ];
+
+  if (displayEntries.length === 0) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         아직 본 사주가 없어요.
@@ -24,48 +73,51 @@ export default function MySajuPage() {
         <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
           내 사주
         </h2>
-        <button
-          type="button"
-          className="text-xs font-medium text-neutral-400 underline"
-          onClick={() => {
-            clearHistory();
-            setEntries([]);
-          }}
-        >
-          기록 삭제
-        </button>
+        {localEntries.length > 0 && (
+          <button
+            type="button"
+            className="text-xs font-medium text-neutral-400 underline"
+            onClick={() => {
+              clearHistory();
+              setLocalEntries([]);
+            }}
+          >
+            이 기기 기록 삭제
+          </button>
+        )}
       </div>
       <p className="text-xs text-neutral-400">
-        이 기기에만 저장된 최근 결과입니다. 앱을 지우거나 다른 기기에서 보면
-        보이지 않아요.
+        {serverEntries !== undefined
+          ? '계정에 저장된 기록과 이 기기에만 저장된 기록을 함께 보여드려요.'
+          : '이 기기에만 저장된 최근 결과입니다. 앱을 지우거나 다른 기기에서 보면 보이지 않아요.'}
       </p>
       <ul className="flex flex-col gap-3">
-        {entries.map((entry) => {
-          const persona = findPersonaById(entry.personaId);
-          return (
-            <li key={entry.id}>
-              <button
-                type="button"
-                className="flex w-full flex-col gap-1 rounded-2xl bg-white p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-transform active:scale-[0.98]"
-                onClick={() =>
-                  navigate(`/persona/${entry.personaId}/result`, {
-                    state: { result: entry.result },
-                  })
-                }
-              >
-                <span className="text-sm font-bold text-neutral-900">
-                  {persona?.title ?? entry.personaType}
-                </span>
-                <span className="text-xs text-neutral-500">
-                  {entry.result.summary}
-                </span>
-                <span className="text-[11px] text-neutral-400">
-                  {new Date(entry.createdAt).toLocaleString('ko-KR')}
-                </span>
-              </button>
-            </li>
-          );
-        })}
+        {displayEntries.map((entry) => (
+          <li key={entry.key}>
+            <button
+              type="button"
+              className="flex w-full flex-col gap-1 rounded-2xl bg-white p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-transform active:scale-[0.98]"
+              onClick={() =>
+                navigate(`/persona/${entry.personaId}/result`, {
+                  state: { result: entry.result },
+                })
+              }
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold text-neutral-900">{entry.title}</span>
+                {entry.source === 'local' && (
+                  <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
+                    이 기기
+                  </span>
+                )}
+              </div>
+              <span className="text-xs text-neutral-500">{entry.summary}</span>
+              <span className="text-[11px] text-neutral-400">
+                {new Date(entry.createdAt).toLocaleString('ko-KR')}
+              </span>
+            </button>
+          </li>
+        ))}
       </ul>
     </main>
   );
