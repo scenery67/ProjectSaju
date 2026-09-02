@@ -4,9 +4,7 @@ import {
   clearAuthToken,
   fetchCurrentUser,
   getAuthToken,
-  loginUrl,
   type CurrentUser,
-  type OAuthProvider,
 } from '../lib/auth';
 import {
   fetchBalance,
@@ -17,27 +15,6 @@ import {
   type PaymentHistoryEntry,
   type PaymentStatus,
 } from '../lib/billing';
-
-// 각 공급자의 실제 브랜드 색을 써야 사용자가 로고 없이도 버튼을 바로 알아본다
-// (카카오=노랑+검정 글자, 구글=흰 배경, 네이버=초록 — 참고 사이트 로그인
-// 화면과 동일한 관례).
-const PROVIDERS: { id: OAuthProvider; label: string; className: string }[] = [
-  {
-    id: 'kakao',
-    label: '카카오로 로그인',
-    className: 'bg-[#FEE500] text-neutral-900',
-  },
-  {
-    id: 'google',
-    label: '구글로 로그인',
-    className: 'bg-white text-neutral-900',
-  },
-  {
-    id: 'naver',
-    label: '네이버로 로그인',
-    className: 'bg-[#03C75A] text-white',
-  },
-];
 
 const STATUS_LABEL: Record<PaymentStatus, string> = {
   PENDING: '결제 대기중',
@@ -98,16 +75,16 @@ export default function MyPage() {
       )}
 
       {user === null && (
-        <section className="flex flex-col gap-2 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
-          {PROVIDERS.map((p) => (
-            <a
-              key={p.id}
-              href={loginUrl(p.id)}
-              className={`rounded-full py-3 text-center text-sm font-bold ${p.className}`}
-            >
-              {p.label}
-            </a>
-          ))}
+        <section className="flex flex-col items-center gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
+          <p className="text-sm text-neutral-400">
+            로그인하면 크레딧, 상담 기록을 계정에 저장할 수 있어요.
+          </p>
+          <Link
+            to="/login"
+            className="rounded-full bg-violet-600 px-6 py-3 text-sm font-bold text-white"
+          >
+            로그인하기
+          </Link>
         </section>
       )}
 
