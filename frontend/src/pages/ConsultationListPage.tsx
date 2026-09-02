@@ -23,7 +23,7 @@ export default function ConsultationListPage() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         로그인하면 이전 상담을 다시 볼 수 있어요.
-        <Link to="/mypage" className="font-semibold text-rose-500 underline">
+        <Link to="/mypage" className="font-semibold text-violet-500 underline">
           마이페이지에서 로그인
         </Link>
       </main>
@@ -38,7 +38,7 @@ export default function ConsultationListPage() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         아직 상담한 내용이 없어요.
-        <Link to="/" className="font-semibold text-rose-500 underline">
+        <Link to="/" className="font-semibold text-violet-500 underline">
           사주 보러 가기
         </Link>
       </main>

@@ -38,7 +38,7 @@ export default function ConsultationPage() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         상담 세션 정보가 없어요.
-        <Link to="/" className="font-semibold text-rose-500 underline">
+        <Link to="/" className="font-semibold text-violet-500 underline">
           홈으로 돌아가기
         </Link>
       </main>
@@ -98,7 +98,7 @@ export default function ConsultationPage() {
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                 m.role === 'USER'
-                  ? 'bg-rose-500 text-white'
+                  ? 'bg-violet-500 text-white'
                   : 'bg-white text-neutral-800 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]'
               }`}
             >
@@ -116,11 +116,11 @@ export default function ConsultationPage() {
         <div ref={bottomRef} />
       </div>
 
-      {error && <p className="mt-2 text-xs font-medium text-rose-500">{error}</p>}
+      {error && <p className="mt-2 text-xs font-medium text-violet-500">{error}</p>}
 
       <form className="mt-3 flex gap-2" onSubmit={handleSend}>
         <input
-          className="flex-1 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-rose-300 focus:bg-white"
+          className="flex-1 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-violet-300 focus:bg-white"
           placeholder="궁금한 걸 물어보세요"
           value={input}
           maxLength={2000}
@@ -130,7 +130,7 @@ export default function ConsultationPage() {
         <button
           type="submit"
           disabled={sending || !input.trim()}
-          className="shrink-0 rounded-full bg-rose-500 px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+          className="shrink-0 rounded-full bg-violet-500 px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50"
         >
           보내기
         </button>

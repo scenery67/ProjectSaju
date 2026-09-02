@@ -156,7 +156,7 @@ export default function MyPage() {
                   <button
                     type="button"
                     disabled={purchasingId === pkg.id}
-                    className="rounded-full bg-rose-500 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+                    className="rounded-full bg-violet-500 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
                     onClick={() => handlePurchase(pkg)}
                   >
                     {purchasingId === pkg.id ? '처리 중...' : '충전'}

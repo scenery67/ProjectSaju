@@ -22,7 +22,7 @@ function PersonalityProfileCard({
 }) {
   return (
     <section className="rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.12)]">
-      <p className="mb-3 text-[11px] font-bold tracking-wide text-rose-400">
+      <p className="mb-3 text-[11px] font-bold tracking-wide text-violet-400">
         {label}
       </p>
       <dl className="flex flex-col gap-3">
@@ -101,7 +101,7 @@ function PillarColumn({
   return (
     <div className="flex flex-col items-center gap-1 text-center">
       <span className="text-[10px] text-neutral-400">{palace}</span>
-      <span className="text-[11px] font-medium text-rose-400">
+      <span className="text-[11px] font-medium text-violet-400">
         {tenGod ?? '—'}
       </span>
       <span className="text-xl font-bold text-neutral-900">{gan}</span>
@@ -203,7 +203,7 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
                 <span className="text-sm font-semibold text-neutral-800">
                   {p.pillar}
                 </span>
-                <span className="text-[10px] text-rose-400">{p.tenGod}</span>
+                <span className="text-[10px] text-violet-400">{p.tenGod}</span>
               </div>
             ))}
           </div>
@@ -227,7 +227,7 @@ export default function ResultPage() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         결과 정보가 없습니다.
-        <Link to="/" className="font-semibold text-rose-500 underline">
+        <Link to="/" className="font-semibold text-violet-500 underline">
           홈으로 돌아가기
         </Link>
       </main>
@@ -278,7 +278,7 @@ export default function ResultPage() {
               : `${persona.characterName}에게 더 물어보기 (크레딧 1개)`}
           </button>
           {consultationError && (
-            <p className="text-xs font-medium text-rose-500">{consultationError}</p>
+            <p className="text-xs font-medium text-violet-500">{consultationError}</p>
           )}
         </div>
       )}
@@ -303,7 +303,7 @@ export default function ResultPage() {
       </section>
       <Link
         to="/"
-        className="rounded-full bg-rose-500 py-3.5 text-center text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(244,63,94,0.6)]"
+        className="rounded-full bg-violet-500 py-3.5 text-center text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(139,92,246,0.6)]"
       >
         다른 사주 보러가기
       </Link>

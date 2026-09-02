@@ -95,7 +95,7 @@ export default function AdminPage() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         관리자만 볼 수 있는 화면이에요.
-        <Link to="/mypage" className="font-semibold text-rose-500 underline">
+        <Link to="/mypage" className="font-semibold text-violet-500 underline">
           마이페이지로
         </Link>
       </main>
@@ -142,7 +142,7 @@ export default function AdminPage() {
                 {p.status === 'COMPLETED' && (
                   <button
                     type="button"
-                    className="rounded-full border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-500"
+                    className="rounded-full border border-violet-200 px-3 py-1.5 text-xs font-semibold text-violet-500"
                     onClick={() => setRefundingId(refundingId === p.id ? null : p.id)}
                   >
                     환불
@@ -152,14 +152,14 @@ export default function AdminPage() {
               {refundingId === p.id && (
                 <div className="flex gap-2">
                   <input
-                    className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs outline-none focus:border-rose-300"
+                    className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs outline-none focus:border-violet-300"
                     placeholder="환불 사유"
                     value={refundReason}
                     onChange={(e) => setRefundReason(e.target.value)}
                   />
                   <button
                     type="button"
-                    className="rounded-full bg-rose-500 px-3 py-2 text-xs font-bold text-white"
+                    className="rounded-full bg-violet-500 px-3 py-2 text-xs font-bold text-white"
                     onClick={() => handleRefund(p.id)}
                   >
                     확인
@@ -175,7 +175,7 @@ export default function AdminPage() {
         <h3 className="text-sm font-bold text-neutral-900">사용자 크레딧 원장</h3>
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-rose-300 focus:bg-white"
+            className="flex-1 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-300 focus:bg-white"
             placeholder="user_account_id"
             value={ledgerUserId}
             onChange={(e) => setLedgerUserId(e.target.value)}
@@ -216,27 +216,27 @@ export default function AdminPage() {
         <h3 className="text-sm font-bold text-neutral-900">크레딧 수동 지급/회수</h3>
         <form className="flex flex-col gap-2 rounded-2xl bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]" onSubmit={handleAdjust}>
           <input
-            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-rose-300 focus:bg-white"
+            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-300 focus:bg-white"
             placeholder="user_account_id"
             value={adjustUserId}
             onChange={(e) => setAdjustUserId(e.target.value)}
           />
           <input
-            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs outline-none focus:border-rose-300 focus:bg-white"
+            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs outline-none focus:border-violet-300 focus:bg-white"
             placeholder="수량 (양수: 지급, 음수: 회수)"
             type="number"
             value={adjustAmount}
             onChange={(e) => setAdjustAmount(e.target.value)}
           />
           <input
-            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs outline-none focus:border-rose-300 focus:bg-white"
+            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-xs outline-none focus:border-violet-300 focus:bg-white"
             placeholder="사유"
             value={adjustReason}
             onChange={(e) => setAdjustReason(e.target.value)}
           />
           <button
             type="submit"
-            className="rounded-full bg-rose-500 py-2.5 text-xs font-bold text-white"
+            className="rounded-full bg-violet-500 py-2.5 text-xs font-bold text-white"
           >
             적용
           </button>

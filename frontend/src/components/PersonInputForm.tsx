@@ -54,7 +54,7 @@ function BirthDateInput({
       maxLength={6}
       placeholder="260901"
       required
-      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
       value={raw}
       onChange={handleChange}
     />
@@ -95,7 +95,7 @@ function BirthTimeInput({
       pattern="[0-9]*"
       maxLength={4}
       placeholder="2040"
-      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
       value={raw}
       onChange={handleChange}
     />
@@ -119,7 +119,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       <label className="flex flex-col gap-1.5 text-xs font-medium text-neutral-500">
         이름
         <input
-          className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-rose-300 focus:bg-white"
+          className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
           required
@@ -147,7 +147,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       <div className="flex gap-4">
         <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
-            className="accent-rose-500"
+            className="accent-violet-500"
             type="radio"
             name={`${label}-calendar`}
             checked={value.calendarType === 'SOLAR'}
@@ -157,7 +157,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
         </label>
         <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
-            className="accent-rose-500"
+            className="accent-violet-500"
             type="radio"
             name={`${label}-calendar`}
             checked={value.calendarType === 'LUNAR'}
@@ -167,7 +167,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
         </label>
         <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
-            className="accent-rose-500"
+            className="accent-violet-500"
             type="radio"
             name={`${label}-gender`}
             checked={value.gender === 'FEMALE'}
@@ -177,7 +177,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
         </label>
         <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
           <input
-            className="accent-rose-500"
+            className="accent-violet-500"
             type="radio"
             name={`${label}-gender`}
             checked={value.gender === 'MALE'}

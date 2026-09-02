@@ -136,7 +136,7 @@ export default function PersonaDetailPage() {
           <div className="w-full max-w-xs">
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
               <div
-                className="h-full rounded-full bg-rose-500 transition-[width] duration-150 ease-out"
+                className="h-full rounded-full bg-violet-500 transition-[width] duration-150 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -160,11 +160,11 @@ export default function PersonaDetailPage() {
             />
           )}
 
-          {error && <p className="text-xs font-medium text-rose-500">{error}</p>}
+          {error && <p className="text-xs font-medium text-violet-500">{error}</p>}
 
           <button
             type="submit"
-            className="rounded-full bg-rose-500 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(244,63,94,0.6)]"
+            className="rounded-full bg-violet-500 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(139,92,246,0.6)]"
           >
             사주 풀이 시작하기 →
           </button>
