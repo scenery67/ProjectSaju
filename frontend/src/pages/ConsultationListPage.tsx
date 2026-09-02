@@ -47,7 +47,7 @@ export default function ConsultationListPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 px-4 pb-6 pt-5">
-      <h2 className="text-2xl font-bold tracking-tight text-neutral-900">내 상담</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-white">내 상담</h2>
       <ul className="flex flex-col gap-3">
         {sessions.map((session) => {
           const persona = findPersonaByType(session.personaType as PersonaType);
@@ -55,12 +55,12 @@ export default function ConsultationListPage() {
             <li key={session.id}>
               <button
                 type="button"
-                className="flex w-full flex-col gap-1 rounded-2xl bg-white p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-transform active:scale-[0.98]"
+                className="flex w-full flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 text-left transition-transform active:scale-[0.98]"
                 onClick={() =>
                   navigate(`/consultation/${session.id}`, { state: { session } })
                 }
               >
-                <span className="text-sm font-bold text-neutral-900">
+                <span className="text-sm font-bold text-white">
                   {persona
                     ? `${withBatchimPostposition(persona.characterName, '와', '과')}의 상담`
                     : '상담'}

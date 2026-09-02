@@ -121,7 +121,7 @@ export default function PersonaDetailPage() {
   return (
     <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
       <section className="flex flex-col gap-1.5">
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-2xl font-bold tracking-tight text-white">
           {persona.title}
         </h2>
         <p className="text-sm text-neutral-500">{persona.subtitle}</p>
@@ -131,10 +131,10 @@ export default function PersonaDetailPage() {
       </section>
 
       {submitting ? (
-        <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.12)]">
+        <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
           <span className="text-4xl">🔮</span>
           <div className="w-full max-w-xs">
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-800">
               <div
                 className="h-full rounded-full bg-violet-500 transition-[width] duration-150 ease-out"
                 style={{ width: `${progress}%` }}
@@ -144,7 +144,7 @@ export default function PersonaDetailPage() {
               {Math.round(progress)}%
             </p>
           </div>
-          <p className="text-sm font-medium text-neutral-600">{message}</p>
+          <p className="text-sm font-medium text-neutral-400">{message}</p>
           <p className="text-xs text-neutral-400">
             서버가 잠시 쉬고 있었다면 깨어나는 데 시간이 좀 더 걸릴 수 있어요.
           </p>

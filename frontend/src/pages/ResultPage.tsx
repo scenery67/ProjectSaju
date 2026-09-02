@@ -21,17 +21,17 @@ function PersonalityProfileCard({
   profile: PersonalityProfile;
 }) {
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.12)]">
+    <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
       <p className="mb-3 text-[11px] font-bold tracking-wide text-violet-400">
         {label}
       </p>
       <dl className="flex flex-col gap-3">
         {PROFILE_ROWS.map(({ key, label: rowLabel }) => (
           <div key={key}>
-            <dt className="mb-0.5 text-xs font-bold text-neutral-800">
+            <dt className="mb-0.5 text-xs font-bold text-neutral-100">
               {rowLabel}
             </dt>
-            <dd className="text-sm leading-relaxed text-neutral-600">
+            <dd className="text-sm leading-relaxed text-neutral-400">
               {profile[key]}
             </dd>
           </div>
@@ -61,10 +61,10 @@ function FiveElementBars({ counts }: { counts: Record<string, number> }) {
         const percent = Math.round((count / total) * 100);
         return (
           <div key={element} className="flex items-center gap-2">
-            <span className="w-4 text-xs font-bold text-neutral-700">
+            <span className="w-4 text-xs font-bold text-neutral-300">
               {element}
             </span>
-            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-neutral-100">
+            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-neutral-800">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -104,8 +104,8 @@ function PillarColumn({
       <span className="text-[11px] font-medium text-violet-400">
         {tenGod ?? '—'}
       </span>
-      <span className="text-xl font-bold text-neutral-900">{gan}</span>
-      <span className="text-xl font-bold text-neutral-700">{zhi}</span>
+      <span className="text-xl font-bold text-white">{gan}</span>
+      <span className="text-xl font-bold text-neutral-300">{zhi}</span>
       <span className="text-[11px] text-neutral-400">
         {twelveStage ?? '—'}
       </span>
@@ -118,11 +118,11 @@ function PillarColumn({
 
 function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
   return (
-    <div className="rounded-2xl bg-neutral-50 p-4">
+    <div className="rounded-2xl bg-neutral-800 p-4">
       <p className="mb-3 text-[11px] font-bold tracking-wide text-neutral-400">
         {label}
       </p>
-      <div className="grid grid-cols-4 gap-1 border-b border-neutral-200 pb-4">
+      <div className="grid grid-cols-4 gap-1 border-b border-neutral-800 pb-4">
         <PillarColumn
           palace="말년(시)"
           pillar={chart.hourPillar ?? '--'}
@@ -172,12 +172,12 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
             {chart.daYunPeriods.map((p) => (
               <div
                 key={p.startAge}
-                className="flex shrink-0 flex-col items-center rounded-lg bg-white px-2 py-1.5 text-center"
+                className="flex shrink-0 flex-col items-center rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-center"
               >
                 <span className="text-[10px] text-neutral-400">
                   {p.startAge}~{p.endAge}세
                 </span>
-                <span className="text-sm font-semibold text-neutral-800">
+                <span className="text-sm font-semibold text-neutral-100">
                   {p.pillar}
                 </span>
               </div>
@@ -195,12 +195,12 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
             {chart.currentLiuNian.map((p) => (
               <div
                 key={p.year}
-                className="flex shrink-0 flex-col items-center rounded-lg bg-white px-2 py-1.5 text-center"
+                className="flex shrink-0 flex-col items-center rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-center"
               >
                 <span className="text-[10px] text-neutral-400">
                   {p.year} ({p.age}세)
                 </span>
-                <span className="text-sm font-semibold text-neutral-800">
+                <span className="text-sm font-semibold text-neutral-100">
                   {p.pillar}
                 </span>
                 <span className="text-[10px] text-violet-400">{p.tenGod}</span>
@@ -254,14 +254,14 @@ export default function ResultPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
-      <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+      <h2 className="text-2xl font-bold tracking-tight text-white">
         {persona.title} 결과
       </h2>
-      <section className="rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.12)]">
-        <p className="mb-3 text-sm font-bold text-neutral-900">
+      <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+        <p className="mb-3 text-sm font-bold text-white">
           {result.summary}
         </p>
-        <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-600">
+        <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-400">
           {result.detail}
         </p>
       </section>
@@ -271,7 +271,7 @@ export default function ResultPage() {
             type="button"
             disabled={startingConsultation}
             onClick={handleStartConsultation}
-            className="rounded-full bg-neutral-900 py-3.5 text-center text-sm font-bold text-white disabled:opacity-50"
+            className="rounded-full border border-violet-700 py-3.5 text-center text-sm font-bold text-violet-200 disabled:opacity-50"
           >
             {startingConsultation
               ? '연결하는 중...'

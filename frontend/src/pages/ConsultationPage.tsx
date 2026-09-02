@@ -80,7 +80,7 @@ export default function ConsultationPage() {
   return (
     <main className="flex flex-1 flex-col px-4 pb-4 pt-5">
       <div className="mb-3 flex flex-col gap-1">
-        <h2 className="text-xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-xl font-bold tracking-tight text-white">
           {persona ? `${withBatchimPostposition(persona.characterName, '와', '과')}의 상담` : '상담'}
         </h2>
         <p className="text-xs text-neutral-400">질문 1건당 크레딧 1개가 소모돼요.</p>
@@ -99,7 +99,7 @@ export default function ConsultationPage() {
               className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                 m.role === 'USER'
                   ? 'bg-violet-500 text-white'
-                  : 'bg-white text-neutral-800 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]'
+                  : 'border border-neutral-800 bg-neutral-900 text-neutral-100'
               }`}
             >
               {m.content}
@@ -108,7 +108,7 @@ export default function ConsultationPage() {
         ))}
         {sending && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-2xl bg-white px-4 py-2.5 text-sm text-neutral-400 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
+            <div className="max-w-[80%] rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 text-sm text-neutral-400">
               답변을 준비하고 있어요...
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function ConsultationPage() {
 
       <form className="mt-3 flex gap-2" onSubmit={handleSend}>
         <input
-          className="flex-1 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm outline-none focus:border-violet-300 focus:bg-white"
+          className="flex-1 rounded-full border border-neutral-800 bg-neutral-800 px-4 py-2.5 text-sm outline-none focus:border-violet-400"
           placeholder="궁금한 걸 물어보세요"
           value={input}
           maxLength={2000}

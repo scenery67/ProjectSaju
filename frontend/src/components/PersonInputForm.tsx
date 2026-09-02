@@ -54,7 +54,7 @@ function BirthDateInput({
       maxLength={6}
       placeholder="260901"
       required
-      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
+      className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-sm text-neutral-100 outline-none focus:border-violet-400"
       value={raw}
       onChange={handleChange}
     />
@@ -95,7 +95,7 @@ function BirthTimeInput({
       pattern="[0-9]*"
       maxLength={4}
       placeholder="2040"
-      className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
+      className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-sm text-neutral-100 outline-none focus:border-violet-400"
       value={raw}
       onChange={handleChange}
     />
@@ -111,15 +111,15 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
   ) => onChange({ ...value, [key]: v });
 
   return (
-    <fieldset className="flex flex-col gap-3.5 rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
-      <legend className="px-1 text-sm font-bold text-neutral-800">
+    <fieldset className="flex flex-col gap-3.5 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+      <legend className="px-1 text-sm font-bold text-neutral-100">
         {label}
       </legend>
 
       <label className="flex flex-col gap-1.5 text-xs font-medium text-neutral-500">
         이름
         <input
-          className="rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-800 outline-none focus:border-violet-300 focus:bg-white"
+          className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-sm text-neutral-100 outline-none focus:border-violet-400"
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
           required
@@ -145,7 +145,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
       </div>
 
       <div className="flex gap-4">
-        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400">
           <input
             className="accent-violet-500"
             type="radio"
@@ -155,7 +155,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           양력
         </label>
-        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400">
           <input
             className="accent-violet-500"
             type="radio"
@@ -165,7 +165,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           음력
         </label>
-        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400">
           <input
             className="accent-violet-500"
             type="radio"
@@ -175,7 +175,7 @@ export default function PersonInputForm({ label, value, onChange }: Props) {
           />
           여성
         </label>
-        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-600">
+        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400">
           <input
             className="accent-violet-500"
             type="radio"

@@ -18,10 +18,25 @@ import {
   type PaymentStatus,
 } from '../lib/billing';
 
-const PROVIDERS: { id: OAuthProvider; label: string }[] = [
-  { id: 'kakao', label: '카카오로 로그인' },
-  { id: 'google', label: '구글로 로그인' },
-  { id: 'naver', label: '네이버로 로그인' },
+// 각 공급자의 실제 브랜드 색을 써야 사용자가 로고 없이도 버튼을 바로 알아본다
+// (카카오=노랑+검정 글자, 구글=흰 배경, 네이버=초록 — 참고 사이트 로그인
+// 화면과 동일한 관례).
+const PROVIDERS: { id: OAuthProvider; label: string; className: string }[] = [
+  {
+    id: 'kakao',
+    label: '카카오로 로그인',
+    className: 'bg-[#FEE500] text-neutral-900',
+  },
+  {
+    id: 'google',
+    label: '구글로 로그인',
+    className: 'bg-white text-neutral-900',
+  },
+  {
+    id: 'naver',
+    label: '네이버로 로그인',
+    className: 'bg-[#03C75A] text-white',
+  },
 ];
 
 const STATUS_LABEL: Record<PaymentStatus, string> = {
@@ -69,7 +84,7 @@ export default function MyPage() {
   return (
     <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
       <div className="flex flex-col gap-1.5">
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-2xl font-bold tracking-tight text-white">
           마이페이지
         </h2>
         <p className="text-xs text-neutral-400">
@@ -83,12 +98,12 @@ export default function MyPage() {
       )}
 
       {user === null && (
-        <section className="flex flex-col gap-2 rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
+        <section className="flex flex-col gap-2 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
           {PROVIDERS.map((p) => (
             <a
               key={p.id}
               href={loginUrl(p.id)}
-              className="rounded-full border border-neutral-200 py-3 text-center text-sm font-bold text-neutral-700"
+              className={`rounded-full py-3 text-center text-sm font-bold ${p.className}`}
             >
               {p.label}
             </a>
@@ -98,22 +113,22 @@ export default function MyPage() {
 
       {user && (
         <>
-          <section className="flex flex-col gap-3 rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
-            <p className="text-sm text-neutral-800">
+          <section className="flex flex-col gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+            <p className="text-sm text-neutral-100">
               <span className="font-bold">{user.nickname || '(닉네임 없음)'}</span>
               님, {user.provider} 계정으로 로그인됐어요.
             </p>
             {user.isAdmin && (
               <Link
                 to="/admin"
-                className="rounded-full border border-neutral-800 bg-neutral-900 py-3 text-center text-sm font-semibold text-white"
+                className="rounded-full bg-violet-600 py-3 text-center text-sm font-semibold text-white"
               >
                 관리자 화면
               </Link>
             )}
             <button
               type="button"
-              className="rounded-full border border-neutral-200 py-3 text-sm font-semibold text-neutral-500"
+              className="rounded-full border border-neutral-800 py-3 text-sm font-semibold text-neutral-500"
               onClick={() => {
                 clearAuthToken();
                 setUser(null);
@@ -126,15 +141,15 @@ export default function MyPage() {
             </button>
           </section>
 
-          <section className="flex flex-col gap-1 rounded-3xl bg-neutral-900 p-5 text-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]">
-            <span className="text-xs text-neutral-400">보유 크레딧</span>
+          <section className="flex flex-col gap-1 rounded-3xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-neutral-900 p-5 text-white">
+            <span className="text-xs text-violet-300">보유 크레딧</span>
             <span className="text-3xl font-bold tracking-tight">
               {creditBalance === null ? '—' : `${creditBalance.toLocaleString('ko-KR')} 크레딧`}
             </span>
           </section>
 
           <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-bold text-neutral-900">충전하기</h3>
+            <h3 className="text-sm font-bold text-white">충전하기</h3>
             {packages === null && (
               <p className="text-xs text-neutral-400">불러오는 중...</p>
             )}
@@ -145,10 +160,10 @@ export default function MyPage() {
               {packages?.map((pkg) => (
                 <li
                   key={pkg.id}
-                  className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]"
+                  className="flex items-center justify-between rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-neutral-900">{pkg.name}</span>
+                    <span className="text-sm font-bold text-white">{pkg.name}</span>
                     <span className="text-xs text-neutral-500">
                       {pkg.creditAmount.toLocaleString('ko-KR')} 크레딧 · {formatKrw(pkg.priceKrw)}
                     </span>
@@ -167,7 +182,7 @@ export default function MyPage() {
           </section>
 
           <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-bold text-neutral-900">결제내역</h3>
+            <h3 className="text-sm font-bold text-white">결제내역</h3>
             {payments === null && (
               <p className="text-xs text-neutral-400">불러오는 중...</p>
             )}
@@ -178,17 +193,17 @@ export default function MyPage() {
               {payments?.map((payment) => (
                 <li
                   key={payment.id}
-                  className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)]"
+                  className="flex items-center justify-between rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-neutral-900">
+                    <span className="text-sm font-semibold text-white">
                       {payment.creditAmount.toLocaleString('ko-KR')} 크레딧 · {formatKrw(payment.amountKrw)}
                     </span>
                     <span className="text-[11px] text-neutral-400">
                       {new Date(payment.createdAt).toLocaleString('ko-KR')}
                     </span>
                   </div>
-                  <span className="rounded-full bg-neutral-100 px-3 py-1 text-[11px] font-semibold text-neutral-600">
+                  <span className="rounded-full bg-neutral-800 px-3 py-1 text-[11px] font-semibold text-neutral-400">
                     {STATUS_LABEL[payment.status]}
                   </span>
                 </li>

@@ -11,7 +11,7 @@ const TABS = [
 // 모바일 화면에서 주 내비게이션으로 쓰는 하단 고정 탭바.
 export default function BottomNav() {
   return (
-    <nav className="sticky bottom-0 z-10 flex bg-white/95 pb-1 pt-1.5 shadow-[0_-1px_0_rgba(0,0,0,0.06)] backdrop-blur">
+    <nav className="sticky bottom-0 z-10 flex border-t border-neutral-800 bg-neutral-900/95 pb-1 pt-1.5 backdrop-blur">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}

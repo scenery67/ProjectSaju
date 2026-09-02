@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col gap-6 px-4 pb-6 pt-5">
       <section className="flex flex-col gap-1.5">
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-2xl font-bold tracking-tight text-white">
           사주 상품 한눈에 보기
         </h2>
         <p className="text-sm text-neutral-500">

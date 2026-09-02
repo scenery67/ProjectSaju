@@ -70,7 +70,7 @@ export default function MySajuPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 px-4 pb-6 pt-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-2xl font-bold tracking-tight text-white">
           내 사주
         </h2>
         {localEntries.length > 0 && (
@@ -96,7 +96,7 @@ export default function MySajuPage() {
           <li key={entry.key}>
             <button
               type="button"
-              className="flex w-full flex-col gap-1 rounded-2xl bg-white p-4 text-left shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-transform active:scale-[0.98]"
+              className="flex w-full flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 text-left transition-transform active:scale-[0.98]"
               onClick={() =>
                 navigate(`/persona/${entry.personaId}/result`, {
                   state: { result: entry.result },
@@ -104,9 +104,9 @@ export default function MySajuPage() {
               }
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-neutral-900">{entry.title}</span>
+                <span className="text-sm font-bold text-white">{entry.title}</span>
                 {entry.source === 'local' && (
-                  <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
+                  <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
                     이 기기
                   </span>
                 )}
