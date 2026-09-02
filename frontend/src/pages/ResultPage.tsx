@@ -1,5 +1,8 @@
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { findPersonaById } from '../data/personas';
+import { getAuthToken } from '../lib/auth';
+import { ConsultationApiError, createConsultationSession } from '../lib/consultation';
 import type { PersonalityProfile, SajuChart, SajuReadingResult } from '../types/saju';
 
 const PROFILE_ROWS: { key: keyof PersonalityProfile; label: string }[] = [
@@ -213,9 +216,12 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
 export default function ResultPage() {
   const { personaId } = useParams<{ personaId: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const persona = personaId ? findPersonaById(personaId) : undefined;
   const result = (location.state as { result?: SajuReadingResult } | null)
     ?.result;
+  const [startingConsultation, setStartingConsultation] = useState(false);
+  const [consultationError, setConsultationError] = useState<string | null>(null);
 
   if (!persona || !result) {
     return (
@@ -226,6 +232,24 @@ export default function ResultPage() {
         </Link>
       </main>
     );
+  }
+
+  async function handleStartConsultation() {
+    if (!result?.id) return;
+    setStartingConsultation(true);
+    setConsultationError(null);
+    try {
+      const session = await createConsultationSession(result.id);
+      navigate(`/consultation/${session.id}`, { state: { session } });
+    } catch (e) {
+      setConsultationError(
+        e instanceof ConsultationApiError && e.status === 404
+          ? '이 결과로는 상담을 시작할 수 없어요.'
+          : '상담을 시작하지 못했어요. 잠시 후 다시 시도해주세요.',
+      );
+    } finally {
+      setStartingConsultation(false);
+    }
   }
 
   return (
@@ -241,6 +265,23 @@ export default function ResultPage() {
           {result.detail}
         </p>
       </section>
+      {getAuthToken() && result.id && (
+        <div className="flex flex-col gap-1.5">
+          <button
+            type="button"
+            disabled={startingConsultation}
+            onClick={handleStartConsultation}
+            className="rounded-full bg-neutral-900 py-3.5 text-center text-sm font-bold text-white disabled:opacity-50"
+          >
+            {startingConsultation
+              ? '연결하는 중...'
+              : `${persona.characterName}에게 더 물어보기 (크레딧 1개)`}
+          </button>
+          {consultationError && (
+            <p className="text-xs font-medium text-rose-500">{consultationError}</p>
+          )}
+        </div>
+      )}
       <PersonalityProfileCard
         label={result.partnerChart ? '나의 성향' : '기본 프로필'}
         profile={result.selfChart.personalityProfile}

@@ -32,6 +32,10 @@ dependencies {
 	implementation("cn.6tail:lunar:1.7.7")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	// RestClient.Builder 빈은 spring-boot-starter-webmvc만으로는 오토컨피그가
+	// 안 된다(Spring Boot 4 오토컨피그 모듈 분리 — flyway-core 때와 같은 함정).
+	// LLM 상담 기능(io.sj.saju.consultation.OpenAiClient)이 외부 HTTP 호출에 사용.
+	implementation("org.springframework.boot:spring-boot-starter-restclient")
 	// OAuth2 소셜 로그인(카카오/구글/네이버) — 프론트(GitHub Pages)와 백엔드(Fly.io)가
 	// 서로 다른 오리진이라 쿠키 세션 대신 로그인 성공 후 자체 JWT를 발급해 프론트로 넘긴다.
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")

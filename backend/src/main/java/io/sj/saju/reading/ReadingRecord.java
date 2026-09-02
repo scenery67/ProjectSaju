@@ -102,4 +102,11 @@ public class ReadingRecord {
     public String getResultJson() {
         return resultJson;
     }
+
+    // SajuReadingResult가 자기 자신의 reading_record id를 담아야 해서(상담
+    // 세션이 이 값을 참조), 먼저 이 레코드를 저장해 id를 받은 뒤 그 id가
+    // 포함된 JSON을 다시 채워 넣는 2단계 저장이 필요하다 — SajuReadingService 참고.
+    public void setResultJson(String resultJson) {
+        this.resultJson = resultJson;
+    }
 }

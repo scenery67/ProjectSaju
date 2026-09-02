@@ -88,6 +88,13 @@ app:
     # 있어서, enabled 플래그 하나만으로는 "아무나 관리자가 되는" 문제가 있었다.
     # 비워두면(기본값) enabled를 켜도 항상 막힌다.
     secret: ${ADMIN_BYPASS_SECRET:}
+  openai:
+    # LLM 사주 상담 기능이 실제로 호출하는 API 키. 비워두면(기본값)
+    # OpenAiClient.isConfigured()가 false를 반환하고 상담 호출은 502로
+    # 실패한다(소비된 크레딧은 자동 환급됨) — 로컬/CI에는 설정하지 않는다.
+    api-key: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-4o-mini}
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
 
 management:
   endpoints:

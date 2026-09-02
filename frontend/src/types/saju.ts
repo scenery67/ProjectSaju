@@ -79,6 +79,9 @@ export interface SajuChart {
 }
 
 export interface SajuReadingResult {
+  // reading_record id — only meaningful for logged-in requests; undefined for
+  // results saved before this field existed (old localStorage history entries).
+  id?: string;
   personaType: PersonaType;
   summary: string;
   detail: string;

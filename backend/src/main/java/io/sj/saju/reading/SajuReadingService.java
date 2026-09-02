@@ -78,10 +78,17 @@ public class SajuReadingService {
                         chart.monthTenGod(), TenGodTraits.describe(chart.monthTenGod()),
                         describeCurrentDaYun(chart, self.birthDate()));
 
-        SajuReadingResult result = new SajuReadingResult(PersonaType.BREAKUP, summary, detail, chart, null);
-        readingRecordRepository.save(new ReadingRecord(
-                PersonaType.BREAKUP, self.name(), null, summary, detail,
-                userAccountId, resultJsonFor(userAccountId, result)));
+        // result가 자기 자신의 reading_record id를 담아야 해서(LLM 상담 세션이
+        // 이 값으로 결과를 참조) 먼저 저장해 id를 받은 뒤 그 id가 포함된
+        // JSON을 다시 채워 넣는다.
+        ReadingRecord record = readingRecordRepository.save(new ReadingRecord(
+                PersonaType.BREAKUP, self.name(), null, summary, detail, userAccountId, null));
+        SajuReadingResult result = new SajuReadingResult(
+                record.getId(), PersonaType.BREAKUP, summary, detail, chart, null);
+        if (userAccountId != null) {
+            record.setResultJson(resultJsonFor(userAccountId, result));
+            readingRecordRepository.save(record);
+        }
 
         return result;
     }
@@ -219,11 +226,15 @@ public class SajuReadingService {
                         self.name(), partner.name(), partnerAsSeenBySelf, TenGodTraits.describe(partnerAsSeenBySelf),
                         partner.name(), self.name(), selfAsSeenByPartner, TenGodTraits.describe(selfAsSeenByPartner));
 
-        SajuReadingResult result = new SajuReadingResult(
-                PersonaType.COUPLE_COMPATIBILITY, summary, detail, selfChart, partnerChart);
-        readingRecordRepository.save(new ReadingRecord(
+        ReadingRecord record = readingRecordRepository.save(new ReadingRecord(
                 PersonaType.COUPLE_COMPATIBILITY, self.name(), partner.name(), summary, detail,
-                userAccountId, resultJsonFor(userAccountId, result)));
+                userAccountId, null));
+        SajuReadingResult result = new SajuReadingResult(
+                record.getId(), PersonaType.COUPLE_COMPATIBILITY, summary, detail, selfChart, partnerChart);
+        if (userAccountId != null) {
+            record.setResultJson(resultJsonFor(userAccountId, result));
+            readingRecordRepository.save(record);
+        }
 
         return result;
     }
