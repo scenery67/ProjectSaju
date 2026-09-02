@@ -45,6 +45,10 @@ async function authedFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export function fetchConsultationSessions(): Promise<ConsultationSession[]> {
+  return authedFetch<ConsultationSession[]>('/api/consultation/sessions');
+}
+
 export function createConsultationSession(readingRecordId: string): Promise<ConsultationSession> {
   return authedFetch<ConsultationSession>('/api/consultation/sessions', {
     method: 'POST',

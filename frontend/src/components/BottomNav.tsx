@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 const TABS = [
   { to: '/', label: '홈', icon: '🏠' },
   { to: '/my-saju', label: '내 사주', icon: '🔮' },
+  { to: '/consultations', label: '상담', icon: '💬' },
   { to: '/mypage', label: '마이페이지', icon: '👤' },
 ];
 

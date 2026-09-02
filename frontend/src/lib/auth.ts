@@ -45,17 +45,27 @@ export interface CurrentUser {
   isAdmin: boolean;
 }
 
-/** Returns null if not logged in or the token is no longer valid. */
+/**
+ * Returns null if not logged in, the token is no longer valid, or the
+ * request itself fails (offline, backend unreachable/asleep) — never
+ * rejects. A rejected promise here left callers' "확인 중..." loading state
+ * stuck forever with no way to see the login/logout buttons, since nothing
+ * caught the error.
+ */
 export async function fetchCurrentUser(): Promise<CurrentUser | null> {
   const token = getAuthToken();
   if (!token) return null;
 
-  const res = await fetch(`${API_ROOT_URL}/api/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) {
-    if (res.status === 401) clearAuthToken();
+  try {
+    const res = await fetch(`${API_ROOT_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      if (res.status === 401) clearAuthToken();
+      return null;
+    }
+    return (await res.json()) as CurrentUser;
+  } catch {
     return null;
   }
-  return res.json() as Promise<CurrentUser>;
 }
