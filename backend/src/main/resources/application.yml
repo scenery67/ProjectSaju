@@ -65,6 +65,13 @@ server:
   # (up to spring.lifecycle.timeout-per-shutdown-phase) instead of cutting
   # them off immediately — required for zero-downtime rolling deploys.
   shutdown: graceful
+  # Fly.io terminates TLS at its edge proxy and forwards plain HTTP internally,
+  # setting X-Forwarded-Proto: https on the request. Without this, Spring
+  # doesn't trust that header, so it thinks every request is http — breaking
+  # any absolute URL it builds itself, notably OAuth2's "{baseUrl}" redirect-uri
+  # placeholder (ends up http://..., which never matches the https:// URI
+  # registered with Kakao/Google/Naver, however correctly configured).
+  forward-headers-strategy: framework
 
 # Frontend origin allowed for local CORS (Vite dev server default port).
 app:
