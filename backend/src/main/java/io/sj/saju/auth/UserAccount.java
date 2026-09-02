@@ -66,6 +66,12 @@ public class UserAccount {
         this.lastLoginAt = Instant.now();
     }
 
+    // 상용화 전 관리자 우회 로그인(dev-admin-bypass)에서 고정 계정을 만들 때만
+    // 쓴다 — 그 외에는 is_admin을 DB에서 직접 바꾼다(관리자 화면이 아직 없음).
+    public void promoteToAdmin() {
+        this.admin = true;
+    }
+
     public UUID getId() {
         return id;
     }

@@ -11,6 +11,12 @@ export function loginUrl(provider: OAuthProvider): string {
   return `${API_ROOT_URL}/oauth2/authorization/${provider}`;
 }
 
+// Only responds while the backend's ADMIN_BYPASS_ENABLED is on (404 otherwise) —
+// a stopgap for using the app as an admin before real OAuth apps are registered.
+export function devAdminLoginUrl(): string {
+  return `${API_ROOT_URL}/api/auth/dev-admin-login`;
+}
+
 export function getAuthToken(): string | null {
   try {
     return localStorage.getItem(STORAGE_KEY);

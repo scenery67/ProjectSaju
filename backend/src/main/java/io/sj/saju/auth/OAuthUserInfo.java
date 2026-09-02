@@ -48,6 +48,11 @@ final class OAuthUserInfo {
                         String.valueOf(response.get("id")),
                         String.valueOf(response.getOrDefault("nickname", "")));
             }
+            // DEV_BYPASS는 실제 OAuth2 등록 공급자가 아니라 이 경로(Spring
+            // Security의 oauth2Login 콜백)로는 절대 들어오지 않는다 —
+            // AuthController#devAdminLogin이 별도로 계정을 만든다.
+            case DEV_BYPASS -> throw new IllegalStateException(
+                    "DEV_BYPASS is not a real OAuth2 provider and should never reach this path");
         };
     }
 

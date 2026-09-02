@@ -78,6 +78,11 @@ app:
     # Local-dev-only default — never used as-is in any real environment.
     # A real deploy must override via JWT_SECRET (32+ bytes, HS256 requires it).
     secret: ${JWT_SECRET:local-dev-only-jwt-secret-please-change-me-0123456789}
+  dev-admin-bypass:
+    # 상용화 전, 실제 OAuth 앱 등록 없이 팀이 관리자 권한으로 써볼 수 있게 하는
+    # 임시 우회 로그인(/api/auth/dev-admin-login) 활성화 여부. 기본값 false —
+    # 상용화 시점엔 반드시 이 값을 켜지 않은 채로 둬야 한다(또는 Fly secret 제거).
+    enabled: ${ADMIN_BYPASS_ENABLED:false}
 
 management:
   endpoints:

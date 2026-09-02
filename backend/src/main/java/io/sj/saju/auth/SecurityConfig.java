@@ -58,7 +58,14 @@ public class SecurityConfig {
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                         PathPatternRequestMatcher.withDefaults().matcher("/api/**")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/saju/**", "/actuator/health", "/oauth2/**", "/login/**").permitAll()
+                        // /error도 permitAll — 아니면 permitAll 경로에서 발생한 에러가
+                        // 컨테이너의 /error 포워딩을 타는 순간 Security가 그 요청(인증
+                        // 안 된 /error 요청)을 다시 막아 원래 상태 코드(404/405 등) 대신
+                        // 401로 덮어써 버린다(예: GET /api/saju/breakup → 405가 아니라 401).
+                        .requestMatchers(
+                                "/api/saju/**", "/actuator/health", "/oauth2/**", "/login/**",
+                                "/api/auth/dev-admin-login", "/error")
+                                .permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
