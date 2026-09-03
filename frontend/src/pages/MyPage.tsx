@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  checkInAttendance,
+  fetchAttendanceStatus,
+  type AttendanceStatus,
+} from '../lib/attendance';
+import {
   fetchCurrentUser,
   getAuthToken,
   logout,
@@ -37,6 +42,9 @@ export default function MyPage() {
   const [payments, setPayments] = useState<PaymentHistoryEntry[] | null>(null);
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
 
+  const [attendance, setAttendance] = useState<AttendanceStatus | null>(null);
+  const [checkingIn, setCheckingIn] = useState(false);
+
   useEffect(() => {
     if (!getAuthToken()) return;
     fetchCurrentUser().then(setUser);
@@ -47,6 +55,7 @@ export default function MyPage() {
     fetchBalance().then((b) => setCreditBalance(b?.creditBalance ?? null));
     fetchPackages().then(setPackages);
     fetchPaymentHistory().then(setPayments);
+    fetchAttendanceStatus().then(setAttendance);
   }, [user]);
 
   async function handlePurchase(pkg: CreditPackage) {
@@ -56,6 +65,19 @@ export default function MyPage() {
       setPayments((prev) => [payment, ...(prev ?? [])]);
     }
     setPurchasingId(null);
+  }
+
+  async function handleCheckIn() {
+    setCheckingIn(true);
+    const result = await checkInAttendance();
+    if (result) {
+      setAttendance({ checkedInToday: true, streak: result.streak, reward: 0 });
+      setCreditBalance((prev) => (prev ?? 0) + result.creditsGranted);
+    } else {
+      // 이미 체크했거나(다른 탭 등) 네트워크 실패 — 실제 최신 상태로 다시 맞춘다.
+      fetchAttendanceStatus().then(setAttendance);
+    }
+    setCheckingIn(false);
   }
 
   return (
@@ -124,6 +146,32 @@ export default function MyPage() {
               {creditBalance === null ? '—' : `${creditBalance.toLocaleString('ko-KR')} 크레딧`}
             </span>
           </section>
+
+          {attendance && (
+            <section className="flex items-center justify-between gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+              <div className="flex flex-col gap-0.5">
+                <h3 className="text-sm font-bold text-white">출석 체크</h3>
+                {attendance.checkedInToday ? (
+                  <p className="text-xs text-neutral-400">
+                    오늘 체크 완료! {attendance.streak}일째 연속 출석 중이에요.
+                  </p>
+                ) : (
+                  <p className="text-xs text-neutral-400">
+                    지금 체크하면 {attendance.streak}일째 · +{attendance.reward} 크레딧
+                    {attendance.streak % 7 === 0 && ' (7일 연속 보너스 포함!)'}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                disabled={attendance.checkedInToday || checkingIn}
+                onClick={handleCheckIn}
+                className="shrink-0 rounded-full bg-violet-500 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-40"
+              >
+                {attendance.checkedInToday ? '완료' : checkingIn ? '처리 중...' : '출석 체크'}
+              </button>
+            </section>
+          )}
 
           <section className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-white">충전하기</h3>

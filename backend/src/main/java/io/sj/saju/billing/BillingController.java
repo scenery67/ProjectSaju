@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 로그인한 사용자 본인의 크레딧/결제 화면용 API. 마이페이지의
- * "캐럿잔액/충전하기/결제내역"에 대응한다. PG 연동 전이라 purchases는
+ * "보유 크레딧/충전하기/결제내역"에 대응한다. PG 연동 전이라 purchases는
  * PENDING 결제 레코드만 만들고, 실제 승인/완료는 아직 붙지 않았다.
  */
 @RestController

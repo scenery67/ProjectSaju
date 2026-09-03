@@ -1,5 +1,6 @@
 package io.sj.saju.common;
 
+import io.sj.saju.attendance.AlreadyCheckedInException;
 import io.sj.saju.billing.InsufficientCreditException;
 import io.sj.saju.consultation.ConsultationFailedException;
 import io.sj.saju.reading.DailyReadingLimitExceededException;
@@ -64,6 +65,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleIllegalArgument(IllegalArgumentException ex) {
         return Map.of("error", "invalid_request", "message", ex.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyCheckedInException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleAlreadyCheckedIn(AlreadyCheckedInException ex) {
+        return Map.of("error", "already_checked_in");
     }
 
     @ExceptionHandler(DailyReadingLimitExceededException.class)

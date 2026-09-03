@@ -164,7 +164,7 @@ export default function AdminPage() {
                     )}
                   </span>
                   <span className="text-[11px] text-neutral-400">
-                    {u.provider} · 캐럿 {u.creditBalance.toLocaleString('ko-KR')}개 · 가입 {formatDate(u.createdAt)}
+                    {u.provider} · 크레딧 {u.creditBalance.toLocaleString('ko-KR')}개 · 가입 {formatDate(u.createdAt)}
                   </span>
                   <span className="select-all font-mono text-[10px] text-neutral-400">{u.id}</span>
                 </div>
@@ -204,7 +204,7 @@ export default function AdminPage() {
                   <p className="text-xs text-neutral-300">
                     {u.nickname || '이 사용자'}를 탈퇴 처리할까요? 되돌릴 수 없어요.
                     {u.creditBalance > 0 && (
-                      <> 보유 중인 캐럿 {u.creditBalance.toLocaleString('ko-KR')}개는 환불 처리됩니다.</>
+                      <> 보유 중인 크레딧 {u.creditBalance.toLocaleString('ko-KR')}개는 환불 처리됩니다.</>
                     )}
                   </p>
                   <div className="flex gap-2">
