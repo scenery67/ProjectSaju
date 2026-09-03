@@ -16,13 +16,18 @@ const PROFILE_ROWS: { key: keyof PersonalityProfile; label: string }[] = [
 function PersonalityProfileCard({
   label,
   profile,
+  accentColor,
 }: {
   label: string;
   profile: PersonalityProfile;
+  accentColor: string;
 }) {
   return (
     <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
-      <p className="mb-3 text-[11px] font-bold tracking-wide text-violet-400">
+      <p
+        className="mb-3 text-[11px] font-bold tracking-wide"
+        style={{ color: accentColor }}
+      >
         {label}
       </p>
       <dl className="flex flex-col gap-3">
@@ -257,39 +262,81 @@ export default function ResultPage() {
       <h2 className="text-2xl font-bold tracking-tight text-white">
         {persona.title} 결과
       </h2>
-      <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
-        <p className="mb-3 text-sm font-bold text-white">
-          {result.summary}
-        </p>
+      <section
+        className="flex flex-col gap-3 rounded-3xl border p-5"
+        style={{
+          borderColor: `${persona.accentColor}40`,
+          background: `linear-gradient(160deg, ${persona.accentColor}20, transparent 60%)`,
+        }}
+      >
+        <span
+          className="w-fit rounded-full px-2.5 py-1 text-[10px] font-bold text-white"
+          style={{ backgroundColor: persona.accentColor }}
+        >
+          무료 공개
+        </span>
+        <p className="text-sm font-bold text-white">{result.summary}</p>
         <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-400">
           {result.detail}
         </p>
       </section>
+
       {getAuthToken() && result.id && (
-        <div className="flex flex-col gap-1.5">
+        <section
+          className="flex flex-col gap-3 rounded-3xl border p-5"
+          style={{
+            borderColor: `${persona.accentColor}55`,
+            background: `linear-gradient(160deg, ${persona.accentColor}26, transparent)`,
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🔓</span>
+            <p className="text-sm font-bold text-white">
+              {persona.characterName}에게 더 물어볼 수 있어요
+            </p>
+          </div>
+          <ul className="flex flex-col gap-1.5 text-xs text-neutral-300">
+            <li>· 이 결과에서 궁금한 부분을 자유롭게 물어보기</li>
+            <li>· 지금 이 시기에 뭘 준비하면 좋을지 구체적으로 상담받기</li>
+          </ul>
           <button
             type="button"
             disabled={startingConsultation}
             onClick={handleStartConsultation}
-            className="rounded-full border border-violet-700 py-3.5 text-center text-sm font-bold text-violet-200 disabled:opacity-50"
+            className="rounded-full py-3.5 text-center text-sm font-bold text-white disabled:opacity-50"
+            style={{ backgroundColor: persona.accentColor }}
           >
             {startingConsultation
               ? '연결하는 중...'
-              : `${persona.characterName}에게 더 물어보기 (크레딧 1개)`}
+              : `${persona.characterName}에게 상담받기 (크레딧 1개)`}
           </button>
           {consultationError && (
             <p className="text-xs font-medium text-violet-500">{consultationError}</p>
           )}
-        </div>
+        </section>
       )}
+      {!getAuthToken() && (
+        <section className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-neutral-700 bg-neutral-900/60 p-5 text-center">
+          <span className="text-lg">🔒</span>
+          <p className="text-sm font-bold text-white">
+            로그인하면 {persona.characterName}에게 더 물어볼 수 있어요
+          </p>
+          <Link to="/login" className="text-xs font-semibold text-violet-400 underline">
+            로그인하러 가기
+          </Link>
+        </section>
+      )}
+
       <PersonalityProfileCard
         label={result.partnerChart ? '나의 성향' : '기본 프로필'}
         profile={result.selfChart.personalityProfile}
+        accentColor={persona.accentColor}
       />
       {result.partnerChart && (
         <PersonalityProfileCard
           label="상대방의 성향"
           profile={result.partnerChart.personalityProfile}
+          accentColor={persona.accentColor}
         />
       )}
       <section className="flex flex-col gap-3">

@@ -39,6 +39,28 @@ export function clearAuthToken(): void {
   }
 }
 
+/**
+ * 서버에 이 토큰을 무효화해달라고 알린 다음 로컬 저장소를 지운다. 서버
+ * 호출이 실패해도(오프라인 등) 로컬은 항상 지운다 — 그렇지 않으면 사용자가
+ * "로그아웃"을 눌렀는데 화면상 로그인 상태가 그대로 남는 이상한 경험이 된다.
+ * (탈취된 토큰 자체는 이걸로 막을 수 없고, 이건 정상적인 로그아웃 흐름에서
+ * 서버 쪽도 그 토큰을 더는 신뢰하지 않게 만드는 것뿐이다.)
+ */
+export async function logout(): Promise<void> {
+  const token = getAuthToken();
+  if (token) {
+    try {
+      await fetch(`${API_ROOT_URL}/api/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // ignore — 로컬 로그아웃은 아래에서 항상 진행된다
+    }
+  }
+  clearAuthToken();
+}
+
 export interface CurrentUser {
   provider: string;
   nickname: string;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  clearAuthToken,
   fetchCurrentUser,
   getAuthToken,
+  logout,
   type CurrentUser,
 } from '../lib/auth';
 import {
@@ -107,7 +107,7 @@ export default function MyPage() {
               type="button"
               className="rounded-full border border-neutral-800 py-3 text-sm font-semibold text-neutral-500"
               onClick={() => {
-                clearAuthToken();
+                void logout();
                 setUser(null);
                 setCreditBalance(null);
                 setPackages(null);

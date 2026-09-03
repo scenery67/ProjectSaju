@@ -8,13 +8,15 @@ export default function PersonaCard({ persona }: { persona: SajuPersona }) {
       className="flex flex-col overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900 transition-transform active:scale-[0.97]"
     >
       <div
-        className="flex h-32 items-center justify-center text-4xl"
+        className="flex h-32 items-center justify-center text-5xl"
         style={{
-          background: `linear-gradient(160deg, ${persona.accentColor}33, ${persona.accentColor}0d)`,
+          // 라이트 배경 기준으로 잡았던 옅은 tint(20%→5% 불투명도)가 다크
+          // 배경에서는 거의 안 보였다 — 실제 색이 드러나는 진한 그라데이션으로.
+          background: `linear-gradient(160deg, ${persona.accentColor}cc, ${persona.accentColor}40)`,
         }}
       >
         {/* Thumbnail illustration goes here once character art is ready */}
-        🔮
+        <span className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">🔮</span>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <span

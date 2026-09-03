@@ -20,7 +20,7 @@ export default function Header() {
           <Link
             to="/mypage"
             aria-label="마이페이지"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-800 text-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-violet-700 bg-violet-950 text-base"
           >
             👤
           </Link>

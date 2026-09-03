@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ApiError } from '../api/client';
 import {
   requestBreakupReading,
   requestCoupleCompatibilityReading,
@@ -7,6 +8,7 @@ import {
 import PersonInputForm from '../components/PersonInputForm';
 import { findPersonaById } from '../data/personas';
 import { getAuthToken } from '../lib/auth';
+import { canStartFreeReading, recordFreeReading } from '../lib/dailyQuota';
 import { saveReadingToHistory } from '../lib/sajuHistory';
 import type { PersonaType, PersonReadingInput } from '../types/saju';
 
@@ -25,6 +27,17 @@ const STATUS_MESSAGES: Record<PersonaType, string[]> = {
   ],
 };
 
+// 결과 자체와 무관한 일반 사주 상식 — 대기 화면이 밋밋하지 않도록 로딩 중
+// 번갈아 보여준다. 페르소나별 콘텐츠 작성은 별도 작업이라 여기선 범용 문구만.
+const TRIVIA_TIPS = [
+  '오행(五行)은 목·화·토·금·수 다섯 기운의 균형으로 성향을 살펴봐요.',
+  '자시(23:00~01:00)는 하루가 바뀌는 경계라 사주 계산이 특히 까다로운 시간대예요.',
+  '같은 날 태어났어도 태어난 시간에 따라 시주가 달라져요.',
+  '대운은 10년 단위로 바뀌는 인생의 큰 흐름을 보여줘요.',
+];
+
+const PROGRESS_ICONS = ['🔮', '✨', '🌙', '🕯️'];
+
 // 실제 진행률을 알 방법이 없는 단일 API 호출이라(서버가 단계를 보고해주지
 // 않음), 시간이 지날수록 증가폭을 줄여가며 95%에서 멈추는 방식으로 "진행되고
 // 있다"는 느낌만 준다 — 응답이 오면 바로 페이지가 바뀌니 100%를 굳이 보여줄
@@ -33,21 +46,30 @@ const STATUS_MESSAGES: Record<PersonaType, string[]> = {
 function useFakeProgress(active: boolean, messages: string[]) {
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
+  const [tipIndex, setTipIndex] = useState(0);
   const startRef = useRef(0);
 
   useEffect(() => {
     if (!active) return;
     const tick = setInterval(() => {
       const elapsed = (Date.now() - startRef.current) / 1000;
-      // 처음엔 빠르게, 갈수록 느리게 — 95%에 점근.
-      setProgress(Math.min(95, 95 * (1 - Math.exp(-elapsed / 4))));
+      // 지수함수 점근(95*(1-e^-t/4))은 처음엔 빠르지만 20~30초 뒤부터는
+      // 반올림 표시값이 사실상 고정돼 "멈춘 것처럼" 보였다(사용자 리포트).
+      // 대신 완만하게 계속 기어가는 쌍곡선 감쇠(95*t/(t+3))를 쓴다 — 초반
+      // 체감 속도는 비슷하지만, Fly 콜드스타트처럼 오래 걸려도 아주 조금씩은
+      // 계속 올라가서 멈춘 느낌을 덜 준다.
+      setProgress((95 * elapsed) / (elapsed + 3));
     }, 150);
     const messageTick = setInterval(() => {
       setMessageIndex((i) => Math.min(i + 1, messages.length - 1));
     }, 1800);
+    const tipTick = setInterval(() => {
+      setTipIndex((i) => (i + 1) % TRIVIA_TIPS.length);
+    }, 3200);
     return () => {
       clearInterval(tick);
       clearInterval(messageTick);
+      clearInterval(tipTick);
     };
   }, [active, messages.length]);
 
@@ -58,9 +80,16 @@ function useFakeProgress(active: boolean, messages: string[]) {
     startRef.current = Date.now();
     setProgress(0);
     setMessageIndex(0);
+    setTipIndex(0);
   }
 
-  return { progress, message: messages[messageIndex], start };
+  return {
+    progress,
+    message: messages[messageIndex],
+    icon: PROGRESS_ICONS[messageIndex % PROGRESS_ICONS.length],
+    tip: TRIVIA_TIPS[tipIndex],
+    start,
+  };
 }
 
 const emptyPerson = (): PersonReadingInput => ({
@@ -81,10 +110,13 @@ export default function PersonaDetailPage() {
   const [partner, setPartner] = useState(emptyPerson);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 'anonymous': 비로그인 + localStorage 한도 소진 → 로그인 유도.
+  // 'loggedIn': 로그인 계정인데 서버가 오늘 한도 초과(429)를 알려옴 → 크레딧 제안.
+  const [limitModal, setLimitModal] = useState<'none' | 'anonymous' | 'loggedIn'>('none');
   // Hooks must run unconditionally (before the !persona early return below),
   // so fall back to BREAKUP's messages for the brief render where persona is
   // still undefined — it's never actually shown since we bail out right after.
-  const { progress, message, start } = useFakeProgress(
+  const { progress, message, icon, tip, start } = useFakeProgress(
     submitting,
     STATUS_MESSAGES[persona?.type ?? 'BREAKUP'],
   );
@@ -95,27 +127,42 @@ export default function PersonaDetailPage() {
 
   const isCouple = persona.type === 'COUPLE_COMPATIBILITY';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submit = async (useCredit: boolean) => {
     start();
     setSubmitting(true);
     setError(null);
     try {
       const result = isCouple
-        ? await requestCoupleCompatibilityReading({ self, partner })
-        : await requestBreakupReading({ self });
+        ? await requestCoupleCompatibilityReading({ self, partner }, useCredit)
+        : await requestBreakupReading({ self }, useCredit);
       // Logged in: the backend already saved this to the account's server-side
       // history (see api/sajuApi.ts's auth header) — avoid a duplicate-looking
       // local entry. Not logged in: local storage stays the only copy, as before.
       if (!getAuthToken()) {
         saveReadingToHistory(persona.id, result);
+        recordFreeReading();
       }
       navigate(`/persona/${persona.id}/result`, { state: { result } });
-    } catch {
-      setError('결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 429) {
+        setLimitModal('loggedIn');
+      } else {
+        setError('결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');
+      }
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // 비로그인 사용자의 무료 횟수는 서버가 모르니(식별자를 안 남겨서) 여기서
+    // 미리 막는다 — 로그인 사용자는 서버가 실제로 세고 있어 그냥 보내본다.
+    if (!getAuthToken() && !canStartFreeReading()) {
+      setLimitModal('anonymous');
+      return;
+    }
+    submit(false);
   };
 
   return (
@@ -132,7 +179,7 @@ export default function PersonaDetailPage() {
 
       {submitting ? (
         <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
-          <span className="text-4xl">🔮</span>
+          <span className="text-4xl">{icon}</span>
           <div className="w-full max-w-xs">
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-800">
               <div
@@ -145,9 +192,25 @@ export default function PersonaDetailPage() {
             </p>
           </div>
           <p className="text-sm font-medium text-neutral-400">{message}</p>
-          <p className="text-xs text-neutral-400">
-            서버가 잠시 쉬고 있었다면 깨어나는 데 시간이 좀 더 걸릴 수 있어요.
-          </p>
+
+          <div className="w-full max-w-xs rounded-2xl border border-violet-900/50 bg-violet-950/40 p-3.5 text-left">
+            <p className="text-xs font-bold text-violet-300">
+              이 화면을 유지해주세요
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
+              다른 화면으로 이동하면 결과로 자동 연결되지 않아요. 서버가 잠시
+              쉬고 있었다면 깨어나는 데 시간이 좀 더 걸릴 수 있어요.
+            </p>
+          </div>
+
+          <div className="w-full max-w-xs rounded-2xl bg-neutral-800/60 p-3.5 text-left">
+            <p className="text-[11px] font-bold text-neutral-300">
+              💡 알고 계셨나요?
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
+              {tip}
+            </p>
+          </div>
         </section>
       ) : (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -169,6 +232,48 @@ export default function PersonaDetailPage() {
             사주 풀이 시작하기 →
           </button>
         </form>
+      )}
+
+      {limitModal !== 'none' && (
+        <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 px-4">
+          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-6 text-center">
+            <span className="text-3xl">⏳</span>
+            <p className="text-sm font-bold text-white">
+              오늘 무료 사주를 모두 사용했어요
+            </p>
+            <p className="text-xs leading-relaxed text-neutral-400">
+              {limitModal === 'anonymous'
+                ? '로그인하면 계정으로 이어서 볼 수 있어요. 매일 자정(KST)에 무료 횟수가 초기화돼요.'
+                : '크레딧 1개로 계속 보거나, 내일 자정(KST) 이후 다시 무료로 볼 수 있어요.'}
+            </p>
+            {limitModal === 'anonymous' ? (
+              <Link
+                to="/login"
+                className="w-full rounded-full bg-violet-500 py-3 text-center text-sm font-bold text-white"
+              >
+                로그인하러 가기
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setLimitModal('none');
+                  submit(true);
+                }}
+                className="w-full rounded-full bg-violet-500 py-3 text-sm font-bold text-white"
+              >
+                크레딧 1개로 계속 보기
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setLimitModal('none')}
+              className="text-xs font-medium text-neutral-500 underline"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
       )}
     </main>
   );
