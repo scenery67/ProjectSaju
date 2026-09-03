@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,15 +31,17 @@ public class SajuReadingController {
     @PostMapping("/breakup")
     public SajuReadingResult readBreakup(
             @Valid @RequestBody BreakupReadingRequest request,
-            @AuthenticationPrincipal UUID userAccountId) {
-        return sajuReadingService.readBreakup(request, userAccountId);
+            @AuthenticationPrincipal UUID userAccountId,
+            @RequestParam(defaultValue = "false") boolean useCredit) {
+        return sajuReadingService.readBreakup(request, userAccountId, useCredit);
     }
 
     @PostMapping("/couple-compatibility")
     public SajuReadingResult readCoupleCompatibility(
             @Valid @RequestBody CoupleCompatibilityRequest request,
-            @AuthenticationPrincipal UUID userAccountId) {
-        return sajuReadingService.readCoupleCompatibility(request, userAccountId);
+            @AuthenticationPrincipal UUID userAccountId,
+            @RequestParam(defaultValue = "false") boolean useCredit) {
+        return sajuReadingService.readCoupleCompatibility(request, userAccountId, useCredit);
     }
 
     /** 로그인한 사용자의 서버 저장 사주 기록 — SecurityConfig에서 인증을 요구한다. */
