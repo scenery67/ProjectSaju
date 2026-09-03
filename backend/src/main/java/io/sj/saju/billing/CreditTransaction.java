@@ -23,7 +23,9 @@ public class CreditTransaction {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "user_account_id", nullable = false)
+    // 계정 탈퇴 시 이 원장 행 자체는 회계 감사를 위해 남기고 소유자만 NULL로
+    // 바뀐다(V8 마이그레이션, ON DELETE SET NULL) — 그래서 nullable이다.
+    @Column(name = "user_account_id")
     private UUID userAccountId;
 
     @Enumerated(EnumType.STRING)

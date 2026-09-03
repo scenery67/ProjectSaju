@@ -58,6 +58,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return Map.of("error", "insufficient_credit");
     }
 
+    // 클라이언트 입력이 잘못된 경우(예: 관리자 화면에서 본인 권한을 스스로
+    // 해제하려는 시도) — 메시지 자체가 사용자가 봐야 할 안내문이라 그대로 내려준다.
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgument(IllegalArgumentException ex) {
+        return Map.of("error", "invalid_request", "message", ex.getMessage());
+    }
+
     @ExceptionHandler(DailyReadingLimitExceededException.class)
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     public Map<String, String> handleDailyReadingLimitExceeded(DailyReadingLimitExceededException ex) {

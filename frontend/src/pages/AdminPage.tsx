@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   adjustUserCredit,
+  deleteUser,
   fetchAllPayments,
+  fetchUsers,
   fetchUserTransactions,
   refundPayment,
+  setUserAdmin,
   type AdminPayment,
   type AdminTransaction,
+  type AdminUser,
   type PaymentStatus,
 } from '../lib/admin';
 import { fetchCurrentUser, getAuthToken } from '../lib/auth';
@@ -31,6 +35,10 @@ export default function AdminPage() {
   const [access, setAccess] = useState<'checking' | 'denied' | 'ok'>(
     getAuthToken() ? 'checking' : 'denied',
   );
+  const [users, setUsers] = useState<AdminUser[] | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [userActionMessage, setUserActionMessage] = useState<string | null>(null);
+
   const [payments, setPayments] = useState<AdminPayment[] | null>(null);
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState('');
@@ -54,7 +62,33 @@ export default function AdminPage() {
   useEffect(() => {
     if (access !== 'ok') return;
     fetchAllPayments().then(setPayments);
+    fetchUsers().then(setUsers);
   }, [access]);
+
+  async function handleSetAdmin(userId: string, admin: boolean) {
+    const result = await setUserAdmin(userId, admin);
+    if (result.ok) {
+      setUsers((prev) => prev?.map((u) => (u.id === userId ? { ...u, isAdmin: admin } : u)) ?? null);
+      setUserActionMessage(null);
+    } else {
+      setUserActionMessage(result.message ?? '권한 변경에 실패했어요.');
+    }
+  }
+
+  async function handleDeleteUser(userId: string) {
+    const result = await deleteUser(userId);
+    if (result.ok) {
+      setUsers((prev) => prev?.filter((u) => u.id !== userId) ?? null);
+      if (ledgerUserId === userId) {
+        setLedgerUserId('');
+        setLedger(null);
+      }
+      setUserActionMessage(null);
+    } else {
+      setUserActionMessage(result.message ?? '탈퇴 처리에 실패했어요.');
+    }
+    setDeletingId(null);
+  }
 
   async function loadLedger(userId: string) {
     setLedgerUserId(userId);
@@ -105,6 +139,96 @@ export default function AdminPage() {
   return (
     <main className="flex flex-1 flex-col gap-6 px-4 pb-6 pt-5">
       <h2 className="text-2xl font-bold tracking-tight text-white">관리자</h2>
+
+      <section className="flex flex-col gap-3">
+        <h3 className="text-sm font-bold text-white">사용자 목록</h3>
+        {users === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
+        {users?.length === 0 && <p className="text-xs text-neutral-400">가입한 사용자가 없어요.</p>}
+        {userActionMessage && (
+          <p className="text-xs font-medium text-violet-500">{userActionMessage}</p>
+        )}
+        <ul className="flex flex-col gap-2">
+          {users?.map((u) => (
+            <li
+              key={u.id}
+              className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-white">
+                    {u.nickname || '(닉네임 없음)'}
+                    {u.isAdmin && (
+                      <span className="ml-1.5 rounded-full bg-violet-900/60 px-2 py-0.5 text-[10px] font-bold text-violet-300">
+                        관리자
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-[11px] text-neutral-400">
+                    {u.provider} · 캐럿 {u.creditBalance.toLocaleString('ko-KR')}개 · 가입 {formatDate(u.createdAt)}
+                  </span>
+                  <span className="select-all font-mono text-[10px] text-neutral-400">{u.id}</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
+                  onClick={() => loadLedger(u.id)}
+                >
+                  원장 보기
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
+                  onClick={() => setAdjustUserId(u.id)}
+                >
+                  크레딧 지급 대상으로
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
+                  onClick={() => handleSetAdmin(u.id, !u.isAdmin)}
+                >
+                  {u.isAdmin ? '관리자 해제' : '관리자로 지정'}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-red-900 px-3 py-1.5 text-xs font-semibold text-red-400"
+                  onClick={() => setDeletingId(deletingId === u.id ? null : u.id)}
+                >
+                  탈퇴
+                </button>
+              </div>
+              {deletingId === u.id && (
+                <div className="flex flex-col gap-2 rounded-xl border border-red-900/60 bg-red-950/30 p-3">
+                  <p className="text-xs text-neutral-300">
+                    {u.nickname || '이 사용자'}를 탈퇴 처리할까요? 되돌릴 수 없어요.
+                    {u.creditBalance > 0 && (
+                      <> 보유 중인 캐럿 {u.creditBalance.toLocaleString('ko-KR')}개는 환불 처리됩니다.</>
+                    )}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-bold text-white"
+                      onClick={() => handleDeleteUser(u.id)}
+                    >
+                      확인, 탈퇴시키기
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
+                      onClick={() => setDeletingId(null)}
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-white">전체 결제 내역</h3>

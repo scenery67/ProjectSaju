@@ -27,6 +27,16 @@ export interface AdminTransaction {
   createdAt: string;
 }
 
+export interface AdminUser {
+  id: string;
+  provider: string;
+  nickname: string | null;
+  creditBalance: number;
+  isAdmin: boolean;
+  createdAt: string;
+  lastLoginAt: string;
+}
+
 async function authedFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   const token = getAuthToken();
   if (!token) return null;
@@ -49,8 +59,56 @@ async function authedFetch<T>(path: string, init?: RequestInit): Promise<T | nul
   return res.json() as Promise<T>;
 }
 
+export interface AdminActionResult {
+  ok: boolean;
+  message?: string;
+}
+
+/**
+ * adjustUserCredit처럼 boolean만 돌려주지 않고 실패 사유(message)까지 담는다 —
+ * 탈퇴/권한변경의 자기 자신 보호 가드는 "왜 실패했는지"를 관리자에게
+ * 보여줘야 의미가 있는 안내문이라(GlobalExceptionHandler가 그대로 내려줌).
+ */
+async function authedAction(path: string, init: RequestInit): Promise<AdminActionResult> {
+  const token = getAuthToken();
+  if (!token) return { ok: false };
+  const res = await fetch(`${API_ROOT_URL}${path}`, {
+    ...init,
+    headers: {
+      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+      Authorization: `Bearer ${token}`,
+      ...init.headers,
+    },
+  });
+  if (res.status === 401) clearAuthToken();
+  if (res.ok) return { ok: true };
+  try {
+    const body = (await res.json()) as { message?: string };
+    return { ok: false, message: body.message };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export function fetchAllPayments(): Promise<AdminPayment[] | null> {
   return authedFetch<AdminPayment[]>('/api/admin/payments?page=0&size=100');
+}
+
+export function fetchUsers(): Promise<AdminUser[] | null> {
+  return authedFetch<AdminUser[]>('/api/admin/users');
+}
+
+export function setUserAdmin(userAccountId: string, admin: boolean): Promise<AdminActionResult> {
+  return authedAction(`/api/admin/users/${encodeURIComponent(userAccountId)}/admin`, {
+    method: 'POST',
+    body: JSON.stringify({ admin }),
+  });
+}
+
+export function deleteUser(userAccountId: string): Promise<AdminActionResult> {
+  return authedAction(`/api/admin/users/${encodeURIComponent(userAccountId)}`, {
+    method: 'DELETE',
+  });
 }
 
 export function fetchUserTransactions(userAccountId: string): Promise<AdminTransaction[] | null> {

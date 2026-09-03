@@ -1,10 +1,12 @@
 package io.sj.saju.billing;
 
+import io.sj.saju.auth.UserAccount;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,16 +27,41 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final CreditService creditService;
+    private final AdminUserService adminUserService;
     private final PaymentRepository paymentRepository;
     private final CreditTransactionRepository creditTransactionRepository;
 
     public AdminController(
             CreditService creditService,
+            AdminUserService adminUserService,
             PaymentRepository paymentRepository,
             CreditTransactionRepository creditTransactionRepository) {
         this.creditService = creditService;
+        this.adminUserService = adminUserService;
         this.paymentRepository = paymentRepository;
         this.creditTransactionRepository = creditTransactionRepository;
+    }
+
+    /** 사용자 목록 — user_account_id를 화면에서 직접 확인/복사할 수 있게 한다. */
+    @GetMapping("/users")
+    public List<UserResponse> users() {
+        return adminUserService.listUsers().stream().map(this::toResponse).toList();
+    }
+
+    /** 관리자 권한 부여/해제. */
+    @PostMapping("/users/{userAccountId}/admin")
+    public void setAdmin(
+            @AuthenticationPrincipal UUID adminUserAccountId,
+            @PathVariable UUID userAccountId,
+            @RequestBody SetAdminRequest request) {
+        adminUserService.setAdmin(userAccountId, request.admin(), adminUserAccountId);
+    }
+
+    /** 계정 탈퇴 — 남은 크레딧은 환급 처리 후 계정을 삭제한다. */
+    @DeleteMapping("/users/{userAccountId}")
+    public void deleteUser(
+            @AuthenticationPrincipal UUID adminUserAccountId, @PathVariable UUID userAccountId) {
+        adminUserService.deleteUser(userAccountId, adminUserAccountId);
     }
 
     /** 전체 결제 내역 — 누가(userAccountId) 얼마를 언제 결제했는지 최신순. */
@@ -73,6 +100,12 @@ public class AdminController {
         creditService.adminAdjust(userAccountId, request.amount(), adminUserAccountId, request.reason());
     }
 
+    private UserResponse toResponse(UserAccount u) {
+        return new UserResponse(
+                u.getId(), u.getProvider().name(), u.getNickname(), u.getCreditBalance(), u.isAdmin(),
+                u.getCreatedAt(), u.getLastLoginAt());
+    }
+
     private PaymentResponse toResponse(Payment p) {
         return new PaymentResponse(
                 p.getId(), p.getUserAccountId(), p.getCreditAmount(), p.getAmountKrw(), p.getStatus().name(),
@@ -84,6 +117,14 @@ public class AdminController {
     }
 
     public record CreditAdjustRequest(int amount, String reason) {
+    }
+
+    public record SetAdminRequest(boolean admin) {
+    }
+
+    public record UserResponse(
+            UUID id, String provider, String nickname, int creditBalance, boolean isAdmin,
+            Instant createdAt, Instant lastLoginAt) {
     }
 
     public record TransactionResponse(

@@ -97,6 +97,25 @@ public class CreditService {
         return payment;
     }
 
+    /**
+     * 계정 탈퇴 처리 중 호출 — 남은 크레딧을 전부 REFUND로 원장에 남기고 0으로
+     * 만든다. 특정 결제 하나가 아니라 "이 시점의 잔액 전체"가 대상이라
+     * refund(paymentId, ...)와는 별도 메서드다. 잔액이 이미 0이면 아무 것도
+     * 안 한다(빈 원장 행을 남기지 않는다).
+     */
+    @Transactional
+    public void refundRemainingBalanceOnAccountDeletion(UUID userAccountId, UUID adminUserAccountId) {
+        entityManager.flush();
+        Integer balance = jdbcTemplate.queryForObject(
+                "SELECT credit_balance FROM user_account WHERE id = ?", Integer.class, userAccountId);
+        if (balance == null || balance <= 0) {
+            return;
+        }
+        int balanceAfter = decreaseBalanceClamped(userAccountId, balance);
+        record(userAccountId, CreditTransactionType.REFUND, -balance, balanceAfter, adminUserAccountId,
+                "계정 탈퇴로 인한 잔여 크레딧 환급 처리");
+    }
+
     /** 관리자가 임의로 크레딧을 더하거나(양수) 회수하는(음수) 수동 조정. */
     @Transactional
     public void adminAdjust(UUID targetUserAccountId, int amount, UUID adminUserAccountId, String reason) {

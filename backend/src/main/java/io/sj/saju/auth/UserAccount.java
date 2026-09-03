@@ -67,9 +67,13 @@ public class UserAccount {
     }
 
     // 상용화 전 관리자 우회 로그인(dev-admin-bypass)에서 고정 계정을 만들 때만
-    // 쓴다 — 그 외에는 is_admin을 DB에서 직접 바꾼다(관리자 화면이 아직 없음).
+    // 쓴다 — 그 외에는 setAdmin()을 관리자 화면(AdminUserService)에서 쓴다.
     public void promoteToAdmin() {
         this.admin = true;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public UUID getId() {
