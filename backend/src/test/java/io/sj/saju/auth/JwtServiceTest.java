@@ -33,4 +33,32 @@ class JwtServiceTest {
 
         assertThat(jwtService.parseUserAccountId(token)).isNull();
     }
+
+    @Test
+    void parseClaimsReturnsUserAccountIdAndAJti() {
+        UUID userAccountId = UUID.randomUUID();
+
+        String token = jwtService.issueToken(userAccountId);
+        JwtService.TokenClaims claims = jwtService.parseClaims(token);
+
+        assertThat(claims).isNotNull();
+        assertThat(claims.userAccountId()).isEqualTo(userAccountId);
+        assertThat(claims.jti()).isNotNull();
+        assertThat(claims.expiresAt()).isAfter(java.time.Instant.now());
+    }
+
+    @Test
+    void eachIssuedTokenGetsADifferentJti() {
+        UUID userAccountId = UUID.randomUUID();
+
+        JwtService.TokenClaims first = jwtService.parseClaims(jwtService.issueToken(userAccountId));
+        JwtService.TokenClaims second = jwtService.parseClaims(jwtService.issueToken(userAccountId));
+
+        assertThat(first.jti()).isNotEqualTo(second.jti());
+    }
+
+    @Test
+    void parseClaimsOnGarbageTokenReturnsNull() {
+        assertThat(jwtService.parseClaims("not-a-real-jwt")).isNull();
+    }
 }

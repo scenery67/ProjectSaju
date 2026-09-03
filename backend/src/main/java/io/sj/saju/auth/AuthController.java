@@ -1,5 +1,6 @@
 package io.sj.saju.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +29,7 @@ public class AuthController {
 
     private final UserAccountRepository userAccountRepository;
     private final JwtService jwtService;
+    private final TokenRevocationService tokenRevocationService;
     private final String frontendUrl;
     private final boolean devAdminBypassEnabled;
     private final String devAdminBypassSecret;
@@ -34,14 +37,34 @@ public class AuthController {
     public AuthController(
             UserAccountRepository userAccountRepository,
             JwtService jwtService,
+            TokenRevocationService tokenRevocationService,
             @Value("${app.frontend-url}") String frontendUrl,
             @Value("${app.dev-admin-bypass.enabled:false}") boolean devAdminBypassEnabled,
             @Value("${app.dev-admin-bypass.secret:}") String devAdminBypassSecret) {
         this.userAccountRepository = userAccountRepository;
         this.jwtService = jwtService;
+        this.tokenRevocationService = tokenRevocationService;
         this.frontendUrl = frontendUrl;
         this.devAdminBypassEnabled = devAdminBypassEnabled;
         this.devAdminBypassSecret = devAdminBypassSecret;
+    }
+
+    /**
+     * 이 토큰만 즉시 무효화한다. JwtAuthenticationFilter가 이미 서명/만료를
+     * 검증해 인증을 통과시켰으므로, 여기서는 그 토큰의 jti를 꺼내 revoked_token에
+     * 남기기만 하면 된다 — jti가 없는 구버전 토큰이면 무효화할 게 없으니
+     * 조용히 넘어간다(로그아웃 자체는 항상 성공한 것처럼 응답).
+     */
+    @PostMapping("/api/auth/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            JwtService.TokenClaims claims = jwtService.parseClaims(header.substring("Bearer ".length()));
+            if (claims != null) {
+                tokenRevocationService.revoke(claims);
+            }
+        }
+        return ResponseEntity.noContent().build();
     }
 
     /** For the frontend to check "am I logged in" and show a nickname — nothing else. */

@@ -112,3 +112,17 @@ management:
   endpoint:
     health:
       show-details: never
+
+---
+# 운영 배포는 SPRING_PROFILES_ACTIVE=prod로 이 문서를 활성화한다(Fly secret).
+# app.jwt.secret에 기본값을 안 둬서, JWT_SECRET을 깜빡 설정 안 하면 그
+# 유명한 로컬 기본값으로 조용히 뜨는 대신 부팅 자체가 실패한다 — 시크릿
+# 누락이 "auth 우회 가능한 운영 배포"가 아니라 "즉시 눈에 띄는 배포 실패"가
+# 되도록 한다.
+spring:
+  config:
+    activate:
+      on-profile: prod
+app:
+  jwt:
+    secret: ${JWT_SECRET}

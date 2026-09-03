@@ -1,5 +1,6 @@
 package io.sj.saju.auth;
 
+import io.sj.saju.common.RateLimitFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler successHandler;
     private final OAuth2LoginFailureHandler failureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
     public SecurityConfig(
@@ -36,11 +38,13 @@ public class SecurityConfig {
             OAuth2LoginSuccessHandler successHandler,
             OAuth2LoginFailureHandler failureHandler,
             JwtAuthenticationFilter jwtAuthenticationFilter,
+            RateLimitFilter rateLimitFilter,
             CorsConfigurationSource corsConfigurationSource) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.rateLimitFilter = rateLimitFilter;
         this.corsConfigurationSource = corsConfigurationSource;
     }
 
@@ -77,7 +81,10 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(successHandler)
                         .failureHandler(failureHandler))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // JWT 파싱보다 앞에 둔다 — 속도 제한에 걸린 요청은 인증 시도조차
+                // 할 필요가 없다.
+                .addFilterBefore(rateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }
