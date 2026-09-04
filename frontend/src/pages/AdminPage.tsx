@@ -36,6 +36,7 @@ export default function AdminPage() {
     getAuthToken() ? 'checking' : 'denied',
   );
   const [users, setUsers] = useState<AdminUser[] | null>(null);
+  const [userQuery, setUserQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [userActionMessage, setUserActionMessage] = useState<string | null>(null);
 
@@ -64,6 +65,11 @@ export default function AdminPage() {
     fetchAllPayments().then(setPayments);
     fetchUsers().then(setUsers);
   }, [access]);
+
+  async function handleSearchUsers() {
+    setUsers(null);
+    fetchUsers(userQuery).then(setUsers);
+  }
 
   async function handleSetAdmin(userId: string, admin: boolean) {
     const result = await setUserAdmin(userId, admin);
@@ -142,8 +148,44 @@ export default function AdminPage() {
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-white">사용자 목록</h3>
+        <div className="flex gap-2">
+          <input
+            className="flex-1 rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
+            placeholder="닉네임 또는 user_account_id로 검색"
+            value={userQuery}
+            onChange={(e) => setUserQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearchUsers()}
+          />
+          <button
+            type="button"
+            className="shrink-0 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-400"
+            onClick={handleSearchUsers}
+          >
+            검색
+          </button>
+          {userQuery && (
+            <button
+              type="button"
+              className="shrink-0 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-400"
+              onClick={() => {
+                setUserQuery('');
+                setUsers(null);
+                fetchUsers().then(setUsers);
+              }}
+            >
+              초기화
+            </button>
+          )}
+        </div>
+        <p className="text-[11px] text-neutral-500">
+          검색어 없이는 최근 가입한 50명만 보여줘요. 특정 사용자를 찾으려면 검색해주세요.
+        </p>
         {users === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
-        {users?.length === 0 && <p className="text-xs text-neutral-400">가입한 사용자가 없어요.</p>}
+        {users?.length === 0 && (
+          <p className="text-xs text-neutral-400">
+            {userQuery ? '검색 결과가 없어요.' : '가입한 사용자가 없어요.'}
+          </p>
+        )}
         {userActionMessage && (
           <p className="text-xs font-medium text-violet-500">{userActionMessage}</p>
         )}

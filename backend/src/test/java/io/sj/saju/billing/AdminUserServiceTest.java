@@ -54,10 +54,30 @@ class AdminUserServiceTest {
     }
 
     @Test
-    void listUsersIncludesNewlyCreatedAccounts() {
-        assertThat(adminUserService.listUsers())
+    void listUsersWithoutQueryIncludesNewlyCreatedAccounts() {
+        assertThat(adminUserService.listUsers(null))
                 .extracting(UserAccount::getId)
                 .contains(admin.getId(), target.getId());
+    }
+
+    @Test
+    void listUsersByExactIdFindsOnlyThatAccount() {
+        assertThat(adminUserService.listUsers(target.getId().toString()))
+                .extracting(UserAccount::getId)
+                .containsExactly(target.getId());
+    }
+
+    @Test
+    void listUsersByNicknameSubstringIsCaseInsensitive() {
+        assertThat(adminUserService.listUsers("퇴대"))
+                .extracting(UserAccount::getId)
+                .contains(target.getId())
+                .doesNotContain(admin.getId());
+    }
+
+    @Test
+    void listUsersByUnknownIdReturnsEmpty() {
+        assertThat(adminUserService.listUsers(UUID.randomUUID().toString())).isEmpty();
     }
 
     @Test

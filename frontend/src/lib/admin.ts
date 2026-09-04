@@ -94,8 +94,10 @@ export function fetchAllPayments(): Promise<AdminPayment[] | null> {
   return authedFetch<AdminPayment[]>('/api/admin/payments?page=0&size=100');
 }
 
-export function fetchUsers(): Promise<AdminUser[] | null> {
-  return authedFetch<AdminUser[]>('/api/admin/users');
+/** query 없으면 최근 가입 50명, 있으면 닉네임 부분일치 또는 정확한 user_account_id로 검색. */
+export function fetchUsers(query?: string): Promise<AdminUser[] | null> {
+  const q = query?.trim() ? `?query=${encodeURIComponent(query.trim())}` : '';
+  return authedFetch<AdminUser[]>(`/api/admin/users${q}`);
 }
 
 export function setUserAdmin(userAccountId: string, admin: boolean): Promise<AdminActionResult> {

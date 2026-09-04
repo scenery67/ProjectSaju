@@ -33,8 +33,23 @@ public class AdminUserService {
         this.creditService = creditService;
     }
 
-    public List<UserAccount> listUsers() {
-        return userAccountRepository.findAllByOrderByCreatedAtDesc();
+    /**
+     * 검색어가 없으면 최근 가입한 50명만 보여준다 — 사용자가 많아지면 전체
+     * 목록을 다 내려주는 게 감당이 안 되므로, 특정 사용자를 찾을 때는 검색을
+     * 쓰게 한다. 검색어가 유효한 UUID면 정확히 그 계정만(id로), 아니면
+     * 닉네임 부분 일치로 최대 50건을 찾는다.
+     */
+    public List<UserAccount> listUsers(String query) {
+        if (query == null || query.isBlank()) {
+            return userAccountRepository.findTop50ByOrderByCreatedAtDesc();
+        }
+        String trimmed = query.trim();
+        try {
+            UUID id = UUID.fromString(trimmed);
+            return userAccountRepository.findById(id).map(List::of).orElseGet(List::of);
+        } catch (IllegalArgumentException notAUuid) {
+            return userAccountRepository.findTop50ByNicknameContainingIgnoreCaseOrderByCreatedAtDesc(trimmed);
+        }
     }
 
     /** 본인의 관리자 권한은 스스로 해제할 수 없다 — 실수로 관리자가 아무도 없는 상태를 막는다. */

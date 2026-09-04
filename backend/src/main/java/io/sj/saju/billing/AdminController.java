@@ -42,10 +42,13 @@ public class AdminController {
         this.creditTransactionRepository = creditTransactionRepository;
     }
 
-    /** 사용자 목록 — user_account_id를 화면에서 직접 확인/복사할 수 있게 한다. */
+    /**
+     * 사용자 목록 — user_account_id를 화면에서 직접 확인/복사할 수 있게 한다.
+     * query 없으면 최근 가입 50명, 있으면 닉네임 부분일치 또는 정확한 id로 찾는다.
+     */
     @GetMapping("/users")
-    public List<UserResponse> users() {
-        return adminUserService.listUsers().stream().map(this::toResponse).toList();
+    public List<UserResponse> users(@RequestParam(required = false) String query) {
+        return adminUserService.listUsers(query).stream().map(this::toResponse).toList();
     }
 
     /** 관리자 권한 부여/해제. */
