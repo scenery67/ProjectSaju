@@ -34,8 +34,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         UserAccount account = userAccountRepository
                 .findByProviderAndProviderUserId(provider, info.providerUserId())
-                .orElseGet(() -> new UserAccount(provider, info.providerUserId(), info.nickname()));
-        account.recordLogin(info.nickname());
+                .orElseGet(() -> new UserAccount(
+                        provider, info.providerUserId(),
+                        RandomProfileGenerator.randomNickname(), RandomProfileGenerator.randomAvatar()));
+        account.recordLogin();
         userAccountRepository.save(account);
 
         Map<String, Object> attributes = new LinkedHashMap<>(oauth2User.getAttributes());

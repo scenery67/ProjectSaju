@@ -2,6 +2,9 @@ package io.sj.saju.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,16 +72,43 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-    /** For the frontend to check "am I logged in" and show a nickname — nothing else. */
+    /** For the frontend to check "am I logged in" and show a nickname/avatar — nothing else. */
     @GetMapping("/api/auth/me")
     public ResponseEntity<MeResponse> me(@AuthenticationPrincipal UUID userAccountId) {
         if (userAccountId == null) {
             return ResponseEntity.status(401).build();
         }
         return userAccountRepository.findById(userAccountId)
-                .map(account -> ResponseEntity.ok(
-                        new MeResponse(account.getProvider().name(), account.getNickname(), account.isAdmin())))
+                .map(account -> ResponseEntity.ok(toResponse(account)))
                 .orElseGet(() -> ResponseEntity.status(401).build());
+    }
+
+    /** 닉네임/아바타 편집(설정 화면) — 둘 다 매번 같이 보낸다. */
+    @PatchMapping("/api/auth/me")
+    public ResponseEntity<MeResponse> updateMe(
+            @AuthenticationPrincipal UUID userAccountId, @Valid @RequestBody UpdateProfileRequest request) {
+        if (userAccountId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        AvatarPreset avatarKey;
+        try {
+            avatarKey = AvatarPreset.valueOf(request.avatarKey());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+        return userAccountRepository.findById(userAccountId)
+                .map(account -> {
+                    account.updateProfile(request.nickname().trim(), avatarKey);
+                    userAccountRepository.save(account);
+                    return ResponseEntity.ok(toResponse(account));
+                })
+                .orElseGet(() -> ResponseEntity.status(401).build());
+    }
+
+    private MeResponse toResponse(UserAccount account) {
+        return new MeResponse(
+                account.getProvider().name(), account.getNickname(), account.getAvatarKey().name(),
+                account.isAdmin());
     }
 
     /**
@@ -112,7 +144,7 @@ public class AuthController {
                     created.promoteToAdmin();
                     return created;
                 });
-        account.recordLogin(DEV_ADMIN_NICKNAME);
+        account.recordLogin();
         account = userAccountRepository.save(account);
 
         String token = jwtService.issueToken(account.getId());
@@ -133,6 +165,11 @@ public class AuthController {
                 devAdminBypassSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public record MeResponse(String provider, String nickname, boolean isAdmin) {
+    public record MeResponse(String provider, String nickname, String avatarKey, boolean isAdmin) {
+    }
+
+    public record UpdateProfileRequest(
+            @NotBlank @Size(min = 1, max = 20) String nickname,
+            @NotBlank String avatarKey) {
     }
 }

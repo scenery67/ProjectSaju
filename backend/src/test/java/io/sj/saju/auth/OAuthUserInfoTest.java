@@ -17,11 +17,10 @@ class OAuthUserInfoTest {
         OAuthUserInfo info = OAuthUserInfo.of(OAuthProvider.GOOGLE, attributes);
 
         assertThat(info.providerUserId()).isEqualTo("1234567890");
-        assertThat(info.nickname()).isEqualTo("홍길동");
     }
 
     @Test
-    void extractsKakaoAttributesFromNestedKakaoAccountProfile() {
+    void extractsKakaoAttributesFromTopLevelId() {
         // https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
         Map<String, Object> attributes = Map.of(
                 "id", 987654321L,
@@ -31,7 +30,6 @@ class OAuthUserInfoTest {
         OAuthUserInfo info = OAuthUserInfo.of(OAuthProvider.KAKAO, attributes);
 
         assertThat(info.providerUserId()).isEqualTo("987654321");
-        assertThat(info.nickname()).isEqualTo("다숨이");
     }
 
     @Test
@@ -44,7 +42,6 @@ class OAuthUserInfoTest {
         OAuthUserInfo info = OAuthUserInfo.of(OAuthProvider.NAVER, attributes);
 
         assertThat(info.providerUserId()).isEqualTo("naver-abc123");
-        assertThat(info.nickname()).isEqualTo("설레이");
     }
 
     @Test
@@ -52,6 +49,5 @@ class OAuthUserInfoTest {
         OAuthUserInfo info = OAuthUserInfo.of(OAuthProvider.KAKAO, Map.of("id", 1L));
 
         assertThat(info.providerUserId()).isEqualTo("1");
-        assertThat(info.nickname()).isEqualTo("");
     }
 }
