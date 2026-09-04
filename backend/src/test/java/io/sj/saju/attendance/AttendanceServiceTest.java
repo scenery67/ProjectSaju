@@ -123,14 +123,17 @@ class AttendanceServiceTest {
         var notifications = notificationRepository.findTop50ByUserAccountIdOrderByCreatedAtDesc(user.getId());
         assertThat(notifications).hasSize(1);
         assertThat(notifications.get(0).getType()).isEqualTo(NotificationType.ATTENDANCE_BONUS);
-        assertThat(notifications.get(0).getCreditAmount()).isEqualTo(AttendanceService.STREAK_BONUS);
+        assertThat(notifications.get(0).getCreditAmount())
+                .isEqualTo(AttendanceService.BASE_REWARD + AttendanceService.STREAK_BONUS);
     }
 
     @Test
-    void aNonBonusDayCheckInDoesNotCreateANotification() {
+    void everyCheckInCreatesANotificationEvenWithoutAStreakBonus() {
         attendanceService.checkIn(user.getId());
 
-        assertThat(notificationRepository.findTop50ByUserAccountIdOrderByCreatedAtDesc(user.getId())).isEmpty();
+        var notifications = notificationRepository.findTop50ByUserAccountIdOrderByCreatedAtDesc(user.getId());
+        assertThat(notifications).hasSize(1);
+        assertThat(notifications.get(0).getCreditAmount()).isEqualTo(AttendanceService.BASE_REWARD);
     }
 
     private void seedCheckIn(LocalDate date, int streak) {
