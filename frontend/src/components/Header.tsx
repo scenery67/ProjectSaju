@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AVATAR_EMOJI, fetchCurrentUser, getAuthToken, type CurrentUser } from '../lib/auth';
 import { fetchUnreadCount } from '../lib/notifications';
 import AccountMenu from './AccountMenu';
@@ -8,6 +8,7 @@ import AccountMenu from './AccountMenu';
 // 계정 버튼을 누르면 바로 마이페이지로 가지 않고 드롭다운 메뉴가 뜬다.
 export default function Header() {
   const loggedIn = Boolean(getAuthToken());
+  const location = useLocation();
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,8 +17,14 @@ export default function Header() {
   useEffect(() => {
     if (!loggedIn) return;
     fetchCurrentUser().then(setUser);
-    fetchUnreadCount().then(setUnreadCount);
   }, [loggedIn]);
+
+  // 알림함(/notifications)에서 읽음 처리를 하고 돌아와도 배지 숫자가 그대로
+  // 남아있던 문제 — 로그인 시점 한 번이 아니라 경로가 바뀔 때마다 다시 조회한다.
+  useEffect(() => {
+    if (!loggedIn) return;
+    fetchUnreadCount().then(setUnreadCount);
+  }, [loggedIn, location.pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
