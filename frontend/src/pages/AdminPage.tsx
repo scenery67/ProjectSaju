@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import {
   adjustUserCredit,
   deleteUser,
+  fetchActionLogs,
   fetchAllPayments,
   fetchUsers,
   fetchUserTransactions,
   refundPayment,
   setUserAdmin,
+  type AdminActionLogEntry,
+  type AdminActionType,
   type AdminPayment,
   type AdminTransaction,
   type AdminUser,
@@ -31,6 +34,14 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('ko-KR');
 }
 
+const ACTION_TYPE_LABEL: Record<AdminActionType, string> = {
+  SET_ADMIN_TRUE: '관리자 지정',
+  SET_ADMIN_FALSE: '관리자 해제',
+  DELETE_USER: '탈퇴 처리',
+  REFUND_PAYMENT: '결제 환불',
+  CREDIT_ADJUST: '크레딧 수동 조정',
+};
+
 export default function AdminPage() {
   const [access, setAccess] = useState<'checking' | 'denied' | 'ok'>(
     getAuthToken() ? 'checking' : 'denied',
@@ -43,6 +54,8 @@ export default function AdminPage() {
   const [payments, setPayments] = useState<AdminPayment[] | null>(null);
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState('');
+
+  const [actionLogs, setActionLogs] = useState<AdminActionLogEntry[] | null>(null);
 
   const [ledgerUserId, setLedgerUserId] = useState('');
   const [ledger, setLedger] = useState<AdminTransaction[] | null>(null);
@@ -64,6 +77,7 @@ export default function AdminPage() {
     if (access !== 'ok') return;
     fetchAllPayments().then(setPayments);
     fetchUsers().then(setUsers);
+    fetchActionLogs().then(setActionLogs);
   }, [access]);
 
   async function handleSearchUsers() {
@@ -76,6 +90,7 @@ export default function AdminPage() {
     if (result.ok) {
       setUsers((prev) => prev?.map((u) => (u.id === userId ? { ...u, isAdmin: admin } : u)) ?? null);
       setUserActionMessage(null);
+      fetchActionLogs().then(setActionLogs);
     } else {
       setUserActionMessage(result.message ?? '권한 변경에 실패했어요.');
     }
@@ -90,6 +105,7 @@ export default function AdminPage() {
         setLedger(null);
       }
       setUserActionMessage(null);
+      fetchActionLogs().then(setActionLogs);
     } else {
       setUserActionMessage(result.message ?? '탈퇴 처리에 실패했어요.');
     }
@@ -108,6 +124,7 @@ export default function AdminPage() {
     const updated = await refundPayment(paymentId, refundReason || '관리자 환불');
     if (updated) {
       setPayments((prev) => prev?.map((p) => (p.id === paymentId ? updated : p)) ?? null);
+      fetchActionLogs().then(setActionLogs);
     }
     setRefundingId(null);
     setRefundReason('');
@@ -122,6 +139,9 @@ export default function AdminPage() {
     }
     const ok = await adjustUserCredit(adjustUserId, amount, adjustReason);
     setAdjustMessage(ok ? '적용됐어요.' : '실패했어요 — 사용자 ID를 확인해주세요.');
+    if (ok) {
+      fetchActionLogs().then(setActionLogs);
+    }
     if (ok && ledgerUserId === adjustUserId) {
       loadLedger(adjustUserId);
     }
@@ -408,6 +428,32 @@ export default function AdminPage() {
           </button>
           {adjustMessage && <p className="text-xs text-neutral-500">{adjustMessage}</p>}
         </form>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h3 className="text-sm font-bold text-white">관리자 조치 로그</h3>
+        <p className="text-[11px] text-neutral-500">
+          권한 변경·탈퇴·환불·크레딧 조정 조치를 최근 100건까지 감사 목적으로 남겨요.
+        </p>
+        {actionLogs === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
+        {actionLogs?.length === 0 && <p className="text-xs text-neutral-400">아직 조치 이력이 없어요.</p>}
+        <ul className="flex flex-col gap-2">
+          {actionLogs?.map((log) => (
+            <li
+              key={log.id}
+              className="flex flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-3.5"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white">{ACTION_TYPE_LABEL[log.actionType]}</span>
+                <span className="text-[11px] text-neutral-400">{formatDate(log.createdAt)}</span>
+              </div>
+              <span className="font-mono text-[10px] text-neutral-500">
+                관리자 {log.adminUserAccountId ?? '(탈퇴된 관리자)'} → 대상 {log.targetUserAccountId ?? '(탈퇴된 계정)'}
+              </span>
+              {log.detail && <span className="text-[11px] text-neutral-400">{log.detail}</span>}
+            </li>
+          ))}
+        </ul>
       </section>
     </main>
   );

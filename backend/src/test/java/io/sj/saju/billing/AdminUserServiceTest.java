@@ -42,6 +42,9 @@ class AdminUserServiceTest {
     @Autowired
     private ReadingRecordRepository readingRecordRepository;
 
+    @Autowired
+    private AdminActionLogRepository adminActionLogRepository;
+
     private UserAccount admin;
     private UserAccount target;
 
@@ -90,6 +93,20 @@ class AdminUserServiceTest {
     }
 
     @Test
+    void settingAdminLogsBothGrantAndRevoke() {
+        adminUserService.setAdmin(target.getId(), true, admin.getId());
+        adminUserService.setAdmin(target.getId(), false, admin.getId());
+
+        var logs = adminActionLogRepository.findAll().stream()
+                .filter(l -> target.getId().equals(l.getTargetUserAccountId()))
+                .toList();
+        assertThat(logs)
+                .extracting(AdminActionLog::getActionType)
+                .contains(AdminActionType.SET_ADMIN_TRUE, AdminActionType.SET_ADMIN_FALSE);
+        assertThat(logs).allSatisfy(l -> assertThat(l.getAdminUserAccountId()).isEqualTo(admin.getId()));
+    }
+
+    @Test
     void adminCannotRevokeOwnAdminRole() {
         assertThatThrownBy(() -> adminUserService.setAdmin(admin.getId(), false, admin.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -135,6 +152,19 @@ class AdminUserServiceTest {
                         && t.getAmount() == -7
                         && "계정 탈퇴로 인한 잔여 크레딧 환급 처리".equals(t.getNote()));
         assertThat(refundLogged).isTrue();
+    }
+
+    @Test
+    void deletingAUserLeavesADeleteUserLogWithTargetNulledAfterward() {
+        adminUserService.deleteUser(target.getId(), admin.getId());
+
+        // 로그 자체(누가, 언제, 무엇을 했는지)는 대상 계정이 사라져도 남아야
+        // 한다 — target_user_account_id만 V10의 ON DELETE SET NULL로 끊긴다.
+        boolean deleteLogged = adminActionLogRepository.findAll().stream()
+                .anyMatch(l -> l.getActionType() == AdminActionType.DELETE_USER
+                        && admin.getId().equals(l.getAdminUserAccountId())
+                        && l.getTargetUserAccountId() == null);
+        assertThat(deleteLogged).isTrue();
     }
 
     @Test

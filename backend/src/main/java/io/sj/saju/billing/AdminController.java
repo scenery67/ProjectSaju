@@ -28,18 +28,27 @@ public class AdminController {
 
     private final CreditService creditService;
     private final AdminUserService adminUserService;
+    private final AdminActionLogService adminActionLogService;
     private final PaymentRepository paymentRepository;
     private final CreditTransactionRepository creditTransactionRepository;
 
     public AdminController(
             CreditService creditService,
             AdminUserService adminUserService,
+            AdminActionLogService adminActionLogService,
             PaymentRepository paymentRepository,
             CreditTransactionRepository creditTransactionRepository) {
         this.creditService = creditService;
         this.adminUserService = adminUserService;
+        this.adminActionLogService = adminActionLogService;
         this.paymentRepository = paymentRepository;
         this.creditTransactionRepository = creditTransactionRepository;
+    }
+
+    /** 관리자 조치 감사 로그 — 최근 100건. */
+    @GetMapping("/action-logs")
+    public List<ActionLogResponse> actionLogs() {
+        return adminActionLogService.recentLogs().stream().map(this::toResponse).toList();
     }
 
     /**
@@ -103,6 +112,12 @@ public class AdminController {
         creditService.adminAdjust(userAccountId, request.amount(), adminUserAccountId, request.reason());
     }
 
+    private ActionLogResponse toResponse(AdminActionLog l) {
+        return new ActionLogResponse(
+                l.getId(), l.getAdminUserAccountId(), l.getTargetUserAccountId(), l.getActionType().name(),
+                l.getDetail(), l.getCreatedAt());
+    }
+
     private UserResponse toResponse(UserAccount u) {
         return new UserResponse(
                 u.getId(), u.getProvider().name(), u.getNickname(), u.getCreditBalance(), u.isAdmin(),
@@ -138,5 +153,10 @@ public class AdminController {
             UUID id, UUID userAccountId, int creditAmount, int amountKrw, String status,
             String pgProvider, String pgTransactionId, Instant createdAt, Instant completedAt,
             Instant refundedAt, UUID refundedBy, String refundReason) {
+    }
+
+    public record ActionLogResponse(
+            UUID id, UUID adminUserAccountId, UUID targetUserAccountId, String actionType, String detail,
+            Instant createdAt) {
     }
 }

@@ -19,6 +19,7 @@ public class AdminUserService {
 
     private final UserAccountRepository userAccountRepository;
     private final CreditService creditService;
+    private final AdminActionLogService adminActionLogService;
 
     // deleteById가 지우는 reading_record/consultation_* CASCADE는 Postgres가
     // DB 레벨에서 처리하는 거라 Hibernate 세션(1차 캐시)은 그 사실을 모른다 —
@@ -28,9 +29,13 @@ public class AdminUserService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public AdminUserService(UserAccountRepository userAccountRepository, CreditService creditService) {
+    public AdminUserService(
+            UserAccountRepository userAccountRepository,
+            CreditService creditService,
+            AdminActionLogService adminActionLogService) {
         this.userAccountRepository = userAccountRepository;
         this.creditService = creditService;
+        this.adminActionLogService = adminActionLogService;
     }
 
     /**
@@ -62,6 +67,8 @@ public class AdminUserService {
                 .orElseThrow(() -> new NoSuchElementException("user not found: " + targetUserAccountId));
         account.setAdmin(admin);
         userAccountRepository.save(account);
+        adminActionLogService.log(actingAdminId, targetUserAccountId,
+                admin ? AdminActionType.SET_ADMIN_TRUE : AdminActionType.SET_ADMIN_FALSE, null);
     }
 
     /**
@@ -70,15 +77,21 @@ public class AdminUserService {
      * payment/credit_transaction은 V8 마이그레이션 덕에 소유자만 NULL로
      * 바뀌며 회계 기록으로 남는다. 자기 자신은 탈퇴시킬 수 없다(관리자
      * 화면에서 스스로를 지워 잠기는 사고 방지).
+     *
+     * <p>감사 로그는 반드시 실제 삭제 *전에* 남긴다 — target_user_account_id
+     * FK가 걸려 있어서, 계정이 없어진 뒤에는 그 id를 가리키는 새 로그 행을
+     * 만들 수 없다(AdminActionLogService 클래스 주석 참고).
      */
     @Transactional
     public void deleteUser(UUID targetUserAccountId, UUID actingAdminId) {
         if (targetUserAccountId.equals(actingAdminId)) {
             throw new IllegalArgumentException("본인 계정은 이 화면에서 탈퇴 처리할 수 없어요");
         }
-        if (!userAccountRepository.existsById(targetUserAccountId)) {
-            throw new NoSuchElementException("user not found: " + targetUserAccountId);
-        }
+        UserAccount account = userAccountRepository.findById(targetUserAccountId)
+                .orElseThrow(() -> new NoSuchElementException("user not found: " + targetUserAccountId));
+
+        adminActionLogService.log(actingAdminId, targetUserAccountId, AdminActionType.DELETE_USER,
+                "탈퇴 처리 (환급 전 잔여 크레딧 %d개)".formatted(account.getCreditBalance()));
         creditService.refundRemainingBalanceOnAccountDeletion(targetUserAccountId, actingAdminId);
         userAccountRepository.deleteById(targetUserAccountId);
         entityManager.flush();

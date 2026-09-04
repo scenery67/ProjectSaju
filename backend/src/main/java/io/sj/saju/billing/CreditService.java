@@ -21,6 +21,7 @@ public class CreditService {
     private final CreditTransactionRepository creditTransactionRepository;
     private final PaymentRepository paymentRepository;
     private final CreditPackageRepository creditPackageRepository;
+    private final AdminActionLogService adminActionLogService;
 
     // user_account.credit_balance는 JPA를 거치지 않는 원자적 raw SQL로
     // 바꾼다(동시 요청 이중 차감 방지). 그래서 같은 트랜잭션 안에서: (1) 이
@@ -35,11 +36,13 @@ public class CreditService {
             JdbcTemplate jdbcTemplate,
             CreditTransactionRepository creditTransactionRepository,
             PaymentRepository paymentRepository,
-            CreditPackageRepository creditPackageRepository) {
+            CreditPackageRepository creditPackageRepository,
+            AdminActionLogService adminActionLogService) {
         this.jdbcTemplate = jdbcTemplate;
         this.creditTransactionRepository = creditTransactionRepository;
         this.paymentRepository = paymentRepository;
         this.creditPackageRepository = creditPackageRepository;
+        this.adminActionLogService = adminActionLogService;
     }
 
     /** LLM 상담 질문 1건에 크레딧을 차감한다. 잔액 부족이면 예외를 던진다. */
@@ -94,6 +97,8 @@ public class CreditService {
         int balanceAfter = decreaseBalanceClamped(payment.getUserAccountId(), payment.getCreditAmount());
         record(payment.getUserAccountId(), CreditTransactionType.REFUND, -payment.getCreditAmount(), balanceAfter,
                 payment.getId(), reason);
+        adminActionLogService.log(adminUserAccountId, payment.getUserAccountId(), AdminActionType.REFUND_PAYMENT,
+                "결제 %s 환불 (%d크레딧) — %s".formatted(payment.getId(), payment.getCreditAmount(), reason));
         return payment;
     }
 
@@ -127,6 +132,8 @@ public class CreditService {
                 : decreaseBalanceClamped(targetUserAccountId, -amount);
         record(targetUserAccountId, CreditTransactionType.ADMIN_ADJUST, amount, balanceAfter,
                 adminUserAccountId, reason);
+        adminActionLogService.log(adminUserAccountId, targetUserAccountId, AdminActionType.CREDIT_ADJUST,
+                "%+d크레딧 — %s".formatted(amount, reason));
     }
 
     private Payment requirePayment(UUID paymentId) {

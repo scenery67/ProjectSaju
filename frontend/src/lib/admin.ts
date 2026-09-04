@@ -37,6 +37,22 @@ export interface AdminUser {
   lastLoginAt: string;
 }
 
+export type AdminActionType =
+  | 'SET_ADMIN_TRUE'
+  | 'SET_ADMIN_FALSE'
+  | 'DELETE_USER'
+  | 'REFUND_PAYMENT'
+  | 'CREDIT_ADJUST';
+
+export interface AdminActionLogEntry {
+  id: string;
+  adminUserAccountId: string | null;
+  targetUserAccountId: string | null;
+  actionType: AdminActionType;
+  detail: string | null;
+  createdAt: string;
+}
+
 async function authedFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   const token = getAuthToken();
   if (!token) return null;
@@ -92,6 +108,10 @@ async function authedAction(path: string, init: RequestInit): Promise<AdminActio
 
 export function fetchAllPayments(): Promise<AdminPayment[] | null> {
   return authedFetch<AdminPayment[]>('/api/admin/payments?page=0&size=100');
+}
+
+export function fetchActionLogs(): Promise<AdminActionLogEntry[] | null> {
+  return authedFetch<AdminActionLogEntry[]>('/api/admin/action-logs');
 }
 
 /** query 없으면 최근 가입 50명, 있으면 닉네임 부분일치 또는 정확한 user_account_id로 검색. */

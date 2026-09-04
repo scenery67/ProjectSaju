@@ -37,6 +37,9 @@ class CreditServiceTest {
     @Autowired
     private CreditTransactionRepository creditTransactionRepository;
 
+    @Autowired
+    private AdminActionLogRepository adminActionLogRepository;
+
     private UserAccount user;
 
     @BeforeEach
@@ -108,14 +111,33 @@ class CreditServiceTest {
         assertThat(refunded.getStatus()).isEqualTo(PaymentStatus.REFUNDED);
         assertThat(refunded.getRefundedBy()).isEqualTo(admin.getId());
         assertThat(userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance()).isEqualTo(0);
+
+        boolean logged = adminActionLogRepository.findAll().stream()
+                .anyMatch(l -> l.getActionType() == AdminActionType.REFUND_PAYMENT
+                        && admin.getId().equals(l.getAdminUserAccountId())
+                        && user.getId().equals(l.getTargetUserAccountId()));
+        assertThat(logged).isTrue();
     }
 
     @Test
     void adminAdjustCanGrantOrClawBackCredits() {
-        creditService.adminAdjust(user.getId(), 10, UUID.randomUUID(), "보상 지급");
+        // adminAdjust는 admin_action_log에도 감사 로그를 남기는데, 그 컬럼은
+        // 실제 user_account를 가리키는 FK라 UUID.randomUUID() 같은 가짜 값을
+        // 못 쓴다 — 실제로 저장된 관리자 계정이어야 한다.
+        UserAccount admin = userAccountRepository.saveAndFlush(
+                new UserAccount(OAuthProvider.KAKAO, "admin-" + UUID.randomUUID(), "관리자"));
+
+        creditService.adminAdjust(user.getId(), 10, admin.getId(), "보상 지급");
         assertThat(userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance()).isEqualTo(10);
 
-        creditService.adminAdjust(user.getId(), -4, UUID.randomUUID(), "오지급 회수");
+        creditService.adminAdjust(user.getId(), -4, admin.getId(), "오지급 회수");
         assertThat(userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance()).isEqualTo(6);
+
+        var logs = adminActionLogRepository.findAll().stream()
+                .filter(l -> l.getActionType() == AdminActionType.CREDIT_ADJUST
+                        && admin.getId().equals(l.getAdminUserAccountId())
+                        && user.getId().equals(l.getTargetUserAccountId()))
+                .toList();
+        assertThat(logs).hasSize(2);
     }
 }
