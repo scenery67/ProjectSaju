@@ -44,6 +44,8 @@ export default function MyPage() {
 
   const [attendance, setAttendance] = useState<AttendanceStatus | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
+  const [justCheckedDay, setJustCheckedDay] = useState<number | null>(null);
+  const [popups, setPopups] = useState<{ id: number; text: string; className: string }[]>([]);
 
   useEffect(() => {
     if (!getAuthToken()) return;
@@ -71,8 +73,23 @@ export default function MyPage() {
     setCheckingIn(true);
     const result = await checkInAttendance();
     if (result) {
-      setAttendance({ checkedInToday: true, streak: result.streak, reward: 0 });
-      setCreditBalance((prev) => (prev ?? 0) + result.creditsGranted);
+      setAttendance({ checkedInToday: true, streak: result.streak, baseReward: 0, bonusReward: 0 });
+      setCreditBalance((prev) => (prev ?? 0) + result.baseReward + result.bonusReward);
+
+      // 방금 채워진 원에 팝 이펙트 + "+N" 문구를 띄운다. 보너스가 있는
+      // 날이면(7일째 등) 기본/보너스를 각각 따로 보여준다.
+      setJustCheckedDay(((result.streak - 1) % 7) + 1);
+      const effects = [{ id: Date.now(), text: `+${result.baseReward}`, className: 'text-violet-300' }];
+      if (result.bonusReward > 0) {
+        effects.push({
+          id: Date.now() + 1,
+          text: `+${result.bonusReward} 보너스`,
+          className: 'text-amber-400',
+        });
+      }
+      setPopups(effects);
+      setTimeout(() => setPopups([]), 1300);
+      setTimeout(() => setJustCheckedDay(null), 500);
     } else {
       // 이미 체크했거나(다른 탭 등) 네트워크 실패 — 실제 최신 상태로 다시 맞춘다.
       fetchAttendanceStatus().then(setAttendance);
@@ -148,28 +165,68 @@ export default function MyPage() {
           </section>
 
           {attendance && (
-            <section className="flex items-center justify-between gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
-              <div className="flex flex-col gap-0.5">
+            <section className="relative flex flex-col gap-4 overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white">출석 체크</h3>
-                {attendance.checkedInToday ? (
-                  <p className="text-xs text-neutral-400">
-                    오늘 체크 완료! {attendance.streak}일째 연속 출석 중이에요.
-                  </p>
-                ) : (
-                  <p className="text-xs text-neutral-400">
-                    지금 체크하면 {attendance.streak}일째 · +{attendance.reward} 크레딧
-                    {attendance.streak % 7 === 0 && ' (7일 연속 보너스 포함!)'}
-                  </p>
-                )}
+                <span className="text-xs text-neutral-400">
+                  {attendance.streak}일째 {attendance.checkedInToday ? '연속 출석 중' : '도전 중'}
+                </span>
               </div>
+
+              <div className="flex justify-between">
+                {Array.from({ length: 7 }, (_, i) => i + 1).map((day) => {
+                  const activePosition = ((attendance.streak - 1) % 7) + 1;
+                  const filledCount = attendance.checkedInToday ? activePosition : activePosition - 1;
+                  const filled = day <= filledCount;
+                  const isToday = !attendance.checkedInToday && day === activePosition;
+                  return (
+                    <div key={day} className="flex flex-col items-center gap-1">
+                      <div
+                        className={[
+                          'flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold transition-colors duration-300',
+                          filled
+                            ? 'border-violet-500 bg-violet-500 text-white'
+                            : isToday
+                              ? 'border-violet-400 text-violet-300'
+                              : 'border-neutral-700 text-neutral-500',
+                          justCheckedDay === day ? 'animate-check-pop' : '',
+                        ].join(' ')}
+                      >
+                        {filled ? '✓' : day}
+                      </div>
+                      <span className={`text-[9px] ${day === 7 ? 'text-amber-400' : 'text-transparent'}`}>
+                        +3
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
               <button
                 type="button"
                 disabled={attendance.checkedInToday || checkingIn}
                 onClick={handleCheckIn}
-                className="shrink-0 rounded-full bg-violet-500 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-40"
+                className="rounded-full bg-violet-500 py-3 text-sm font-bold text-white disabled:opacity-40"
               >
-                {attendance.checkedInToday ? '완료' : checkingIn ? '처리 중...' : '출석 체크'}
+                {attendance.checkedInToday
+                  ? '오늘 체크 완료'
+                  : checkingIn
+                    ? '처리 중...'
+                    : `출석 체크하고 +${attendance.baseReward + attendance.bonusReward} 받기`}
               </button>
+
+              {popups.length > 0 && (
+                <div className="pointer-events-none absolute inset-x-0 top-14 flex flex-col items-center gap-1">
+                  {popups.map((p) => (
+                    <span
+                      key={p.id}
+                      className={`animate-float-up-fade text-lg font-extrabold drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] ${p.className}`}
+                    >
+                      {p.text}
+                    </span>
+                  ))}
+                </div>
+              )}
             </section>
           )}
 

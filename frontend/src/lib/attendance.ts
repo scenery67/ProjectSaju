@@ -6,13 +6,16 @@ export interface AttendanceStatus {
   // checkedInToday=true면 오늘 실제로 달성한 연속 일수, false면 "지금
   // 체크하면" 달성할 연속 일수(미리보기).
   streak: number;
-  // checkedInToday=true면 0(이미 받음), false면 지금 체크 시 받을 크레딧 수.
-  reward: number;
+  // 아래 둘 다 checkedInToday=true면 0(이미 받음) — 기본/보너스를 나눠서
+  // 줘야 프론트에서 "+2"와 "+3 보너스" 이펙트를 따로 보여줄 수 있다.
+  baseReward: number;
+  bonusReward: number;
 }
 
 export interface AttendanceCheckInResult {
   streak: number;
-  creditsGranted: number;
+  baseReward: number;
+  bonusReward: number;
 }
 
 async function authedGet<T>(path: string): Promise<T | null> {

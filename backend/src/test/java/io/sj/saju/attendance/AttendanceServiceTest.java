@@ -45,7 +45,8 @@ class AttendanceServiceTest {
 
         assertThat(status.checkedInToday()).isFalse();
         assertThat(status.streak()).isEqualTo(1);
-        assertThat(status.reward()).isEqualTo(AttendanceService.BASE_REWARD);
+        assertThat(status.baseReward()).isEqualTo(AttendanceService.BASE_REWARD);
+        assertThat(status.bonusReward()).isZero();
     }
 
     @Test
@@ -76,7 +77,8 @@ class AttendanceServiceTest {
 
         assertThat(status.checkedInToday()).isTrue();
         assertThat(status.streak()).isEqualTo(1);
-        assertThat(status.reward()).isZero();
+        assertThat(status.baseReward()).isZero();
+        assertThat(status.bonusReward()).isZero();
     }
 
     @Test
@@ -108,6 +110,8 @@ class AttendanceServiceTest {
         AttendanceService.CheckInResult result = attendanceService.checkIn(user.getId());
 
         assertThat(result.streak()).isEqualTo(7);
+        assertThat(result.baseReward()).isEqualTo(AttendanceService.BASE_REWARD);
+        assertThat(result.bonusReward()).isEqualTo(AttendanceService.STREAK_BONUS);
         assertThat(result.creditsGranted())
                 .isEqualTo(AttendanceService.BASE_REWARD + AttendanceService.STREAK_BONUS);
     }

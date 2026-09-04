@@ -34,13 +34,19 @@ public class AttendanceService {
      * @param checkedInToday 오늘 이미 체크했는지
      * @param streak         오늘 이미 체크했으면 실제 달성한 연속 일수, 아니면
      *                       "지금 체크하면" 달성할 연속 일수
-     * @param reward         오늘 이미 체크했으면 0(추가 지급 없음), 아니면
-     *                       "지금 체크하면" 받을 크레딧 수
+     * @param baseReward     오늘 이미 체크했으면 0(추가 지급 없음), 아니면
+     *                       "지금 체크하면" 받을 기본 크레딧 수
+     * @param bonusReward    오늘 이미 체크했으면 0, 아니면 "지금 체크하면" 추가로
+     *                       받을 스트릭 보너스(보너스 없는 날이면 0) — 프론트가
+     *                       기본/보너스 이펙트를 따로 보여줄 수 있게 나눠서 준다
      */
-    public record Status(boolean checkedInToday, int streak, int reward) {
+    public record Status(boolean checkedInToday, int streak, int baseReward, int bonusReward) {
     }
 
-    public record CheckInResult(int streak, int creditsGranted) {
+    public record CheckInResult(int streak, int baseReward, int bonusReward) {
+        public int creditsGranted() {
+            return baseReward + bonusReward;
+        }
     }
 
     public Status status(UUID userAccountId) {
@@ -48,10 +54,10 @@ public class AttendanceService {
         Optional<AttendanceCheck> todayCheck =
                 attendanceCheckRepository.findByUserAccountIdAndCheckedDate(userAccountId, today);
         if (todayCheck.isPresent()) {
-            return new Status(true, todayCheck.get().getStreakCount(), 0);
+            return new Status(true, todayCheck.get().getStreakCount(), 0, 0);
         }
         int streak = nextStreak(userAccountId, today);
-        return new Status(false, streak, rewardFor(streak));
+        return new Status(false, streak, BASE_REWARD, bonusFor(streak));
     }
 
     @Transactional
@@ -61,11 +67,12 @@ public class AttendanceService {
             throw new AlreadyCheckedInException(userAccountId);
         }
         int streak = nextStreak(userAccountId, today);
-        int reward = rewardFor(streak);
+        int bonus = bonusFor(streak);
+        int totalReward = BASE_REWARD + bonus;
         AttendanceCheck check = attendanceCheckRepository.save(new AttendanceCheck(userAccountId, today, streak));
-        creditService.grantFree(userAccountId, reward, check.getId(),
+        creditService.grantFree(userAccountId, totalReward, check.getId(),
                 "출석 체크 보상 (%d일 연속)".formatted(streak));
-        return new CheckInResult(streak, reward);
+        return new CheckInResult(streak, BASE_REWARD, bonus);
     }
 
     /** 어제도 체크했으면 그 스트릭 +1, 아니면(끊겼거나 첫 출석) 1부터 다시. */
@@ -76,11 +83,7 @@ public class AttendanceService {
                 .orElse(1);
     }
 
-    private int rewardFor(int streak) {
-        int reward = BASE_REWARD;
-        if (streak % STREAK_BONUS_INTERVAL == 0) {
-            reward += STREAK_BONUS;
-        }
-        return reward;
+    private int bonusFor(int streak) {
+        return streak % STREAK_BONUS_INTERVAL == 0 ? STREAK_BONUS : 0;
     }
 }
