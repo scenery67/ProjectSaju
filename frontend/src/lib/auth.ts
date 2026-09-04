@@ -61,9 +61,25 @@ export async function logout(): Promise<void> {
   clearAuthToken();
 }
 
+export type AvatarKey = 'FOX' | 'RABBIT' | 'BEAR' | 'CAT' | 'TIGER' | 'PANDA' | 'DOG' | 'OWL';
+
+// 백엔드 AvatarPreset과 1:1로 맞춘 표시용 이모지 — 실제 사진 업로드 대신
+// 고정된 프리셋 중에서만 고르게 해서 저장/노출 리스크를 없앤다.
+export const AVATAR_EMOJI: Record<AvatarKey, string> = {
+  FOX: '🦊',
+  RABBIT: '🐰',
+  BEAR: '🐻',
+  CAT: '🐱',
+  TIGER: '🐯',
+  PANDA: '🐼',
+  DOG: '🐶',
+  OWL: '🦉',
+};
+
 export interface CurrentUser {
   provider: string;
   nickname: string;
+  avatarKey: AvatarKey;
   isAdmin: boolean;
 }
 
@@ -81,6 +97,30 @@ export async function fetchCurrentUser(): Promise<CurrentUser | null> {
   try {
     const res = await fetch(`${API_ROOT_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      if (res.status === 401) clearAuthToken();
+      return null;
+    }
+    return (await res.json()) as CurrentUser;
+  } catch {
+    return null;
+  }
+}
+
+/** 설정 화면의 프로필 편집 — 닉네임/아바타를 함께 바꾼다. */
+export async function updateProfile(
+  nickname: string,
+  avatarKey: AvatarKey,
+): Promise<CurrentUser | null> {
+  const token = getAuthToken();
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${API_ROOT_URL}/api/auth/me`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ nickname, avatarKey }),
     });
     if (!res.ok) {
       if (res.status === 401) clearAuthToken();

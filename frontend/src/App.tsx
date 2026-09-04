@@ -9,10 +9,15 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import MySajuPage from './pages/MySajuPage';
+import NotificationsPage from './pages/NotificationsPage';
 import PaymentFailPage from './pages/PaymentFailPage';
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PersonaDetailPage from './pages/PersonaDetailPage';
 import ResultPage from './pages/ResultPage';
+import RewardsPage from './pages/RewardsPage';
+import SettingsPage from './pages/SettingsPage';
+import ShopPage from './pages/ShopPage';
 
 // 로그인 화면과 결제 결과 화면은 참고 사이트처럼 사이트 전체 내비게이션
 // 없이 독립된 화면으로 둔다 — 외부(토스)에서 돌아오는 짧은 처리 화면이라
@@ -39,6 +44,11 @@ export default function App() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/payment/success" element={<PaymentSuccessPage />} />
         <Route path="/payment/fail" element={<PaymentFailPage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/rewards" element={<RewardsPage />} />
+        <Route path="/payments" element={<PaymentHistoryPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
       {showChrome && <BottomNav />}
     </>
