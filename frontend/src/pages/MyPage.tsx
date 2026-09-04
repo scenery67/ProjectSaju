@@ -16,6 +16,7 @@ import {
   fetchPackages,
   fetchPaymentHistory,
   purchasePackage,
+  startTossCheckout,
   type CreditPackage,
   type PaymentHistoryEntry,
   type PaymentStatus,
@@ -41,6 +42,7 @@ export default function MyPage() {
   const [packages, setPackages] = useState<CreditPackage[] | null>(null);
   const [payments, setPayments] = useState<PaymentHistoryEntry[] | null>(null);
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   const [attendance, setAttendance] = useState<AttendanceStatus | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
@@ -62,11 +64,25 @@ export default function MyPage() {
 
   async function handlePurchase(pkg: CreditPackage) {
     setPurchasingId(pkg.id);
+    setPurchaseError(null);
     const payment = await purchasePackage(pkg.id);
-    if (payment) {
-      setPayments((prev) => [payment, ...(prev ?? [])]);
+    if (!payment) {
+      setPurchaseError('결제 준비에 실패했어요. 잠시 후 다시 시도해주세요.');
+      setPurchasingId(null);
+      return;
     }
-    setPurchasingId(null);
+    try {
+      // 성공하면 브라우저가 토스 결제창으로 이동해서 이 아래 코드는 실행 안
+      // 됨 — 사용자가 결제창을 닫거나 SDK/키 설정이 잘못됐을 때만 여기로 온다.
+      await startTossCheckout(
+        { id: payment.id, amountKrw: payment.amountKrw },
+        pkg.name,
+        user?.nickname || '고객',
+      );
+    } catch {
+      setPurchaseError('결제창을 여는 데 실패했어요.');
+      setPurchasingId(null);
+    }
   }
 
   async function handleCheckIn() {
@@ -104,8 +120,8 @@ export default function MyPage() {
           마이페이지
         </h2>
         <p className="text-xs text-neutral-400">
-          로그인 기능 테스트 중이에요 — 결제는 아직 실제 PG 연동 전이라
-          충전하면 대기 상태로만 등록돼요.
+          결제는 토스페이먼츠 테스트 연동 중이에요 — 실제 결제/정산은 아직
+          시작 전이라 결제해도 실제 돈은 나가지 않아요.
         </p>
       </div>
 
@@ -232,6 +248,9 @@ export default function MyPage() {
 
           <section className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-white">충전하기</h3>
+            {purchaseError && (
+              <p className="text-xs font-medium text-violet-500">{purchaseError}</p>
+            )}
             {packages === null && (
               <p className="text-xs text-neutral-400">불러오는 중...</p>
             )}

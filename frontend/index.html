@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#fdf6f0" />
     <title>사주 서비스</title>
+    <!-- 결제창형 연동 SDK — v1 requestPayment API. 위젯형(v2/standard)과는
+         다른 API라 섞어 쓰면 안 된다(billing.ts의 startTossCheckout 참고). -->
+    <script src="https://js.tosspayments.com/v1/payment"></script>
   </head>
   <body>
     <div id="root"></div>

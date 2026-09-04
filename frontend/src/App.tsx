@@ -9,12 +9,15 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import MySajuPage from './pages/MySajuPage';
+import PaymentFailPage from './pages/PaymentFailPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PersonaDetailPage from './pages/PersonaDetailPage';
 import ResultPage from './pages/ResultPage';
 
-// 로그인 화면은 참고 사이트처럼 사이트 전체 내비게이션 없이 독립된
-// 화면으로 둔다 — 아직 "앱 안"에 들어오기 전이라는 느낌을 준다.
-const CHROME_FREE_PATHS = ['/login'];
+// 로그인 화면과 결제 결과 화면은 참고 사이트처럼 사이트 전체 내비게이션
+// 없이 독립된 화면으로 둔다 — 외부(토스)에서 돌아오는 짧은 처리 화면이라
+// 하단 탭 등 평소 UI가 어색하다.
+const CHROME_FREE_PATHS = ['/login', '/payment/success', '/payment/fail'];
 
 export default function App() {
   const location = useLocation();
@@ -34,6 +37,8 @@ export default function App() {
         <Route path="/consultations" element={<ConsultationListPage />} />
         <Route path="/consultation/:sessionId" element={<ConsultationPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/payment/fail" element={<PaymentFailPage />} />
       </Routes>
       {showChrome && <BottomNav />}
     </>
