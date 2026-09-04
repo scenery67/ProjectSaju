@@ -1,6 +1,7 @@
 package io.sj.saju.billing;
 
 import io.sj.saju.auth.UserAccount;
+import io.sj.saju.notification.NotificationService;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -31,18 +32,30 @@ public class AdminController {
     private final AdminActionLogService adminActionLogService;
     private final PaymentRepository paymentRepository;
     private final CreditTransactionRepository creditTransactionRepository;
+    private final NotificationService notificationService;
 
     public AdminController(
             CreditService creditService,
             AdminUserService adminUserService,
             AdminActionLogService adminActionLogService,
             PaymentRepository paymentRepository,
-            CreditTransactionRepository creditTransactionRepository) {
+            CreditTransactionRepository creditTransactionRepository,
+            NotificationService notificationService) {
         this.creditService = creditService;
         this.adminUserService = adminUserService;
         this.adminActionLogService = adminActionLogService;
         this.paymentRepository = paymentRepository;
         this.creditTransactionRepository = creditTransactionRepository;
+        this.notificationService = notificationService;
+    }
+
+    /** 전체 사용자에게 알림함으로 공지를 보낸다. */
+    @PostMapping("/announcements")
+    public void announce(
+            @AuthenticationPrincipal UUID adminUserAccountId, @RequestBody AnnouncementRequest request) {
+        int recipientCount = notificationService.broadcastAnnouncement(request.title(), request.body());
+        adminActionLogService.log(adminUserAccountId, null, AdminActionType.ANNOUNCEMENT,
+                "\"%s\" — %d명에게 발송".formatted(request.title(), recipientCount));
     }
 
     /** 관리자 조치 감사 로그 — 최근 100건. */
@@ -138,6 +151,9 @@ public class AdminController {
     }
 
     public record SetAdminRequest(boolean admin) {
+    }
+
+    public record AnnouncementRequest(String title, String body) {
     }
 
     public record UserResponse(

@@ -1,5 +1,7 @@
 package io.sj.saju.billing;
 
+import io.sj.saju.notification.NotificationService;
+import io.sj.saju.notification.NotificationType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.NoSuchElementException;
@@ -24,6 +26,7 @@ public class CreditService {
     private final CreditPackageRepository creditPackageRepository;
     private final AdminActionLogService adminActionLogService;
     private final TossPaymentsClient tossPaymentsClient;
+    private final NotificationService notificationService;
 
     // user_account.credit_balance는 JPA를 거치지 않는 원자적 raw SQL로
     // 바꾼다(동시 요청 이중 차감 방지). 그래서 같은 트랜잭션 안에서: (1) 이
@@ -40,13 +43,15 @@ public class CreditService {
             PaymentRepository paymentRepository,
             CreditPackageRepository creditPackageRepository,
             AdminActionLogService adminActionLogService,
-            TossPaymentsClient tossPaymentsClient) {
+            TossPaymentsClient tossPaymentsClient,
+            NotificationService notificationService) {
         this.jdbcTemplate = jdbcTemplate;
         this.creditTransactionRepository = creditTransactionRepository;
         this.paymentRepository = paymentRepository;
         this.creditPackageRepository = creditPackageRepository;
         this.adminActionLogService = adminActionLogService;
         this.tossPaymentsClient = tossPaymentsClient;
+        this.notificationService = notificationService;
     }
 
     /** LLM 상담 질문 1건에 크레딧을 차감한다. 잔액 부족이면 예외를 던진다. */
@@ -86,6 +91,8 @@ public class CreditService {
         payment.markCompleted(pgProvider, pgTransactionId);
         paymentRepository.save(payment);
         grant(payment.getUserAccountId(), payment.getCreditAmount(), CreditTransactionType.PURCHASE, payment.getId(), null);
+        notificationService.notify(payment.getUserAccountId(), NotificationType.PAYMENT_COMPLETED, "충전 완료",
+                "%,d 크레딧이 충전됐어요.".formatted(payment.getCreditAmount()), payment.getCreditAmount());
         return payment;
     }
 

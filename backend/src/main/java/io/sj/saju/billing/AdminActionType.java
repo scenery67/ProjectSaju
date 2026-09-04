@@ -6,5 +6,6 @@ public enum AdminActionType {
     SET_ADMIN_FALSE,
     DELETE_USER,
     REFUND_PAYMENT,
-    CREDIT_ADJUST
+    CREDIT_ADJUST,
+    ANNOUNCEMENT
 }

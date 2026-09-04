@@ -1,6 +1,8 @@
 package io.sj.saju.attendance;
 
 import io.sj.saju.billing.CreditService;
+import io.sj.saju.notification.NotificationService;
+import io.sj.saju.notification.NotificationType;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -24,10 +26,15 @@ public class AttendanceService {
 
     private final AttendanceCheckRepository attendanceCheckRepository;
     private final CreditService creditService;
+    private final NotificationService notificationService;
 
-    public AttendanceService(AttendanceCheckRepository attendanceCheckRepository, CreditService creditService) {
+    public AttendanceService(
+            AttendanceCheckRepository attendanceCheckRepository,
+            CreditService creditService,
+            NotificationService notificationService) {
         this.attendanceCheckRepository = attendanceCheckRepository;
         this.creditService = creditService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -72,6 +79,12 @@ public class AttendanceService {
         AttendanceCheck check = attendanceCheckRepository.save(new AttendanceCheck(userAccountId, today, streak));
         creditService.grantFree(userAccountId, totalReward, check.getId(),
                 "출석 체크 보상 (%d일 연속)".formatted(streak));
+        // 매일 주는 기본 보상까지 알림으로 보내면 스팸이 되니, 스트릭 보너스가
+        // 붙는 날(7일째 등)에만 알린다.
+        if (bonus > 0) {
+            notificationService.notify(userAccountId, NotificationType.ATTENDANCE_BONUS, "출석 보너스 지급",
+                    "%d일 연속 출석 보너스로 %d크레딧을 더 받았어요!".formatted(streak, bonus), bonus);
+        }
         return new CheckInResult(streak, BASE_REWARD, bonus);
     }
 

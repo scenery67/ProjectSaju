@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.sj.saju.auth.OAuthProvider;
 import io.sj.saju.auth.UserAccount;
 import io.sj.saju.auth.UserAccountRepository;
+import io.sj.saju.notification.NotificationRepository;
+import io.sj.saju.notification.NotificationType;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.UUID;
@@ -30,6 +32,9 @@ class AttendanceServiceTest {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     private UserAccount user;
 
@@ -114,6 +119,18 @@ class AttendanceServiceTest {
         assertThat(result.bonusReward()).isEqualTo(AttendanceService.STREAK_BONUS);
         assertThat(result.creditsGranted())
                 .isEqualTo(AttendanceService.BASE_REWARD + AttendanceService.STREAK_BONUS);
+
+        var notifications = notificationRepository.findTop50ByUserAccountIdOrderByCreatedAtDesc(user.getId());
+        assertThat(notifications).hasSize(1);
+        assertThat(notifications.get(0).getType()).isEqualTo(NotificationType.ATTENDANCE_BONUS);
+        assertThat(notifications.get(0).getCreditAmount()).isEqualTo(AttendanceService.STREAK_BONUS);
+    }
+
+    @Test
+    void aNonBonusDayCheckInDoesNotCreateANotification() {
+        attendanceService.checkIn(user.getId());
+
+        assertThat(notificationRepository.findTop50ByUserAccountIdOrderByCreatedAtDesc(user.getId())).isEmpty();
     }
 
     private void seedCheckIn(LocalDate date, int streak) {
