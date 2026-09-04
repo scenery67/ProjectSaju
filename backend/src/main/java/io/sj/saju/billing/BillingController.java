@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 로그인한 사용자 본인의 크레딧/결제 화면용 API. 마이페이지의
- * "보유 크레딧/충전하기/결제내역"에 대응한다. PG 연동 전이라 purchases는
- * PENDING 결제 레코드만 만들고, 실제 승인/완료는 아직 붙지 않았다.
+ * "보유 크레딧/충전하기/결제내역"에 대응한다. purchases로 PENDING 결제
+ * 레코드를 만든 뒤, 프론트가 토스 결제창을 띄우고 돌아오면 confirm으로
+ * 실제 승인을 확인한다 — 검증 로직 자체는 CreditService.confirmTossPurchase에
+ * 모아뒀다(서비스 계층에서 테스트하기 위해, 이 컨트롤러는 얇게 유지).
  */
 @RestController
 @RequestMapping("/api/billing")
@@ -82,7 +85,27 @@ public class BillingController {
                 payment.getStatus().name(), payment.getCreatedAt());
     }
 
+    /**
+     * 토스 결제창에서 돌아온 뒤 호출 — orderId는 애초에 payment.id를 그대로
+     * 썼으므로 경로변수만으로 어떤 결제인지 알 수 있다. 실제 검증(본인
+     * 소유·PENDING 상태·금액 일치)과 토스 재확인은 CreditService에서 한다.
+     */
+    @PostMapping("/purchases/{paymentId}/confirm")
+    public PaymentResponse confirmPurchase(
+            @AuthenticationPrincipal UUID userAccountId,
+            @PathVariable UUID paymentId,
+            @RequestBody ConfirmPurchaseRequest request) {
+        Payment completed = creditService.confirmTossPurchase(
+                userAccountId, paymentId, request.paymentKey(), request.amount());
+        return new PaymentResponse(
+                completed.getId(), completed.getCreditAmount(), completed.getAmountKrw(),
+                completed.getStatus().name(), completed.getCreatedAt());
+    }
+
     public record CreatePurchaseRequest(UUID creditPackageId) {
+    }
+
+    public record ConfirmPurchaseRequest(String paymentKey, int amount) {
     }
 
     public record PackageResponse(UUID id, String name, int creditAmount, int priceKrw) {

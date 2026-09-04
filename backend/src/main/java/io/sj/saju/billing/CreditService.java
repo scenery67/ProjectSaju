@@ -2,6 +2,7 @@ package io.sj.saju.billing;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +23,7 @@ public class CreditService {
     private final PaymentRepository paymentRepository;
     private final CreditPackageRepository creditPackageRepository;
     private final AdminActionLogService adminActionLogService;
+    private final TossPaymentsClient tossPaymentsClient;
 
     // user_account.credit_balance는 JPA를 거치지 않는 원자적 raw SQL로
     // 바꾼다(동시 요청 이중 차감 방지). 그래서 같은 트랜잭션 안에서: (1) 이
@@ -37,12 +39,14 @@ public class CreditService {
             CreditTransactionRepository creditTransactionRepository,
             PaymentRepository paymentRepository,
             CreditPackageRepository creditPackageRepository,
-            AdminActionLogService adminActionLogService) {
+            AdminActionLogService adminActionLogService,
+            TossPaymentsClient tossPaymentsClient) {
         this.jdbcTemplate = jdbcTemplate;
         this.creditTransactionRepository = creditTransactionRepository;
         this.paymentRepository = paymentRepository;
         this.creditPackageRepository = creditPackageRepository;
         this.adminActionLogService = adminActionLogService;
+        this.tossPaymentsClient = tossPaymentsClient;
     }
 
     /** LLM 상담 질문 1건에 크레딧을 차감한다. 잔액 부족이면 예외를 던진다. */
@@ -83,6 +87,40 @@ public class CreditService {
         paymentRepository.save(payment);
         grant(payment.getUserAccountId(), payment.getCreditAmount(), CreditTransactionType.PURCHASE, payment.getId(), null);
         return payment;
+    }
+
+    /** PG 승인 확인이 실패했을 때 호출 — 크레딧은 지급하지 않고 상태만 남긴다. */
+    @Transactional
+    public Payment failPurchase(UUID paymentId, String reason) {
+        Payment payment = requirePayment(paymentId);
+        payment.markFailed(reason);
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * 토스 결제창에서 돌아온 뒤 호출 — 프론트가 보낸 paymentKey/amount를
+     * 그대로 믿지 않고 토스 서버에 직접 재확인한 뒤에만 크레딧을 지급한다.
+     * 본인 소유의 PENDING 결제가 아니거나(다른 사람 결제 가로채기 시도),
+     * 이미 처리된 결제거나, 금액이 안 맞으면 토스를 부르기 전에 막는다.
+     */
+    @Transactional
+    public Payment confirmTossPurchase(UUID userAccountId, UUID paymentId, String paymentKey, int amount) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .filter(p -> userAccountId.equals(p.getUserAccountId()))
+                .orElseThrow(() -> new NoSuchElementException("payment not found: " + paymentId));
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            throw new IllegalArgumentException("이미 처리된 결제예요");
+        }
+        if (payment.getAmountKrw() != amount) {
+            throw new IllegalArgumentException("결제 금액이 일치하지 않아요");
+        }
+        try {
+            tossPaymentsClient.confirmPayment(paymentKey, paymentId.toString(), amount);
+        } catch (TossPaymentFailedException e) {
+            failPurchase(paymentId, e.getMessage());
+            throw e;
+        }
+        return completePurchase(paymentId, "TOSS", paymentKey);
     }
 
     /**

@@ -2,6 +2,7 @@ package io.sj.saju.common;
 
 import io.sj.saju.attendance.AlreadyCheckedInException;
 import io.sj.saju.billing.InsufficientCreditException;
+import io.sj.saju.billing.TossPaymentFailedException;
 import io.sj.saju.consultation.ConsultationFailedException;
 import io.sj.saju.reading.DailyReadingLimitExceededException;
 import java.util.HashMap;
@@ -84,6 +85,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Map<String, String> handleConsultationFailed(ConsultationFailedException ex) {
         return Map.of("error", "consultation_failed");
+    }
+
+    // 토스 결제 승인 실패 — 크레딧은 지급되지 않았고(BillingController가
+    // failPurchase 처리 후 재던짐), 결제 상태도 이미 FAILED로 남았다.
+    @ExceptionHandler(TossPaymentFailedException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public Map<String, String> handleTossPaymentFailed(TossPaymentFailedException ex) {
+        return Map.of("error", "payment_confirmation_failed");
     }
 
     // 위에서 못 잡은 나머지 전부 — Spring Boot 기본 에러 응답(include-stacktrace:

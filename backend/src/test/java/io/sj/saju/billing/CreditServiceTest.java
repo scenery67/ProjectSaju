@@ -40,6 +40,9 @@ class CreditServiceTest {
     @Autowired
     private AdminActionLogRepository adminActionLogRepository;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     private UserAccount user;
 
     @BeforeEach
@@ -117,6 +120,64 @@ class CreditServiceTest {
                         && admin.getId().equals(l.getAdminUserAccountId())
                         && user.getId().equals(l.getTargetUserAccountId()));
         assertThat(logged).isTrue();
+    }
+
+    @Test
+    void confirmTossPurchaseRejectsAPaymentBelongingToSomeoneElse() {
+        CreditPackage pkg = creditPackageRepository.findByActiveTrueOrderBySortOrderAsc().get(0);
+        Payment payment = creditService.createPendingPurchase(user.getId(), pkg.getId());
+        UUID someoneElse = userAccountRepository.saveAndFlush(
+                new UserAccount(OAuthProvider.KAKAO, "other-" + UUID.randomUUID(), "다른사람")).getId();
+
+        assertThatThrownBy(() -> creditService.confirmTossPurchase(someoneElse, payment.getId(), "pay_1", pkg.getPriceKrw()))
+                .isInstanceOf(java.util.NoSuchElementException.class);
+        assertThat(paymentRepository.findById(payment.getId()).orElseThrow().getStatus())
+                .isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    void confirmTossPurchaseRejectsAnAmountThatDoesNotMatchThePayment() {
+        CreditPackage pkg = creditPackageRepository.findByActiveTrueOrderBySortOrderAsc().get(0);
+        Payment payment = creditService.createPendingPurchase(user.getId(), pkg.getId());
+
+        assertThatThrownBy(() -> creditService.confirmTossPurchase(
+                user.getId(), payment.getId(), "pay_1", pkg.getPriceKrw() + 1_000))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(paymentRepository.findById(payment.getId()).orElseThrow().getStatus())
+                .isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    void confirmTossPurchaseRejectsAnAlreadyProcessedPayment() {
+        CreditPackage pkg = creditPackageRepository.findByActiveTrueOrderBySortOrderAsc().get(0);
+        Payment payment = creditService.completePurchase(
+                creditService.createPendingPurchase(user.getId(), pkg.getId()).getId(), "TEST_PG", "tx-already");
+        int balanceAfterFirstCompletion = userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance();
+
+        assertThatThrownBy(() -> creditService.confirmTossPurchase(
+                user.getId(), payment.getId(), "pay_1", pkg.getPriceKrw()))
+                .isInstanceOf(IllegalArgumentException.class);
+        // 이미 완료된 결제를 다시 확인하려 해도 크레딧이 또 지급되면 안 된다.
+        assertThat(userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance())
+                .isEqualTo(balanceAfterFirstCompletion);
+    }
+
+    @Test
+    void confirmTossPurchaseMarksThePaymentFailedWhenTossIsNotConfigured() {
+        // 테스트 환경에는 TOSS_SECRET_KEY를 안 넣어뒀으니, TossPaymentsClient가
+        // 항상 TossPaymentFailedException을 던진다 — 그 실패 경로(크레딧 미지급,
+        // 상태를 FAILED로 남김)를 검증한다.
+        CreditPackage pkg = creditPackageRepository.findByActiveTrueOrderBySortOrderAsc().get(0);
+        Payment payment = creditService.createPendingPurchase(user.getId(), pkg.getId());
+
+        assertThatThrownBy(() -> creditService.confirmTossPurchase(
+                user.getId(), payment.getId(), "pay_1", pkg.getPriceKrw()))
+                .isInstanceOf(TossPaymentFailedException.class);
+
+        Payment reloaded = paymentRepository.findById(payment.getId()).orElseThrow();
+        assertThat(reloaded.getStatus()).isEqualTo(PaymentStatus.FAILED);
+        assertThat(reloaded.getFailReason()).isNotBlank();
+        assertThat(userAccountRepository.findById(user.getId()).orElseThrow().getCreditBalance()).isZero();
     }
 
     @Test

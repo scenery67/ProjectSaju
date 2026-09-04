@@ -55,6 +55,8 @@ public class Payment {
 
     private String refundReason;
 
+    private String failReason;
+
     protected Payment() {
         // JPA
     }
@@ -80,6 +82,12 @@ public class Payment {
         this.refundedAt = Instant.now();
         this.refundedBy = adminUserAccountId;
         this.refundReason = reason;
+    }
+
+    /** PG(토스) 승인 확인이 실패했을 때 — 크레딧은 지급되지 않는다. */
+    public void markFailed(String reason) {
+        this.status = PaymentStatus.FAILED;
+        this.failReason = reason;
     }
 
     public UUID getId() {
@@ -132,5 +140,9 @@ public class Payment {
 
     public String getRefundReason() {
         return refundReason;
+    }
+
+    public String getFailReason() {
+        return failReason;
     }
 }

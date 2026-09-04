@@ -102,6 +102,12 @@ app:
     api-key: ${OPENAI_API_KEY:}
     model: ${OPENAI_MODEL:gpt-4o-mini}
     base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+  toss:
+    # 결제 승인(confirm) 때 토스 서버로 보내는 시크릿 키 — 절대 프론트에
+    # 노출하면 안 된다(클라이언트 키와 다름). 비워두면(기본값)
+    # TossPaymentsClient.isConfigured()가 false라 결제 승인은 항상 실패한다.
+    secret-key: ${TOSS_SECRET_KEY:}
+    base-url: ${TOSS_BASE_URL:https://api.tosspayments.com}
 
 management:
   endpoints:
