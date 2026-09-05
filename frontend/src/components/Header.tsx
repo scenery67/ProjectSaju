@@ -73,7 +73,7 @@ export default function Header() {
               <Emoji name={user ? AVATAR_EMOJI[user.avatarKey] : 'person'} className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-10 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
+              <div className="animate-dropdown-in absolute right-0 top-10 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
                 <AccountMenu onNavigate={() => setMenuOpen(false)} initialUser={user} />
               </div>
             )}

@@ -68,3 +68,20 @@ body {
 .animate-check-pop {
   animation: check-pop 0.4s ease-out;
 }
+
+/* 계정 드롭다운이 열릴 때 — 위쪽이 기준점이라 아래로 펼쳐지듯 보인다
+   (참고 사이트의 "위→아래로 속도 차이 나며 펼쳐지는" 느낌). */
+@keyframes dropdown-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+.animate-dropdown-in {
+  animation: dropdown-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top center;
+}
