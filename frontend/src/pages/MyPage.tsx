@@ -51,7 +51,7 @@ function RowSection({ title, rows }: { title: string; rows: RowItem[] }) {
           <Link
             key={row.to}
             to={row.to}
-            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/60"
+            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/60 active:bg-slate-700/60"
           >
             <span className="flex items-center gap-2.5">
               <row.Icon className="h-4.5 w-4.5" strokeWidth={2} />
@@ -122,13 +122,13 @@ export default function MyPage() {
         <div className="flex gap-2">
           <Link
             to="/payments"
-            className="flex-1 rounded-full border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-800"
+            className="flex-1 rounded-full border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-800 active:bg-slate-700"
           >
             내역
           </Link>
           <Link
             to="/shop"
-            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400"
+            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400 active:bg-amber-300"
           >
             충전하기
           </Link>
@@ -142,7 +142,7 @@ export default function MyPage() {
       {user.isAdmin && (
         <Link
           to="/admin"
-          className="rounded-full bg-violet-600 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-violet-500"
+          className="rounded-full bg-violet-600 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-violet-500 active:bg-violet-400"
         >
           관리자 화면
         </Link>
@@ -150,7 +150,7 @@ export default function MyPage() {
 
       <button
         type="button"
-        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400 transition-colors hover:bg-slate-800/60"
+        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400 transition-colors hover:bg-slate-800/60 active:bg-slate-700/60"
         onClick={() => {
           void logout();
           navigate('/');

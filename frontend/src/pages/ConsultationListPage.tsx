@@ -56,7 +56,7 @@ export default function ConsultationListPage() {
             <li key={session.id}>
               <button
                 type="button"
-                className="flex w-full flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-left transition-all hover:bg-slate-800 active:scale-[0.98]"
+                className="flex w-full flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-left transition-all hover:bg-slate-800 active:bg-slate-700 active:scale-[0.98]"
                 onClick={() =>
                   navigate(`/consultation/${session.id}`, { state: { session } })
                 }

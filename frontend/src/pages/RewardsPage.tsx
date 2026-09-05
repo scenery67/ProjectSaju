@@ -78,7 +78,7 @@ export default function RewardsPage() {
 
       <div className="grid grid-cols-2 gap-3">
         {attendance && (
-          <section className="relative col-span-2 flex flex-col gap-4 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:bg-slate-800/70 sm:col-span-1">
+          <section className="relative col-span-2 flex flex-col gap-4 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 p-5 transition-colors hover:bg-slate-800/70 active:bg-slate-700/70 sm:col-span-1">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white">출석 체크</h3>
               <span className="text-xs text-slate-400">
@@ -96,7 +96,7 @@ export default function RewardsPage() {
                   <div key={day} className="flex flex-col items-center gap-1">
                     <div
                       className={[
-                        'flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold transition-colors duration-300',
+                        'flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-bold transition-colors duration-300',
                         filled
                           ? 'border-violet-500 bg-violet-500 text-white'
                           : isToday
@@ -143,7 +143,7 @@ export default function RewardsPage() {
           </section>
         )}
 
-        <section className="col-span-2 flex flex-col gap-2 rounded-3xl border border-slate-800 bg-slate-900 p-5 opacity-60 transition-colors hover:bg-slate-800/70 sm:col-span-1">
+        <section className="col-span-2 flex flex-col gap-2 rounded-3xl border border-slate-800 bg-slate-900 p-5 opacity-60 transition-colors hover:bg-slate-800/70 active:bg-slate-700/70 sm:col-span-1">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white">친구 초대</h3>
             <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500">

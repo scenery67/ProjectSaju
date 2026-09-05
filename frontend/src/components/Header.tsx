@@ -44,7 +44,7 @@ export default function Header() {
         <Link
           to="/search"
           aria-label="검색"
-          className="rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+          className="rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white active:bg-slate-700"
         >
           <Search className="h-5 w-5" strokeWidth={2} />
         </Link>
@@ -52,7 +52,7 @@ export default function Header() {
           <Link
             to="/notifications"
             aria-label="알림"
-            className="relative rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="relative rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white active:bg-slate-700"
           >
             <Mail className="h-5 w-5" strokeWidth={2} />
             {unreadCount > 0 && (
@@ -68,7 +68,7 @@ export default function Header() {
               type="button"
               aria-label="계정 메뉴"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-violet-700 bg-violet-950 transition-colors hover:bg-violet-900"
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-violet-700 bg-violet-950 transition-colors hover:bg-violet-900 active:bg-violet-800"
             >
               {user ? (
                 <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-4.5 w-4.5" />
