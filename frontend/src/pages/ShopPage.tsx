@@ -1,6 +1,7 @@
+import { ClipboardList } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Emoji from '../components/Emoji';
+import PageTitle from '../components/PageTitle';
 import { useUser } from '../contexts/useUser';
 import { getAuthToken } from '../lib/auth';
 import { fetchPackages, purchasePackage, startTossCheckout, type CreditPackage } from '../lib/billing';
@@ -44,7 +45,7 @@ export default function ShopPage() {
 
   if (!getAuthToken()) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center text-sm text-neutral-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center text-sm text-slate-500">
         로그인하면 크레딧을 충전할 수 있어요.
         <Link to="/login" className="font-semibold text-violet-500 underline">
           로그인하기
@@ -56,11 +57,11 @@ export default function ShopPage() {
   return (
     <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
       <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold tracking-tight text-white">상점</h2>
-        <p className="text-xs text-neutral-400">사주 추가 상담에 쓰는 크레딧을 충전하세요</p>
+        <PageTitle>상점</PageTitle>
+        <p className="text-xs text-slate-400">사주 추가 상담에 쓰는 크레딧을 충전하세요</p>
       </div>
 
-      <section className="flex items-center justify-between rounded-3xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-neutral-900 p-5">
+      <section className="flex items-center justify-between rounded-3xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-slate-900 p-5">
         <div className="flex flex-col gap-1">
           <span className="text-xs text-violet-300">보유 크레딧</span>
           <span className="text-2xl font-bold text-white">
@@ -77,10 +78,10 @@ export default function ShopPage() {
 
       <div className="flex flex-col gap-1">
         <h3 className="text-sm font-bold text-white">크레딧 충전</h3>
-        <p className="text-[11px] text-neutral-500">사주 상담에 바로 쓰는 크레딧 · 질문 1회 {BASE_UNIT_PRICE_KRW}크레딧</p>
+        <p className="text-[11px] text-slate-500">사주 상담에 바로 쓰는 크레딧 · 질문 1회 {BASE_UNIT_PRICE_KRW}크레딧</p>
       </div>
 
-      {packages === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
+      {packages === null && <p className="text-xs text-slate-400">불러오는 중...</p>}
       {error && <p className="text-xs font-medium text-violet-500">{error}</p>}
 
       <ul className="grid grid-cols-2 gap-3">
@@ -95,12 +96,12 @@ export default function ShopPage() {
             <li
               key={pkg.id}
               className={`flex flex-col gap-2 rounded-2xl border p-4 ${
-                isLast ? 'border-amber-700/60 bg-amber-950/10' : 'border-neutral-800 bg-neutral-900'
+                isLast ? 'border-amber-700/60 bg-amber-950/10' : 'border-slate-800 bg-slate-900'
               }`}
             >
               <span className="text-sm font-bold text-white">{pkg.name}</span>
               <div className="flex flex-col">
-                <span className="text-xs text-neutral-400">기본 {pkg.creditAmount.toLocaleString('ko-KR')}크레딧</span>
+                <span className="text-xs text-slate-400">기본 {pkg.creditAmount.toLocaleString('ko-KR')}크레딧</span>
                 {bonusCredits > 0 && (
                   <span className="text-xs font-semibold text-violet-400">
                     +{bonusCredits.toLocaleString('ko-KR')} 보너스
@@ -113,7 +114,7 @@ export default function ShopPage() {
                   isLast
                     ? 'bg-amber-900/60 text-amber-300'
                     : isFirst
-                      ? 'bg-neutral-800 text-neutral-400'
+                      ? 'bg-slate-800 text-slate-400'
                       : 'bg-violet-900/60 text-violet-300'
                 }`}
               >
@@ -132,12 +133,12 @@ export default function ShopPage() {
         })}
       </ul>
 
-      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+      <section className="flex flex-col gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4">
         <h4 className="flex items-center gap-1.5 text-xs font-bold text-white">
-          <Emoji name="clipboard" className="h-4 w-4" />
+          <ClipboardList className="h-4 w-4" strokeWidth={2} />
           유의사항
         </h4>
-        <ul className="flex flex-col gap-1.5 text-[11px] leading-relaxed text-neutral-500">
+        <ul className="flex flex-col gap-1.5 text-[11px] leading-relaxed text-slate-500">
           <li>상기 결제 금액은 VAT가 포함된 금액입니다.</li>
           <li>답변 품질과 같은 주관적인 사유로는 환불이 불가합니다.</li>
           <li>크레딧 패키지 결제 등은 전자상거래법에 따른 청약철회 규정이 적용될 수 있으나, 사용 여부 등에 따라 제한될 수 있습니다.</li>

@@ -17,13 +17,15 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PersonaDetailPage from './pages/PersonaDetailPage';
 import ResultPage from './pages/ResultPage';
 import RewardsPage from './pages/RewardsPage';
+import SearchPage from './pages/SearchPage';
 import SettingsPage from './pages/SettingsPage';
 import ShopPage from './pages/ShopPage';
 
 // 로그인 화면과 결제 결과 화면은 참고 사이트처럼 사이트 전체 내비게이션
 // 없이 독립된 화면으로 둔다 — 외부(토스)에서 돌아오는 짧은 처리 화면이라
-// 하단 탭 등 평소 UI가 어색하다.
-const CHROME_FREE_PATHS = ['/login', '/payment/success', '/payment/fail'];
+// 하단 탭 등 평소 UI가 어색하다. 검색 화면도 자체 상단바(뒤로가기+입력창)를
+// 쓰는 몰입형 화면이라 마찬가지.
+const CHROME_FREE_PATHS = ['/login', '/payment/success', '/payment/fail', '/search'];
 
 export default function App() {
   const location = useLocation();
@@ -50,6 +52,7 @@ export default function App() {
         <Route path="/payments" element={<PaymentHistoryPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
       {showChrome && <BottomNav />}
     </UserProvider>

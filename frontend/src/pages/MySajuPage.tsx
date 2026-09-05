@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import PageTitle from '../components/PageTitle';
 import { findPersonaByType, findPersonaById } from '../data/personas';
 import { getAuthToken } from '../lib/auth';
 import { fetchServerHistory, type ServerHistoryEntry } from '../lib/readingHistory';
@@ -58,7 +59,7 @@ export default function MySajuPage() {
 
   if (displayEntries.length === 0) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
         아직 본 사주가 없어요.
         <Link to="/" className="font-semibold text-violet-500 underline">
           사주 보러 가기
@@ -70,13 +71,11 @@ export default function MySajuPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 px-4 pb-6 pt-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight text-white">
-          내 사주
-        </h2>
+        <PageTitle>내 사주</PageTitle>
         {localEntries.length > 0 && (
           <button
             type="button"
-            className="text-xs font-medium text-neutral-400 underline"
+            className="text-xs font-medium text-slate-400 underline"
             onClick={() => {
               clearHistory();
               setLocalEntries([]);
@@ -86,7 +85,7 @@ export default function MySajuPage() {
           </button>
         )}
       </div>
-      <p className="text-xs text-neutral-400">
+      <p className="text-xs text-slate-400">
         {serverEntries !== undefined
           ? '계정에 저장된 기록과 이 기기에만 저장된 기록을 함께 보여드려요.'
           : '이 기기에만 저장된 최근 결과입니다. 앱을 지우거나 다른 기기에서 보면 보이지 않아요.'}
@@ -96,7 +95,7 @@ export default function MySajuPage() {
           <li key={entry.key}>
             <button
               type="button"
-              className="flex w-full flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 text-left transition-transform active:scale-[0.98]"
+              className="flex w-full flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-left transition-transform active:scale-[0.98]"
               onClick={() =>
                 navigate(`/persona/${entry.personaId}/result`, {
                   state: { result: entry.result },
@@ -106,13 +105,13 @@ export default function MySajuPage() {
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-white">{entry.title}</span>
                 {entry.source === 'local' && (
-                  <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
+                  <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-medium text-slate-400">
                     이 기기
                   </span>
                 )}
               </div>
-              <span className="text-xs text-neutral-500">{entry.summary}</span>
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-xs text-slate-500">{entry.summary}</span>
+              <span className="text-[11px] text-slate-400">
                 {new Date(entry.createdAt).toLocaleString('ko-KR')}
               </span>
             </button>

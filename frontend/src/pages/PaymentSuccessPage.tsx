@@ -1,6 +1,6 @@
+import { CheckCircle2, TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import Emoji from '../components/Emoji';
 import { confirmPurchase } from '../lib/billing';
 
 // 토스 결제창에서 성공적으로 돌아왔을 때의 착지 화면:
@@ -37,11 +37,11 @@ export default function PaymentSuccessPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-10 text-center">
       {status === 'confirming' && (
-        <p className="text-sm text-neutral-400">결제를 확인하는 중이에요...</p>
+        <p className="text-sm text-slate-400">결제를 확인하는 중이에요...</p>
       )}
       {status === 'done' && (
         <>
-          <Emoji name="check" className="h-14 w-14" />
+          <CheckCircle2 className="h-14 w-14 text-emerald-400" strokeWidth={1.5} />
           <p className="text-sm font-bold text-white">
             {creditAmount?.toLocaleString('ko-KR')} 크레딧이 충전됐어요!
           </p>
@@ -49,9 +49,9 @@ export default function PaymentSuccessPage() {
       )}
       {status === 'failed' && (
         <>
-          <Emoji name="warning" className="h-14 w-14" />
+          <TriangleAlert className="h-14 w-14 text-amber-400" strokeWidth={1.5} />
           <p className="text-sm font-bold text-white">결제 확인에 실패했어요.</p>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-slate-400">
             결제는 됐는데 크레딧 반영이 안 됐다면, 마이페이지 결제내역을 확인해주세요.
           </p>
         </>

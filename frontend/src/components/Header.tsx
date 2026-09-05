@@ -1,3 +1,4 @@
+import { Mail, Search, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../contexts/useUser';
@@ -35,17 +36,17 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/90 px-4 py-2.5 backdrop-blur">
-      <Link to="/" className="text-base font-extrabold tracking-tight text-white">
+    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-4 py-3.5 backdrop-blur">
+      <Link to="/" className="text-lg font-extrabold tracking-tight text-white">
         사주 서비스
       </Link>
-      <div className="flex items-center gap-2.5">
-        <Link to="/" aria-label="홈" className="text-neutral-400">
-          <Emoji name="search" className="h-4.5 w-4.5" />
+      <div className="flex items-center gap-4">
+        <Link to="/search" aria-label="검색" className="text-slate-300">
+          <Search className="h-5 w-5" strokeWidth={2} />
         </Link>
         {loggedIn && (
-          <Link to="/notifications" aria-label="알림" className="relative text-neutral-400">
-            <Emoji name="mail" className="h-4.5 w-4.5" />
+          <Link to="/notifications" aria-label="알림" className="relative text-slate-300">
+            <Mail className="h-5 w-5" strokeWidth={2} />
             {unreadCount > 0 && (
               <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -59,12 +60,16 @@ export default function Header() {
               type="button"
               aria-label="계정 메뉴"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-700 bg-violet-950"
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-violet-700 bg-violet-950"
             >
-              <Emoji name={user ? AVATAR_EMOJI[user.avatarKey] : 'person'} className="h-4 w-4" />
+              {user ? (
+                <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-4.5 w-4.5" />
+              ) : (
+                <User className="h-4 w-4 text-slate-300" strokeWidth={2} />
+              )}
             </button>
             {menuOpen && (
-              <div className="animate-dropdown-in absolute right-0 top-10 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
+              <div className="animate-dropdown-in absolute right-0 top-11 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
                 <AccountMenu onNavigate={() => setMenuOpen(false)} />
               </div>
             )}

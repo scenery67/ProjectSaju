@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import PageTitle from '../components/PageTitle';
 import { findPersonaByType } from '../data/personas';
 import { getAuthToken } from '../lib/auth';
 import { fetchConsultationSessions, type ConsultationSession } from '../lib/consultation';
@@ -21,7 +22,7 @@ export default function ConsultationListPage() {
 
   if (!getAuthToken()) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
         로그인하면 이전 상담을 다시 볼 수 있어요.
         <Link to="/mypage" className="font-semibold text-violet-500 underline">
           마이페이지에서 로그인
@@ -31,12 +32,12 @@ export default function ConsultationListPage() {
   }
 
   if (sessions === null) {
-    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-neutral-400">불러오는 중...</main>;
+    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-slate-400">불러오는 중...</main>;
   }
 
   if (sessions.length === 0) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
         아직 상담한 내용이 없어요.
         <Link to="/" className="font-semibold text-violet-500 underline">
           사주 보러 가기
@@ -47,7 +48,7 @@ export default function ConsultationListPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 px-4 pb-6 pt-5">
-      <h2 className="text-2xl font-bold tracking-tight text-white">내 상담</h2>
+      <PageTitle>내 상담</PageTitle>
       <ul className="flex flex-col gap-3">
         {sessions.map((session) => {
           const persona = findPersonaByType(session.personaType as PersonaType);
@@ -55,7 +56,7 @@ export default function ConsultationListPage() {
             <li key={session.id}>
               <button
                 type="button"
-                className="flex w-full flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 text-left transition-transform active:scale-[0.98]"
+                className="flex w-full flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-900 p-4 text-left transition-transform active:scale-[0.98]"
                 onClick={() =>
                   navigate(`/consultation/${session.id}`, { state: { session } })
                 }
@@ -65,8 +66,8 @@ export default function ConsultationListPage() {
                     ? `${withBatchimPostposition(persona.characterName, '와', '과')}의 상담`
                     : '상담'}
                 </span>
-                <span className="text-xs text-neutral-500">{persona?.title ?? session.personaType}</span>
-                <span className="text-[11px] text-neutral-400">
+                <span className="text-xs text-slate-500">{persona?.title ?? session.personaType}</span>
+                <span className="text-[11px] text-slate-400">
                   {new Date(session.createdAt).toLocaleString('ko-KR')}
                 </span>
               </button>

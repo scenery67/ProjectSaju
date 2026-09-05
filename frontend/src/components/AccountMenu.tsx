@@ -1,5 +1,15 @@
+import {
+  CreditCard,
+  Gift,
+  LogOut,
+  MessageCircle,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import type { EmojiName } from '../assets/emoji';
 import { useUser } from '../contexts/useUser';
 import { AVATAR_EMOJI } from '../lib/auth';
 import Emoji from './Emoji';
@@ -14,7 +24,7 @@ const PROVIDER_LABEL: Record<string, string> = {
 interface MenuItem {
   to?: string;
   label: string;
-  icon: EmojiName;
+  Icon: LucideIcon;
   disabled?: boolean;
 }
 
@@ -25,13 +35,13 @@ function staggerDelay(index: number) {
 }
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: '세이프티', icon: 'shield', disabled: true },
-  { to: '/my-saju', label: '내 사주', icon: 'crystalball' },
-  { to: '/consultations', label: '내 상담', icon: 'speech' },
-  { to: '/shop', label: '상점', icon: 'cart' },
-  { to: '/rewards', label: '보상', icon: 'gift' },
-  { to: '/payments', label: '결제내역', icon: 'card' },
-  { to: '/settings', label: '설정', icon: 'gear' },
+  { label: '세이프티', Icon: Shield, disabled: true },
+  { to: '/my-saju', label: '내 사주', Icon: Sparkles },
+  { to: '/consultations', label: '내 상담', Icon: MessageCircle },
+  { to: '/shop', label: '상점', Icon: ShoppingCart },
+  { to: '/rewards', label: '보상', Icon: Gift },
+  { to: '/payments', label: '결제내역', Icon: CreditCard },
+  { to: '/settings', label: '설정', Icon: Settings },
 ];
 
 interface AccountMenuProps {
@@ -48,13 +58,13 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
   const { user, creditBalance, logout } = useUser();
 
   if (user === undefined) {
-    return <p className="p-4 text-sm text-neutral-400">확인 중...</p>;
+    return <p className="p-4 text-sm text-slate-400">확인 중...</p>;
   }
 
   if (user === null) {
     return (
       <div className="flex flex-col items-center gap-3 p-6 text-center">
-        <p className="text-sm text-neutral-400">로그인하면 크레딧, 상담 기록을 계정에 저장할 수 있어요.</p>
+        <p className="text-sm text-slate-400">로그인하면 크레딧, 상담 기록을 계정에 저장할 수 있어요.</p>
         <Link
           to="/login"
           onClick={onNavigate}
@@ -77,12 +87,12 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
         </span>
         <div className="flex flex-col">
           <span className="text-sm font-bold text-white">{user.nickname || '(닉네임 없음)'}</span>
-          <span className="text-xs text-neutral-400">{PROVIDER_LABEL[user.provider] ?? user.provider} 로그인</span>
+          <span className="text-xs text-slate-400">{PROVIDER_LABEL[user.provider] ?? user.provider} 로그인</span>
         </div>
       </div>
 
       <div
-        className="animate-dropdown-item-in flex items-center justify-between rounded-2xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-neutral-900 px-3.5 py-3"
+        className="animate-dropdown-item-in flex items-center justify-between rounded-2xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-slate-900 px-3.5 py-3"
         style={staggerDelay(1)}
       >
         <div className="flex flex-col">
@@ -100,19 +110,19 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
         </Link>
       </div>
 
-      <nav className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
+      <nav className="flex flex-col divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900">
         {MENU_ITEMS.map((item, i) =>
           item.disabled ? (
             <span
               key={item.label}
-              className="animate-dropdown-item-in flex items-center justify-between px-3.5 py-2.5 text-sm text-neutral-600"
+              className="animate-dropdown-item-in flex items-center justify-between px-3.5 py-2.5 text-sm text-slate-600"
               style={staggerDelay(2 + i)}
             >
               <span className="flex items-center gap-2">
-                <Emoji name={item.icon} className="h-4.5 w-4.5" />
+                <item.Icon className="h-4.5 w-4.5" strokeWidth={2} />
                 {item.label}
               </span>
-              <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-500">
+              <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
                 준비중
               </span>
             </span>
@@ -121,10 +131,10 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
               key={item.to}
               to={item.to!}
               onClick={onNavigate}
-              className="animate-dropdown-item-in flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-neutral-100"
+              className="animate-dropdown-item-in flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-100"
               style={staggerDelay(2 + i)}
             >
-              <Emoji name={item.icon} className="h-4.5 w-4.5" />
+              <item.Icon className="h-4.5 w-4.5" strokeWidth={2} />
               {item.label}
             </Link>
           ),
@@ -144,7 +154,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
 
       <button
         type="button"
-        className="animate-dropdown-item-in flex items-center gap-2 rounded-2xl border border-neutral-800 px-3.5 py-2.5 text-sm font-semibold text-red-400"
+        className="animate-dropdown-item-in flex items-center gap-2 rounded-2xl border border-slate-800 px-3.5 py-2.5 text-sm font-semibold text-red-400"
         style={staggerDelay(2 + MENU_ITEMS.length + (user.isAdmin ? 1 : 0))}
         onClick={() => {
           void logout();
@@ -152,7 +162,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
           navigate('/');
         }}
       >
-        <Emoji name="door" className="h-4.5 w-4.5" />
+        <LogOut className="h-4.5 w-4.5" strokeWidth={2} />
         로그아웃
       </button>
     </div>

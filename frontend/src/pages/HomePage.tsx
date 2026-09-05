@@ -1,3 +1,4 @@
+import PageTitle from '../components/PageTitle';
 import PersonaCard from '../components/PersonaCard';
 import { PERSONAS } from '../data/personas';
 
@@ -5,10 +6,8 @@ export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col gap-6 px-4 pb-6 pt-5">
       <section className="flex flex-col gap-1.5">
-        <h2 className="text-2xl font-bold tracking-tight text-white">
-          사주 상품 한눈에 보기
-        </h2>
-        <p className="text-sm text-neutral-500">
+        <PageTitle>사주 상품 한눈에 보기</PageTitle>
+        <p className="text-sm text-slate-500">
           지금 마음이 궁금한 주제를 골라보세요
         </p>
       </section>
