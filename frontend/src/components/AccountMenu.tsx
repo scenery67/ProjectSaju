@@ -131,7 +131,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
               key={item.to}
               to={item.to!}
               onClick={onNavigate}
-              className="animate-dropdown-item-in flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-100"
+              className="animate-dropdown-item-in flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/60"
               style={staggerDelay(2 + i)}
             >
               <item.Icon className="h-4.5 w-4.5" strokeWidth={2} />

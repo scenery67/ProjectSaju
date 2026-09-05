@@ -51,7 +51,7 @@ function RowSection({ title, rows }: { title: string; rows: RowItem[] }) {
           <Link
             key={row.to}
             to={row.to}
-            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-slate-100"
+            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/60"
           >
             <span className="flex items-center gap-2.5">
               <row.Icon className="h-4.5 w-4.5" strokeWidth={2} />
