@@ -6,6 +6,7 @@ const TABS: { to: string; label: string; icon: EmojiName }[] = [
   { to: '/', label: '홈', icon: 'house' },
   { to: '/my-saju', label: '내 사주', icon: 'crystalball' },
   { to: '/consultations', label: '상담', icon: 'speech' },
+  { to: '/rewards', label: '보상', icon: 'gift' },
   { to: '/mypage', label: '마이페이지', icon: 'person' },
 ];
 
