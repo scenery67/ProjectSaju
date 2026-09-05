@@ -122,13 +122,13 @@ export default function MyPage() {
         <div className="flex gap-2">
           <Link
             to="/payments"
-            className="flex-1 rounded-full border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300"
+            className="flex-1 rounded-full border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-800"
           >
             내역
           </Link>
           <Link
             to="/shop"
-            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-slate-950"
+            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400"
           >
             충전하기
           </Link>
@@ -142,7 +142,7 @@ export default function MyPage() {
       {user.isAdmin && (
         <Link
           to="/admin"
-          className="rounded-full bg-violet-600 py-3 text-center text-sm font-semibold text-white"
+          className="rounded-full bg-violet-600 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-violet-500"
         >
           관리자 화면
         </Link>
@@ -150,7 +150,7 @@ export default function MyPage() {
 
       <button
         type="button"
-        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400"
+        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400 transition-colors hover:bg-slate-800/60"
         onClick={() => {
           void logout();
           navigate('/');

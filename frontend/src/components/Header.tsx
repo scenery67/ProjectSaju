@@ -40,15 +40,23 @@ export default function Header() {
       <Link to="/" className="text-lg font-extrabold tracking-tight text-white">
         사주 서비스
       </Link>
-      <div className="flex items-center gap-4">
-        <Link to="/search" aria-label="검색" className="text-slate-300">
+      <div className="flex items-center gap-2">
+        <Link
+          to="/search"
+          aria-label="검색"
+          className="rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+        >
           <Search className="h-5 w-5" strokeWidth={2} />
         </Link>
         {loggedIn && (
-          <Link to="/notifications" aria-label="알림" className="relative text-slate-300">
+          <Link
+            to="/notifications"
+            aria-label="알림"
+            className="relative rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+          >
             <Mail className="h-5 w-5" strokeWidth={2} />
             {unreadCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
+              <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -60,7 +68,7 @@ export default function Header() {
               type="button"
               aria-label="계정 메뉴"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-violet-700 bg-violet-950"
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-violet-700 bg-violet-950 transition-colors hover:bg-violet-900"
             >
               {user ? (
                 <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-4.5 w-4.5" />

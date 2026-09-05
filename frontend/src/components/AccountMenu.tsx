@@ -145,7 +145,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
         <Link
           to="/admin"
           onClick={onNavigate}
-          className="animate-dropdown-item-in rounded-full bg-violet-600 py-2.5 text-center text-sm font-semibold text-white"
+          className="animate-dropdown-item-in rounded-full bg-violet-600 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-violet-500"
           style={staggerDelay(2 + MENU_ITEMS.length)}
         >
           관리자 화면
@@ -154,7 +154,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
 
       <button
         type="button"
-        className="animate-dropdown-item-in flex items-center gap-2 rounded-2xl border border-slate-800 px-3.5 py-2.5 text-sm font-semibold text-red-400"
+        className="animate-dropdown-item-in flex items-center gap-2 rounded-2xl border border-slate-800 px-3.5 py-2.5 text-sm font-semibold text-red-400 transition-colors hover:bg-slate-800/60"
         style={staggerDelay(2 + MENU_ITEMS.length + (user.isAdmin ? 1 : 0))}
         onClick={() => {
           void logout();
