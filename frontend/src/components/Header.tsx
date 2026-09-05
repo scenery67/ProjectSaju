@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AVATAR_EMOJI, fetchCurrentUser, getAuthToken, type CurrentUser } from '../lib/auth';
+import { useUser } from '../contexts/useUser';
+import { AVATAR_EMOJI, getAuthToken } from '../lib/auth';
 import { fetchUnreadCount } from '../lib/notifications';
 import AccountMenu from './AccountMenu';
 import Emoji from './Emoji';
@@ -10,20 +11,10 @@ import Emoji from './Emoji';
 export default function Header() {
   const loggedIn = Boolean(getAuthToken());
   const location = useLocation();
-  // undefined = 아직 서버 확인 전(로그인은 돼있음), null = 비로그인.
-  // AccountMenu에 그대로 넘겨서, 드롭다운을 열 때 이미 불러온 값이 있으면
-  // 다시 "확인 중..."을 보여주지 않고 바로 열리게 한다(참고 사이트처럼 즉시 열림).
-  const [user, setUser] = useState<CurrentUser | null | undefined>(() =>
-    loggedIn ? undefined : null,
-  );
+  const { user } = useUser();
   const [unreadCount, setUnreadCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!loggedIn) return;
-    fetchCurrentUser().then(setUser);
-  }, [loggedIn]);
 
   // 알림함(/notifications)에서 읽음 처리를 하고 돌아와도 배지 숫자가 그대로
   // 남아있던 문제 — 로그인 시점 한 번이 아니라 경로가 바뀔 때마다 다시 조회한다.
@@ -74,7 +65,7 @@ export default function Header() {
             </button>
             {menuOpen && (
               <div className="animate-dropdown-in absolute right-0 top-10 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
-                <AccountMenu onNavigate={() => setMenuOpen(false)} initialUser={user} />
+                <AccountMenu onNavigate={() => setMenuOpen(false)} />
               </div>
             )}
           </div>

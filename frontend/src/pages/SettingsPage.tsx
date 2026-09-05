@@ -1,15 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Emoji from '../components/Emoji';
-import {
-  AVATAR_EMOJI,
-  fetchCurrentUser,
-  getAuthToken,
-  logout,
-  updateProfile,
-  type AvatarKey,
-  type CurrentUser,
-} from '../lib/auth';
+import { useUser } from '../contexts/useUser';
+import { AVATAR_EMOJI, updateProfile, type AvatarKey } from '../lib/auth';
 
 const PROVIDER_LABEL: Record<string, string> = {
   KAKAO: '카카오',
@@ -22,19 +15,12 @@ const AVATAR_OPTIONS = Object.keys(AVATAR_EMOJI) as AvatarKey[];
 
 export default function SettingsPage() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<CurrentUser | null | undefined>(() =>
-    getAuthToken() ? undefined : null,
-  );
+  const { user, setUser, logout } = useUser();
   const [editing, setEditing] = useState(false);
   const [draftNickname, setDraftNickname] = useState('');
   const [draftAvatar, setDraftAvatar] = useState<AvatarKey>('FOX');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!getAuthToken()) return;
-    fetchCurrentUser().then(setUser);
-  }, []);
 
   function startEditing() {
     if (!user) return;

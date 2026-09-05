@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Emoji from '../components/Emoji';
+import { useUser } from '../contexts/useUser';
 import { getAuthToken } from '../lib/auth';
-import {
-  fetchBalance,
-  fetchPackages,
-  purchasePackage,
-  startTossCheckout,
-  type CreditPackage,
-} from '../lib/billing';
+import { fetchPackages, purchasePackage, startTossCheckout, type CreditPackage } from '../lib/billing';
 
 // 할인율/보너스를 스키마에 별도로 두지 않고(V3 마이그레이션 참고) 기준
 // 단가로부터 계산한다 — 실제 판매가가 이 단가보다 저렴한 만큼을
@@ -20,14 +15,13 @@ function formatKrw(amount: number): string {
 }
 
 export default function ShopPage() {
-  const [creditBalance, setCreditBalance] = useState<number | null>(null);
+  const { creditBalance } = useUser();
   const [packages, setPackages] = useState<CreditPackage[] | null>(null);
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!getAuthToken()) return;
-    fetchBalance().then((b) => setCreditBalance(b?.creditBalance ?? null));
     fetchPackages().then(setPackages);
   }, []);
 

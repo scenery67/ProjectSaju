@@ -1,6 +1,7 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import BottomNav from './components/BottomNav';
 import Header from './components/Header';
+import { UserProvider } from './contexts/UserProvider';
 import AdminPage from './pages/AdminPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import ConsultationListPage from './pages/ConsultationListPage';
@@ -29,7 +30,7 @@ export default function App() {
   const showChrome = !CHROME_FREE_PATHS.includes(location.pathname);
 
   return (
-    <>
+    <UserProvider>
       {showChrome && <Header />}
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -51,6 +52,6 @@ export default function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
       {showChrome && <BottomNav />}
-    </>
+    </UserProvider>
   );
 }

@@ -5,11 +5,11 @@ import {
   fetchAttendanceStatus,
   type AttendanceStatus,
 } from '../lib/attendance';
+import { useUser } from '../contexts/useUser';
 import { getAuthToken } from '../lib/auth';
-import { fetchBalance } from '../lib/billing';
 
 export default function RewardsPage() {
-  const [creditBalance, setCreditBalance] = useState<number | null>(null);
+  const { creditBalance, refreshBalance } = useUser();
   const [attendance, setAttendance] = useState<AttendanceStatus | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
   const [justCheckedDay, setJustCheckedDay] = useState<number | null>(null);
@@ -17,7 +17,6 @@ export default function RewardsPage() {
 
   useEffect(() => {
     if (!getAuthToken()) return;
-    fetchBalance().then((b) => setCreditBalance(b?.creditBalance ?? null));
     fetchAttendanceStatus().then(setAttendance);
   }, []);
 
@@ -26,7 +25,7 @@ export default function RewardsPage() {
     const result = await checkInAttendance();
     if (result) {
       setAttendance({ checkedInToday: true, streak: result.streak, baseReward: 0, bonusReward: 0 });
-      setCreditBalance((prev) => (prev ?? 0) + result.baseReward + result.bonusReward);
+      void refreshBalance();
 
       setJustCheckedDay(((result.streak - 1) % 7) + 1);
       const effects = [{ id: Date.now(), text: `+${result.baseReward}`, className: 'text-violet-300' }];

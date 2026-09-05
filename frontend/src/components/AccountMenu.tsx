@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { EmojiName } from '../assets/emoji';
-import { fetchBalance } from '../lib/billing';
-import { AVATAR_EMOJI, fetchCurrentUser, getAuthToken, logout, type CurrentUser } from '../lib/auth';
+import { useUser } from '../contexts/useUser';
+import { AVATAR_EMOJI } from '../lib/auth';
 import Emoji from './Emoji';
 
 const PROVIDER_LABEL: Record<string, string> = {
@@ -38,32 +37,15 @@ const MENU_ITEMS: MenuItem[] = [
 interface AccountMenuProps {
   /** 드롭다운으로 쓸 때, 항목을 누르면 드롭다운을 닫기 위한 콜백 */
   onNavigate?: () => void;
-  /**
-   * 헤더가 이미 불러와 둔 사용자 정보 — 넘겨주면 드롭다운을 열 때 "확인
-   * 중..."이 뜨지 않고 바로 메뉴가 보인다(FoxBunny처럼 즉시 열림). 헤더 없이
-   * 단독 페이지(마이페이지)로 쓸 때는 안 넘어오니 이 컴포넌트가 직접 조회한다.
-   */
-  initialUser?: CurrentUser | null;
 }
 
 // 마이페이지(하단 탭)와 헤더 계정 버튼(드롭다운) 둘 다 같은 메뉴 구성을
-// 보여준다 — 참고 사이트(foxbunny.io/saju)의 계정 드롭다운 구조.
-export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProps) {
+// 보여준다 — 참고 사이트(foxbunny.io/saju)의 계정 드롭다운 구조. 사용자/잔액은
+// UserContext에서 가져온다 — 앱 전체가 같은 값을 공유해서, 이미 다른 화면에서
+// 불러온 뒤라면 여기서 다시 "확인 중..."을 보여주지 않고 즉시 열린다.
+export default function AccountMenu({ onNavigate }: AccountMenuProps) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<CurrentUser | null | undefined>(() =>
-    initialUser !== undefined ? initialUser : getAuthToken() ? undefined : null,
-  );
-  const [creditBalance, setCreditBalance] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!getAuthToken()) return;
-    fetchCurrentUser().then(setUser);
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    fetchBalance().then((b) => setCreditBalance(b?.creditBalance ?? null));
-  }, [user]);
+  const { user, creditBalance, logout } = useUser();
 
   if (user === undefined) {
     return <p className="p-4 text-sm text-neutral-400">확인 중...</p>;
@@ -166,11 +148,7 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
         style={staggerDelay(2 + MENU_ITEMS.length + (user.isAdmin ? 1 : 0))}
         onClick={() => {
           void logout();
-          setUser(null);
-          setCreditBalance(null);
           onNavigate?.();
-          // 헤더의 계정 버튼은 로그인 상태를 나타내는 상태가 따로 없어
-          // 경로가 바뀌어야(App의 useLocation 재렌더) 로그아웃이 반영된다.
           navigate('/');
         }}
       >
