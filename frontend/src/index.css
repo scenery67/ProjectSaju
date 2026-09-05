@@ -24,7 +24,9 @@ body {
 }
 
 #root {
-  max-width: 480px;
+  /* 실제 폰 화면 폭(iPhone 15 Pro Max 기준 430px)을 넘지 않게 — 예전 480px는
+     데스크톱 큰 화면에서 볼 때 참고 사이트보다 눈에 띄게 넓어 보였다. */
+  max-width: 430px;
   margin: 0 auto;
   min-height: 100dvh;
   background: #0d0d14;
