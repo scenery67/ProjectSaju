@@ -20,7 +20,7 @@ interface MenuItem {
 }
 
 // 드롭다운 항목이 위→아래로 순서대로 나타나는 시간차(stagger) 간격.
-const STAGGER_STEP_MS = 28;
+const STAGGER_STEP_MS = 16;
 function staggerDelay(index: number) {
   return { animationDelay: `${index * STAGGER_STEP_MS}ms` };
 }

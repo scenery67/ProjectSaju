@@ -99,5 +99,5 @@ body {
   }
 }
 .animate-dropdown-item-in {
-  animation: dropdown-item-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dropdown-item-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
