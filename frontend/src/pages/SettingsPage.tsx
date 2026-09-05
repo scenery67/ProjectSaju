@@ -49,12 +49,12 @@ export default function SettingsPage() {
   }
 
   if (user === undefined) {
-    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-slate-400">확인 중...</main>;
+    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-neutral-400">확인 중...</main>;
   }
 
   if (user === null) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center text-sm text-slate-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center text-sm text-neutral-500">
         로그인하면 설정을 볼 수 있어요.
         <Link to="/login" className="font-semibold text-violet-500 underline">
           로그인하기
@@ -68,8 +68,8 @@ export default function SettingsPage() {
       <PageTitle>설정</PageTitle>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold text-slate-500">프로필</h3>
-        <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-4">
+        <h3 className="text-xs font-semibold text-neutral-500">프로필</h3>
+        <div className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-950">
@@ -77,7 +77,7 @@ export default function SettingsPage() {
               </span>
               <div className="flex flex-col">
                 <span className="text-sm font-bold text-white">{user.nickname}</span>
-                <span className="text-xs text-slate-500">{PROVIDER_LABEL[user.provider] ?? user.provider} 계정</span>
+                <span className="text-xs text-neutral-500">{PROVIDER_LABEL[user.provider] ?? user.provider} 계정</span>
               </div>
             </div>
             {!editing && (
@@ -92,18 +92,18 @@ export default function SettingsPage() {
           </div>
 
           {editing && (
-            <div className="flex flex-col gap-3 border-t border-slate-800 pt-3">
+            <div className="flex flex-col gap-3 border-t border-neutral-800 pt-3">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-medium text-slate-400">닉네임</label>
+                <label className="text-[11px] font-medium text-neutral-400">닉네임</label>
                 <input
-                  className="rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-sm text-white outline-none focus:border-violet-400"
+                  className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-sm text-white outline-none focus:border-violet-400"
                   value={draftNickname}
                   maxLength={20}
                   onChange={(e) => setDraftNickname(e.target.value)}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-medium text-slate-400">아바타</label>
+                <label className="text-[11px] font-medium text-neutral-400">아바타</label>
                 <div className="grid grid-cols-8 gap-2">
                   {AVATAR_OPTIONS.map((key) => (
                     <button
@@ -111,7 +111,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => setDraftAvatar(key)}
                       className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                        draftAvatar === key ? 'bg-violet-600' : 'bg-slate-800'
+                        draftAvatar === key ? 'bg-violet-600' : 'bg-neutral-800'
                       }`}
                     >
                       <Emoji name={AVATAR_EMOJI[key]} className="h-5 w-5" />
@@ -132,7 +132,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setEditing(false)}
-                  className="flex-1 rounded-full border border-slate-800 py-2.5 text-xs font-semibold text-slate-400"
+                  className="flex-1 rounded-full border border-neutral-800 py-2.5 text-xs font-semibold text-neutral-400"
                 >
                   취소
                 </button>
@@ -143,10 +143,10 @@ export default function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold text-slate-500">계정</h3>
-        <div className="flex flex-col divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900">
+        <h3 className="text-xs font-semibold text-neutral-500">계정</h3>
+        <div className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
           <div className="flex items-center justify-between px-4 py-3.5">
-            <span className="text-sm text-slate-100">로그인 방식</span>
+            <span className="text-sm text-neutral-100">로그인 방식</span>
             <span className="rounded-full bg-emerald-900/60 px-2.5 py-1 text-[11px] font-semibold text-emerald-300">
               {PROVIDER_LABEL[user.provider] ?? user.provider}
             </span>
@@ -155,12 +155,12 @@ export default function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold text-slate-500">개인정보 및 보안</h3>
-        <div className="flex flex-col divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900">
+        <h3 className="text-xs font-semibold text-neutral-500">개인정보 및 보안</h3>
+        <div className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
           {['개인정보 처리방침', '서비스 이용약관', '데이터 관리'].map((label) => (
             <div key={label} className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm text-slate-100">{label}</span>
-              <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+              <span className="text-sm text-neutral-100">{label}</span>
+              <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-500">
                 준비중
               </span>
             </div>
@@ -169,15 +169,15 @@ export default function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold text-slate-500">앱 정보</h3>
-        <div className="flex flex-col divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900">
+        <h3 className="text-xs font-semibold text-neutral-500">앱 정보</h3>
+        <div className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
           <div className="flex items-center justify-between px-4 py-3.5">
-            <span className="text-sm text-slate-100">버전</span>
-            <span className="text-xs text-slate-500">1.0.0</span>
+            <span className="text-sm text-neutral-100">버전</span>
+            <span className="text-xs text-neutral-500">1.0.0</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5">
-            <span className="text-sm text-slate-100">문의하기</span>
-            <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+            <span className="text-sm text-neutral-100">문의하기</span>
+            <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-500">
               준비중
             </span>
           </div>
@@ -186,7 +186,7 @@ export default function SettingsPage() {
 
       <button
         type="button"
-        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400"
+        className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-800 py-3 text-sm font-semibold text-red-400"
         onClick={() => {
           void logout();
           navigate('/');

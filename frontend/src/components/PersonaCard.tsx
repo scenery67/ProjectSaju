@@ -6,7 +6,7 @@ export default function PersonaCard({ persona }: { persona: SajuPersona }) {
   return (
     <Link
       to={`/persona/${persona.id}`}
-      className="flex flex-col overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 transition-transform active:scale-[0.97]"
+      className="flex flex-col overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-900 transition-transform active:scale-[0.97]"
     >
       <div
         className="flex h-32 items-center justify-center"
@@ -32,8 +32,8 @@ export default function PersonaCard({ persona }: { persona: SajuPersona }) {
         <span className="text-base font-bold text-white">
           {persona.title}
         </span>
-        <span className="text-xs text-slate-400">{persona.subtitle}</span>
-        <span className="line-clamp-2 text-[11px] leading-relaxed text-slate-500">
+        <span className="text-xs text-neutral-400">{persona.subtitle}</span>
+        <span className="line-clamp-2 text-[11px] leading-relaxed text-neutral-500">
           {persona.personality}
         </span>
         <span

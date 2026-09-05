@@ -149,12 +149,12 @@ export default function AdminPage() {
   }
 
   if (access === 'checking') {
-    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-slate-400">확인 중...</main>;
+    return <main className="flex flex-1 items-center justify-center p-4 text-sm text-neutral-400">확인 중...</main>;
   }
 
   if (access === 'denied') {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         관리자만 볼 수 있는 화면이에요.
         <Link to="/mypage" className="font-semibold text-violet-500 underline">
           마이페이지로
@@ -171,7 +171,7 @@ export default function AdminPage() {
         <h3 className="text-sm font-bold text-white">사용자 목록</h3>
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
+            className="flex-1 rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
             placeholder="닉네임 또는 user_account_id로 검색"
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
@@ -179,7 +179,7 @@ export default function AdminPage() {
           />
           <button
             type="button"
-            className="shrink-0 rounded-full border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-400"
+            className="shrink-0 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-400"
             onClick={handleSearchUsers}
           >
             검색
@@ -187,7 +187,7 @@ export default function AdminPage() {
           {userQuery && (
             <button
               type="button"
-              className="shrink-0 rounded-full border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-400"
+              className="shrink-0 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-400"
               onClick={() => {
                 setUserQuery('');
                 setUsers(null);
@@ -198,12 +198,12 @@ export default function AdminPage() {
             </button>
           )}
         </div>
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-neutral-500">
           검색어 없이는 최근 가입한 50명만 보여줘요. 특정 사용자를 찾으려면 검색해주세요.
         </p>
-        {users === null && <p className="text-xs text-slate-400">불러오는 중...</p>}
+        {users === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
         {users?.length === 0 && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-neutral-400">
             {userQuery ? '검색 결과가 없어요.' : '가입한 사용자가 없어요.'}
           </p>
         )}
@@ -214,7 +214,7 @@ export default function AdminPage() {
           {users?.map((u) => (
             <li
               key={u.id}
-              className="flex flex-col gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4"
+              className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-col">
@@ -226,30 +226,30 @@ export default function AdminPage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-neutral-400">
                     {u.provider} · 크레딧 {u.creditBalance.toLocaleString('ko-KR')}개 · 가입 {formatDate(u.createdAt)}
                   </span>
-                  <span className="select-all font-mono text-[10px] text-slate-400">{u.id}</span>
+                  <span className="select-all font-mono text-[10px] text-neutral-400">{u.id}</span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  className="rounded-full border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-400"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
                   onClick={() => loadLedger(u.id)}
                 >
                   원장 보기
                 </button>
                 <button
                   type="button"
-                  className="rounded-full border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-400"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
                   onClick={() => setAdjustUserId(u.id)}
                 >
                   크레딧 지급 대상으로
                 </button>
                 <button
                   type="button"
-                  className="rounded-full border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-400"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
                   onClick={() => handleSetAdmin(u.id, !u.isAdmin)}
                 >
                   {u.isAdmin ? '관리자 해제' : '관리자로 지정'}
@@ -264,7 +264,7 @@ export default function AdminPage() {
               </div>
               {deletingId === u.id && (
                 <div className="flex flex-col gap-2 rounded-xl border border-red-900/60 bg-red-950/30 p-3">
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs text-neutral-300">
                     {u.nickname || '이 사용자'}를 탈퇴 처리할까요? 되돌릴 수 없어요.
                     {u.creditBalance > 0 && (
                       <> 보유 중인 크레딧 {u.creditBalance.toLocaleString('ko-KR')}개는 환불 처리됩니다.</>
@@ -280,7 +280,7 @@ export default function AdminPage() {
                     </button>
                     <button
                       type="button"
-                      className="rounded-full border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-400"
+                      className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
                       onClick={() => setDeletingId(null)}
                     >
                       취소
@@ -295,33 +295,33 @@ export default function AdminPage() {
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-white">전체 결제 내역</h3>
-        {payments === null && <p className="text-xs text-slate-400">불러오는 중...</p>}
-        {payments?.length === 0 && <p className="text-xs text-slate-400">결제 내역이 없어요.</p>}
+        {payments === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
+        {payments?.length === 0 && <p className="text-xs text-neutral-400">결제 내역이 없어요.</p>}
         <ul className="flex flex-col gap-2">
           {payments?.map((p) => (
             <li
               key={p.id}
-              className="flex flex-col gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4"
+              className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-white">
                     {p.creditAmount.toLocaleString('ko-KR')} 크레딧 · {formatKrw(p.amountKrw)}
                   </span>
-                  <span className="text-[11px] text-slate-400">{formatDate(p.createdAt)}</span>
-                  <span className="font-mono text-[10px] text-slate-400">{p.userAccountId}</span>
+                  <span className="text-[11px] text-neutral-400">{formatDate(p.createdAt)}</span>
+                  <span className="font-mono text-[10px] text-neutral-400">{p.userAccountId}</span>
                   {p.refundReason && (
-                    <span className="text-[11px] text-slate-500">환불 사유: {p.refundReason}</span>
+                    <span className="text-[11px] text-neutral-500">환불 사유: {p.refundReason}</span>
                   )}
                 </div>
-                <span className="shrink-0 rounded-full bg-slate-800 px-3 py-1 text-[11px] font-semibold text-slate-400">
+                <span className="shrink-0 rounded-full bg-neutral-800 px-3 py-1 text-[11px] font-semibold text-neutral-400">
                   {STATUS_LABEL[p.status]}
                 </span>
               </div>
               <div className="flex gap-2">
                 <button
                   type="button"
-                  className="rounded-full border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-400"
+                  className="rounded-full border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-400"
                   onClick={() => loadLedger(p.userAccountId)}
                 >
                   이 사용자 원장 보기
@@ -339,7 +339,7 @@ export default function AdminPage() {
               {refundingId === p.id && (
                 <div className="flex gap-2">
                   <input
-                    className="flex-1 rounded-xl border border-slate-800 bg-slate-800 px-3 py-2 text-xs outline-none focus:border-violet-400"
+                    className="flex-1 rounded-xl border border-neutral-800 bg-neutral-800 px-3 py-2 text-xs outline-none focus:border-violet-400"
                     placeholder="환불 사유"
                     value={refundReason}
                     onChange={(e) => setRefundReason(e.target.value)}
@@ -362,36 +362,36 @@ export default function AdminPage() {
         <h3 className="text-sm font-bold text-white">사용자 크레딧 원장</h3>
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-400"
+            className="flex-1 rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-400"
             placeholder="user_account_id"
             value={ledgerUserId}
             onChange={(e) => setLedgerUserId(e.target.value)}
           />
           <button
             type="button"
-            className="shrink-0 rounded-full border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-400"
+            className="shrink-0 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-400"
             onClick={() => ledgerUserId && loadLedger(ledgerUserId)}
           >
             조회
           </button>
         </div>
-        {ledgerLoading && <p className="text-xs text-slate-400">불러오는 중...</p>}
+        {ledgerLoading && <p className="text-xs text-neutral-400">불러오는 중...</p>}
         {ledger !== null && !ledgerLoading && (
           <ul className="flex flex-col gap-2">
-            {ledger.length === 0 && <p className="text-xs text-slate-400">내역이 없어요.</p>}
+            {ledger.length === 0 && <p className="text-xs text-neutral-400">내역이 없어요.</p>}
             {ledger.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900 p-3.5"
+                className="flex items-center justify-between rounded-2xl border border-neutral-800 bg-neutral-900 p-3.5"
               >
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-slate-100">
+                  <span className="text-xs font-semibold text-neutral-100">
                     {t.type} {t.amount > 0 ? `+${t.amount}` : t.amount}
                   </span>
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-neutral-400">
                     잔액 {t.balanceAfter} · {formatDate(t.createdAt)}
                   </span>
-                  {t.note && <span className="text-[11px] text-slate-500">{t.note}</span>}
+                  {t.note && <span className="text-[11px] text-neutral-500">{t.note}</span>}
                 </div>
               </li>
             ))}
@@ -401,22 +401,22 @@ export default function AdminPage() {
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-white">크레딧 수동 지급/회수</h3>
-        <form className="flex flex-col gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-4" onSubmit={handleAdjust}>
+        <form className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4" onSubmit={handleAdjust}>
           <input
-            className="rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-400"
+            className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs font-mono outline-none focus:border-violet-400"
             placeholder="user_account_id"
             value={adjustUserId}
             onChange={(e) => setAdjustUserId(e.target.value)}
           />
           <input
-            className="rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
+            className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
             placeholder="수량 (양수: 지급, 음수: 회수)"
             type="number"
             value={adjustAmount}
             onChange={(e) => setAdjustAmount(e.target.value)}
           />
           <input
-            className="rounded-xl border border-slate-800 bg-slate-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
+            className="rounded-xl border border-neutral-800 bg-neutral-800 px-3.5 py-2.5 text-xs outline-none focus:border-violet-400"
             placeholder="사유"
             value={adjustReason}
             onChange={(e) => setAdjustReason(e.target.value)}
@@ -427,31 +427,31 @@ export default function AdminPage() {
           >
             적용
           </button>
-          {adjustMessage && <p className="text-xs text-slate-500">{adjustMessage}</p>}
+          {adjustMessage && <p className="text-xs text-neutral-500">{adjustMessage}</p>}
         </form>
       </section>
 
       <section className="flex flex-col gap-3">
         <h3 className="text-sm font-bold text-white">관리자 조치 로그</h3>
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-neutral-500">
           권한 변경·탈퇴·환불·크레딧 조정 조치를 최근 100건까지 감사 목적으로 남겨요.
         </p>
-        {actionLogs === null && <p className="text-xs text-slate-400">불러오는 중...</p>}
-        {actionLogs?.length === 0 && <p className="text-xs text-slate-400">아직 조치 이력이 없어요.</p>}
+        {actionLogs === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
+        {actionLogs?.length === 0 && <p className="text-xs text-neutral-400">아직 조치 이력이 없어요.</p>}
         <ul className="flex flex-col gap-2">
           {actionLogs?.map((log) => (
             <li
               key={log.id}
-              className="flex flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-900 p-3.5"
+              className="flex flex-col gap-1 rounded-2xl border border-neutral-800 bg-neutral-900 p-3.5"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-white">{ACTION_TYPE_LABEL[log.actionType]}</span>
-                <span className="text-[11px] text-slate-400">{formatDate(log.createdAt)}</span>
+                <span className="text-[11px] text-neutral-400">{formatDate(log.createdAt)}</span>
               </div>
-              <span className="font-mono text-[10px] text-slate-500">
+              <span className="font-mono text-[10px] text-neutral-500">
                 관리자 {log.adminUserAccountId ?? '(탈퇴된 관리자)'} → 대상 {log.targetUserAccountId ?? '(탈퇴된 계정)'}
               </span>
-              {log.detail && <span className="text-[11px] text-slate-400">{log.detail}</span>}
+              {log.detail && <span className="text-[11px] text-neutral-400">{log.detail}</span>}
             </li>
           ))}
         </ul>

@@ -23,7 +23,7 @@ export default function AuthCallbackPage() {
   }, [searchParams, navigate, refreshUser]);
 
   return (
-    <main className="flex flex-1 items-center justify-center p-4 text-sm text-slate-400">
+    <main className="flex flex-1 items-center justify-center p-4 text-sm text-neutral-400">
       로그인 처리 중...
     </main>
   );

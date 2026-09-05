@@ -8,12 +8,12 @@ const PROVIDERS: { id: OAuthProvider; label: string; className: string }[] = [
   {
     id: 'kakao',
     label: '카카오로 시작하기',
-    className: 'bg-[#FEE500] text-slate-900',
+    className: 'bg-[#FEE500] text-neutral-900',
   },
   {
     id: 'google',
     label: 'Google로 시작하기',
-    className: 'bg-white text-slate-900',
+    className: 'bg-white text-neutral-900',
   },
   {
     id: 'naver',
@@ -27,12 +27,12 @@ const PROVIDERS: { id: OAuthProvider; label: string; className: string }[] = [
 export default function LoginPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-10">
-      <div className="flex w-full max-w-sm flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-900 p-8">
+      <div className="flex w-full max-w-sm flex-col gap-6 rounded-3xl border border-neutral-800 bg-neutral-900 p-8">
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-extrabold tracking-tight text-white">
             사주 서비스
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-neutral-400">
             이별과 인연, 사주로 다정하게 짚어드려요
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function LoginPage() {
 
         <Link
           to="/"
-          className="text-center text-xs font-medium text-slate-500 underline"
+          className="text-center text-xs font-medium text-neutral-500 underline"
         >
           로그인 없이 둘러보기
         </Link>

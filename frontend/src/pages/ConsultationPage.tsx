@@ -36,7 +36,7 @@ export default function ConsultationPage() {
 
   if (!sessionId) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         상담 세션 정보가 없어요.
         <Link to="/" className="font-semibold text-violet-500 underline">
           홈으로 돌아가기
@@ -83,13 +83,13 @@ export default function ConsultationPage() {
         <h2 className="text-xl font-bold tracking-tight text-white">
           {persona ? `${withBatchimPostposition(persona.characterName, '와', '과')}의 상담` : '상담'}
         </h2>
-        <p className="text-xs text-slate-400">질문 1건당 크레딧 1개가 소모돼요.</p>
+        <p className="text-xs text-neutral-400">질문 1건당 크레딧 1개가 소모돼요.</p>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto">
-        {messages === null && <p className="text-xs text-slate-400">불러오는 중...</p>}
+        {messages === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
         {messages?.length === 0 && (
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-neutral-400">
             궁금한 걸 편하게 물어보세요. {persona?.characterName ?? '상담사'}가 사주를 참고해서 답해줄 거예요.
           </p>
         )}
@@ -99,7 +99,7 @@ export default function ConsultationPage() {
               className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                 m.role === 'USER'
                   ? 'bg-violet-500 text-white'
-                  : 'border border-slate-800 bg-slate-900 text-slate-100'
+                  : 'border border-neutral-800 bg-neutral-900 text-neutral-100'
               }`}
             >
               {m.content}
@@ -108,7 +108,7 @@ export default function ConsultationPage() {
         ))}
         {sending && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-400">
+            <div className="max-w-[80%] rounded-2xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 text-sm text-neutral-400">
               답변을 준비하고 있어요...
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function ConsultationPage() {
 
       <form className="mt-3 flex gap-2" onSubmit={handleSend}>
         <input
-          className="flex-1 rounded-full border border-slate-800 bg-slate-800 px-4 py-2.5 text-sm outline-none focus:border-violet-400"
+          className="flex-1 rounded-full border border-neutral-800 bg-neutral-800 px-4 py-2.5 text-sm outline-none focus:border-violet-400"
           placeholder="궁금한 걸 물어보세요"
           value={input}
           maxLength={2000}

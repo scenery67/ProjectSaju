@@ -34,8 +34,8 @@ export default function SearchPage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-slate-800 bg-slate-900/90 px-4 py-3.5 backdrop-blur">
-        <button type="button" aria-label="뒤로" onClick={() => navigate(-1)} className="text-slate-300">
+      <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-neutral-800 bg-neutral-900/90 px-4 py-3.5 backdrop-blur">
+        <button type="button" aria-label="뒤로" onClick={() => navigate(-1)} className="text-neutral-300">
           <ArrowLeft className="h-5 w-5" strokeWidth={2} />
         </button>
         <input
@@ -44,13 +44,13 @@ export default function SearchPage() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && runSearch(query)}
           placeholder="사주 상품 검색..."
-          className="flex-1 rounded-full border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-violet-400"
+          className="flex-1 rounded-full border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-violet-400"
         />
         <button
           type="button"
           aria-label="검색"
           onClick={() => runSearch(query)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-500 text-slate-950"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-500 text-neutral-950"
         >
           <Search className="h-5 w-5" strokeWidth={2.5} />
         </button>
@@ -59,19 +59,19 @@ export default function SearchPage() {
       <div className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-6">
         {submittedQuery === null && (
           <div className="flex flex-col items-center gap-2 pt-10 text-center">
-            <Search className="h-10 w-10 text-slate-600" strokeWidth={1.5} />
+            <Search className="h-10 w-10 text-neutral-600" strokeWidth={1.5} />
             <p className="text-base font-bold text-white">사주 상품을 검색해보세요</p>
-            <p className="text-xs text-slate-500">이별, 궁합 등 원하는 주제로 찾을 수 있어요</p>
+            <p className="text-xs text-neutral-500">이별, 궁합 등 원하는 주제로 찾을 수 있어요</p>
 
             <div className="mt-6 flex flex-col items-center gap-3">
-              <span className="text-xs font-semibold text-slate-500">인기 검색어</span>
+              <span className="text-xs font-semibold text-neutral-500">인기 검색어</span>
               <div className="flex flex-wrap justify-center gap-2">
                 {POPULAR_KEYWORDS.map(({ label, Icon }) => (
                   <button
                     key={label}
                     type="button"
                     onClick={() => runSearch(label)}
-                    className="flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200"
+                    className="flex items-center gap-1.5 rounded-full border border-neutral-700 bg-neutral-800 px-4 py-2 text-sm font-medium text-neutral-200"
                   >
                     <Icon className="h-4 w-4 text-pink-400" strokeWidth={2} />
                     {label}
@@ -86,14 +86,14 @@ export default function SearchPage() {
           <>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">&quot;{submittedQuery}&quot; 검색 결과</h3>
-              <span className="text-xs text-slate-500">{results.length}개의 사주 상품</span>
+              <span className="text-xs text-neutral-500">{results.length}개의 사주 상품</span>
             </div>
 
             {results.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 pt-10 text-center">
-                <SearchX className="h-10 w-10 text-slate-600" strokeWidth={1.5} />
+                <SearchX className="h-10 w-10 text-neutral-600" strokeWidth={1.5} />
                 <p className="text-sm font-bold text-white">검색 결과가 없어요</p>
-                <p className="text-xs text-slate-500">다른 검색어로 다시 시도해보세요</p>
+                <p className="text-xs text-neutral-500">다른 검색어로 다시 시도해보세요</p>
                 <Link to="/" className="mt-2 text-xs font-semibold text-violet-400 underline">
                   전체 상품 보러 가기
                 </Link>

@@ -45,19 +45,19 @@ const OTHER_ROWS: RowItem[] = [{ to: '/settings', label: '설정', Icon: Setting
 function RowSection({ title, rows }: { title: string; rows: RowItem[] }) {
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-xs font-semibold text-slate-500">{title}</h3>
-      <nav className="flex flex-col divide-y divide-slate-800 rounded-2xl border border-slate-800 bg-slate-900">
+      <h3 className="text-xs font-semibold text-neutral-500">{title}</h3>
+      <nav className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
         {rows.map((row) => (
           <Link
             key={row.to}
             to={row.to}
-            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800/60 active:bg-slate-700/60"
+            className="flex items-center justify-between px-4 py-3.5 text-sm font-medium text-neutral-100 transition-colors hover:bg-neutral-800/60 active:bg-neutral-700/60"
           >
             <span className="flex items-center gap-2.5">
               <row.Icon className="h-4.5 w-4.5" strokeWidth={2} />
               {row.label}
             </span>
-            <ChevronRight className="h-4 w-4 text-slate-600" strokeWidth={2} />
+            <ChevronRight className="h-4 w-4 text-neutral-600" strokeWidth={2} />
           </Link>
         ))}
       </nav>
@@ -83,7 +83,7 @@ export default function MyPage() {
   if (user === undefined) {
     return (
       <PageShell>
-        <p className="text-sm text-slate-400">확인 중...</p>
+        <p className="text-sm text-neutral-400">확인 중...</p>
       </PageShell>
     );
   }
@@ -91,8 +91,8 @@ export default function MyPage() {
   if (user === null) {
     return (
       <PageShell>
-        <div className="flex flex-col items-center gap-3 rounded-3xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <p className="text-sm text-slate-400">로그인하면 크레딧, 상담 기록을 계정에 저장할 수 있어요.</p>
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
+          <p className="text-sm text-neutral-400">로그인하면 크레딧, 상담 기록을 계정에 저장할 수 있어요.</p>
           <Link to="/login" className="rounded-full bg-violet-600 px-6 py-3 text-sm font-bold text-white">
             로그인하기
           </Link>
@@ -103,32 +103,32 @@ export default function MyPage() {
 
   return (
     <PageShell>
-      <section className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-4">
+      <section className="flex items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-950">
           <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-7 w-7" />
         </span>
         <div className="flex flex-col">
           <span className="text-sm font-bold text-white">{user.nickname || '(닉네임 없음)'}</span>
-          <span className="text-xs text-slate-500">{PROVIDER_LABEL[user.provider] ?? user.provider} 계정</span>
+          <span className="text-xs text-neutral-500">{PROVIDER_LABEL[user.provider] ?? user.provider} 계정</span>
         </div>
       </section>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-amber-900/40 bg-gradient-to-br from-amber-950/40 to-slate-900 p-4">
+      <section className="flex flex-col gap-3 rounded-2xl border border-amber-900/40 bg-gradient-to-br from-amber-950/40 to-neutral-900 p-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-300">
+          <span className="text-sm text-neutral-300">
             보유 크레딧 <span className="ml-1.5 text-lg font-bold text-amber-400">{creditBalance === null ? '—' : creditBalance.toLocaleString('ko-KR')}</span>
           </span>
         </div>
         <div className="flex gap-2">
           <Link
             to="/payments"
-            className="flex-1 rounded-full border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-800 active:bg-slate-700"
+            className="flex-1 rounded-full border border-neutral-700 py-2 text-center text-xs font-semibold text-neutral-300 transition-colors hover:bg-neutral-800 active:bg-neutral-700"
           >
             내역
           </Link>
           <Link
             to="/shop"
-            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-slate-950 transition-colors hover:bg-amber-400 active:bg-amber-300"
+            className="flex-1 rounded-full bg-amber-500 py-2 text-center text-xs font-bold text-neutral-950 transition-colors hover:bg-amber-400 active:bg-amber-300"
           >
             충전하기
           </Link>
@@ -150,7 +150,7 @@ export default function MyPage() {
 
       <button
         type="button"
-        className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 py-3 text-sm font-semibold text-red-400 transition-colors hover:bg-slate-800/60 active:bg-slate-700/60"
+        className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-800 py-3 text-sm font-semibold text-red-400 transition-colors hover:bg-neutral-800/60 active:bg-neutral-700/60"
         onClick={() => {
           void logout();
           navigate('/');

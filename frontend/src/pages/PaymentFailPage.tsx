@@ -10,9 +10,9 @@ export default function PaymentFailPage() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-10 text-center">
-      <Frown className="h-14 w-14 text-slate-500" strokeWidth={1.5} />
+      <Frown className="h-14 w-14 text-neutral-500" strokeWidth={1.5} />
       <p className="text-sm font-bold text-white">결제가 완료되지 않았어요.</p>
-      {message && <p className="text-xs text-slate-400">{message}</p>}
+      {message && <p className="text-xs text-neutral-400">{message}</p>}
       <Link to="/mypage" className="rounded-full bg-violet-500 px-6 py-3 text-sm font-bold text-white">
         마이페이지로
       </Link>

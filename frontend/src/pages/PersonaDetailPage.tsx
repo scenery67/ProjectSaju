@@ -124,7 +124,7 @@ export default function PersonaDetailPage() {
   );
 
   if (!persona) {
-    return <main className="p-4 text-sm text-slate-500">존재하지 않는 상품입니다.</main>;
+    return <main className="p-4 text-sm text-neutral-500">존재하지 않는 상품입니다.</main>;
   }
 
   const isCouple = persona.type === 'COUPLE_COMPATIBILITY';
@@ -171,44 +171,44 @@ export default function PersonaDetailPage() {
     <main className="flex flex-1 flex-col gap-5 px-4 pb-6 pt-5">
       <section className="flex flex-col gap-1.5">
         <PageTitle>{persona.title}</PageTitle>
-        <p className="text-sm text-slate-500">{persona.subtitle}</p>
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-neutral-500">{persona.subtitle}</p>
+        <p className="text-xs text-neutral-400">
           {persona.characterName} · {persona.personality}
         </p>
       </section>
 
       {submitting ? (
-        <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl border border-slate-800 bg-slate-900 p-8 text-center">
+        <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
           <ProgressIcon className="h-10 w-10 text-violet-300" strokeWidth={1.5} />
           <div className="w-full max-w-xs">
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-800">
               <div
                 className="h-full rounded-full bg-violet-500 transition-[width] duration-150 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-1 text-right text-[11px] tabular-nums text-slate-400">
+            <p className="mt-1 text-right text-[11px] tabular-nums text-neutral-400">
               {Math.round(progress)}%
             </p>
           </div>
-          <p className="text-sm font-medium text-slate-400">{message}</p>
+          <p className="text-sm font-medium text-neutral-400">{message}</p>
 
           <div className="w-full max-w-xs rounded-2xl border border-violet-900/50 bg-violet-950/40 p-3.5 text-left">
             <p className="text-xs font-bold text-violet-300">
               이 화면을 유지해주세요
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+            <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
               다른 화면으로 이동하면 결과로 자동 연결되지 않아요. 서버가 잠시
               쉬고 있었다면 깨어나는 데 시간이 좀 더 걸릴 수 있어요.
             </p>
           </div>
 
-          <div className="w-full max-w-xs rounded-2xl bg-slate-800/60 p-3.5 text-left">
-            <p className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300">
+          <div className="w-full max-w-xs rounded-2xl bg-neutral-800/60 p-3.5 text-left">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-neutral-300">
               <Lightbulb className="h-3.5 w-3.5" strokeWidth={2} />
               알고 계셨나요?
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+            <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
               {tip}
             </p>
           </div>
@@ -237,12 +237,12 @@ export default function PersonaDetailPage() {
 
       {limitModal !== 'none' && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/70 px-4">
-          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl border border-slate-800 bg-slate-900 p-6 text-center">
+          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-6 text-center">
             <span className="text-3xl">⏳</span>
             <p className="text-sm font-bold text-white">
               오늘 무료 사주를 모두 사용했어요
             </p>
-            <p className="text-xs leading-relaxed text-slate-400">
+            <p className="text-xs leading-relaxed text-neutral-400">
               {limitModal === 'anonymous'
                 ? '로그인하면 계정으로 이어서 볼 수 있어요. 매일 자정(KST)에 무료 횟수가 초기화돼요.'
                 : '크레딧 1개로 계속 보거나, 내일 자정(KST) 이후 다시 무료로 볼 수 있어요.'}
@@ -269,7 +269,7 @@ export default function PersonaDetailPage() {
             <button
               type="button"
               onClick={() => setLimitModal('none')}
-              className="text-xs font-medium text-slate-500 underline"
+              className="text-xs font-medium text-neutral-500 underline"
             >
               닫기
             </button>

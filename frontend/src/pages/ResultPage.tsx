@@ -25,7 +25,7 @@ function PersonalityProfileCard({
   accentColor: string;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+    <section className="rounded-3xl border border-neutral-800 bg-neutral-900 p-5">
       <p
         className="mb-3 text-[11px] font-bold tracking-wide"
         style={{ color: accentColor }}
@@ -35,10 +35,10 @@ function PersonalityProfileCard({
       <dl className="flex flex-col gap-3">
         {PROFILE_ROWS.map(({ key, label: rowLabel }) => (
           <div key={key}>
-            <dt className="mb-0.5 text-xs font-bold text-slate-100">
+            <dt className="mb-0.5 text-xs font-bold text-neutral-100">
               {rowLabel}
             </dt>
-            <dd className="text-sm leading-relaxed text-slate-400">
+            <dd className="text-sm leading-relaxed text-neutral-400">
               {profile[key]}
             </dd>
           </div>
@@ -68,10 +68,10 @@ function FiveElementBars({ counts }: { counts: Record<string, number> }) {
         const percent = Math.round((count / total) * 100);
         return (
           <div key={element} className="flex items-center gap-2">
-            <span className="w-4 text-xs font-bold text-slate-300">
+            <span className="w-4 text-xs font-bold text-neutral-300">
               {element}
             </span>
-            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-800">
+            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-neutral-800">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -80,7 +80,7 @@ function FiveElementBars({ counts }: { counts: Record<string, number> }) {
                 }}
               />
             </div>
-            <span className="w-9 text-right text-[11px] tabular-nums text-slate-500">
+            <span className="w-9 text-right text-[11px] tabular-nums text-neutral-500">
               {percent}%
             </span>
           </div>
@@ -107,16 +107,16 @@ function PillarColumn({
   const zhi = pillar.charAt(1);
   return (
     <div className="flex flex-col items-center gap-1 text-center">
-      <span className="text-[10px] text-slate-400">{palace}</span>
+      <span className="text-[10px] text-neutral-400">{palace}</span>
       <span className="text-[11px] font-medium text-violet-400">
         {tenGod ?? '—'}
       </span>
       <span className="text-xl font-bold text-white">{gan}</span>
-      <span className="text-xl font-bold text-slate-300">{zhi}</span>
-      <span className="text-[11px] text-slate-400">
+      <span className="text-xl font-bold text-neutral-300">{zhi}</span>
+      <span className="text-[11px] text-neutral-400">
         {twelveStage ?? '—'}
       </span>
-      <span className="text-[10px] leading-tight text-slate-400">
+      <span className="text-[10px] leading-tight text-neutral-400">
         {hideGan && hideGan.length > 0 ? hideGan.join('·') : '—'}
       </span>
     </div>
@@ -125,11 +125,11 @@ function PillarColumn({
 
 function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
   return (
-    <div className="rounded-2xl bg-slate-800 p-4">
-      <p className="mb-3 text-[11px] font-bold tracking-wide text-slate-400">
+    <div className="rounded-2xl bg-neutral-800 p-4">
+      <p className="mb-3 text-[11px] font-bold tracking-wide text-neutral-400">
         {label}
       </p>
-      <div className="grid grid-cols-4 gap-1 border-b border-slate-800 pb-4">
+      <div className="grid grid-cols-4 gap-1 border-b border-neutral-800 pb-4">
         <PillarColumn
           palace="말년(시)"
           pillar={chart.hourPillar ?? '--'}
@@ -160,31 +160,31 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
         />
       </div>
       {!chart.hourPillar && (
-        <p className="mt-2 text-[11px] text-slate-400">
+        <p className="mt-2 text-[11px] text-neutral-400">
           시주는 출생시간 미상이라 제외했어요.
         </p>
       )}
 
-      <p className="mb-2 mt-4 text-[11px] font-bold tracking-wide text-slate-400">
+      <p className="mb-2 mt-4 text-[11px] font-bold tracking-wide text-neutral-400">
         오행 분포
       </p>
       <FiveElementBars counts={chart.fiveElementCounts} />
 
       {chart.daYunPeriods.length > 0 && (
         <div className="mt-4 overflow-x-auto">
-          <p className="mb-1.5 text-[11px] font-bold tracking-wide text-slate-400">
+          <p className="mb-1.5 text-[11px] font-bold tracking-wide text-neutral-400">
             대운
           </p>
           <div className="flex gap-2">
             {chart.daYunPeriods.map((p) => (
               <div
                 key={p.startAge}
-                className="flex shrink-0 flex-col items-center rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 text-center"
+                className="flex shrink-0 flex-col items-center rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-center"
               >
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-neutral-400">
                   {p.startAge}~{p.endAge}세
                 </span>
-                <span className="text-sm font-semibold text-slate-100">
+                <span className="text-sm font-semibold text-neutral-100">
                   {p.pillar}
                 </span>
               </div>
@@ -195,19 +195,19 @@ function ChartCard({ label, chart }: { label: string; chart: SajuChart }) {
 
       {chart.currentLiuNian.length > 0 && (
         <div className="mt-3 overflow-x-auto">
-          <p className="mb-1.5 text-[11px] font-bold tracking-wide text-slate-400">
+          <p className="mb-1.5 text-[11px] font-bold tracking-wide text-neutral-400">
             요즘 흐름 (세운)
           </p>
           <div className="flex gap-2">
             {chart.currentLiuNian.map((p) => (
               <div
                 key={p.year}
-                className="flex shrink-0 flex-col items-center rounded-lg border border-slate-800 bg-slate-900 px-2 py-1.5 text-center"
+                className="flex shrink-0 flex-col items-center rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-center"
               >
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-neutral-400">
                   {p.year} ({p.age}세)
                 </span>
-                <span className="text-sm font-semibold text-slate-100">
+                <span className="text-sm font-semibold text-neutral-100">
                   {p.pillar}
                 </span>
                 <span className="text-[10px] text-violet-400">{p.tenGod}</span>
@@ -232,7 +232,7 @@ export default function ResultPage() {
 
   if (!persona || !result) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-slate-500">
+      <main className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-sm text-neutral-500">
         결과 정보가 없습니다.
         <Link to="/" className="font-semibold text-violet-500 underline">
           홈으로 돌아가기
@@ -276,7 +276,7 @@ export default function ResultPage() {
           무료 공개
         </span>
         <p className="text-sm font-bold text-white">{result.summary}</p>
-        <p className="whitespace-pre-line text-sm leading-relaxed text-slate-400">
+        <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-400">
           {result.detail}
         </p>
       </section>
@@ -295,7 +295,7 @@ export default function ResultPage() {
               {persona.characterName}에게 더 물어볼 수 있어요
             </p>
           </div>
-          <ul className="flex flex-col gap-1.5 text-xs text-slate-300">
+          <ul className="flex flex-col gap-1.5 text-xs text-neutral-300">
             <li>· 이 결과에서 궁금한 부분을 자유롭게 물어보기</li>
             <li>· 지금 이 시기에 뭘 준비하면 좋을지 구체적으로 상담받기</li>
           </ul>
@@ -316,7 +316,7 @@ export default function ResultPage() {
         </section>
       )}
       {!getAuthToken() && (
-        <section className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-slate-700 bg-slate-900/60 p-5 text-center">
+        <section className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-neutral-700 bg-neutral-900/60 p-5 text-center">
           <Lock className="h-4.5 w-4.5" strokeWidth={2} />
           <p className="text-sm font-bold text-white">
             로그인하면 {persona.characterName}에게 더 물어볼 수 있어요
@@ -340,7 +340,7 @@ export default function ResultPage() {
         />
       )}
       <section className="flex flex-col gap-3">
-        <p className="text-[11px] text-slate-400">
+        <p className="text-[11px] text-neutral-400">
           아래는 해석에 쓰인 사주 원국표예요 (참고용)
         </p>
         <ChartCard label="나의 사주" chart={result.selfChart} />

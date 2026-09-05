@@ -14,15 +14,15 @@ const TABS: { to: string; label: string; Icon: LucideIcon }[] = [
 // 모바일 화면에서 주 내비게이션으로 쓰는 하단 고정 탭바.
 export default function BottomNav() {
   return (
-    <nav className="sticky bottom-0 z-10 flex border-t border-slate-800 bg-slate-900/95 pb-0.5 pt-0.5 backdrop-blur">
+    <nav className="sticky bottom-0 z-10 flex border-t border-neutral-800 bg-neutral-900/95 pb-0.5 pt-0.5 backdrop-blur">
       {TABS.map(({ to, label, Icon }) => (
         <NavLink
           key={to}
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `mx-1 flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-1 text-[10px] font-medium transition-colors hover:bg-slate-800/70 active:bg-slate-800 ${
-              isActive ? 'text-violet-500' : 'text-slate-400'
+            `mx-1 flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-1 text-[10px] font-medium transition-colors hover:bg-neutral-800/70 active:bg-neutral-800 ${
+              isActive ? 'text-violet-500' : 'text-neutral-400'
             }`
           }
         >

@@ -36,7 +36,7 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-4 py-3.5 backdrop-blur">
+    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/90 px-4 py-3.5 backdrop-blur">
       <Link to="/" className="text-lg font-extrabold tracking-tight text-white">
         사주 서비스
       </Link>
@@ -44,7 +44,7 @@ export default function Header() {
         <Link
           to="/search"
           aria-label="검색"
-          className="rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white active:bg-slate-700"
+          className="rounded-full p-1.5 text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white active:bg-neutral-700"
         >
           <Search className="h-5 w-5" strokeWidth={2} />
         </Link>
@@ -52,7 +52,7 @@ export default function Header() {
           <Link
             to="/notifications"
             aria-label="알림"
-            className="relative rounded-full p-1.5 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white active:bg-slate-700"
+            className="relative rounded-full p-1.5 text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white active:bg-neutral-700"
           >
             <Mail className="h-5 w-5" strokeWidth={2} />
             {unreadCount > 0 && (
@@ -73,11 +73,11 @@ export default function Header() {
               {user ? (
                 <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-4.5 w-4.5" />
               ) : (
-                <User className="h-4 w-4 text-slate-300" strokeWidth={2} />
+                <User className="h-4 w-4 text-neutral-300" strokeWidth={2} />
               )}
             </button>
             {menuOpen && (
-              <div className="animate-dropdown-in absolute right-0 top-11 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-xl">
+              <div className="animate-dropdown-in absolute right-0 top-11 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
                 <AccountMenu onNavigate={() => setMenuOpen(false)} />
               </div>
             )}
