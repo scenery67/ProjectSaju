@@ -69,19 +69,35 @@ body {
   animation: check-pop 0.4s ease-out;
 }
 
-/* 계정 드롭다운이 열릴 때 — 위쪽이 기준점이라 아래로 펼쳐지듯 보인다
-   (참고 사이트의 "위→아래로 속도 차이 나며 펼쳐지는" 느낌). */
+/* 계정 드롭다운 패널 — 테두리/배경만 살짝 빠르게 페이드인, 실제 "펼쳐지는"
+   느낌은 아래 dropdown-item-in이 항목별로 순차 등장하며 만든다. */
 @keyframes dropdown-in {
-  0% {
+  from {
     opacity: 0;
-    transform: translateY(-8px) scaleY(0.92);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: translateY(0) scaleY(1);
   }
 }
 .animate-dropdown-in {
-  animation: dropdown-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: top center;
+  animation: dropdown-in 0.15s ease-out;
+}
+
+/* 드롭다운 안의 각 항목(프로필/잔액/메뉴줄)이 위→아래로 순서대로, 약간의
+   시간차(stagger)를 두고 나타난다 — 참고 사이트의 "아래로 갈수록 속도
+   차이 나며 보이는" 느낌은 전체 패널 하나의 트랜지션이 아니라 이 개별
+   항목들의 지연된 등장이 쌓여서 만들어진다. animation-delay는 각 항목에서
+   인라인 style로 준다. */
+@keyframes dropdown-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-dropdown-item-in {
+  animation: dropdown-item-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

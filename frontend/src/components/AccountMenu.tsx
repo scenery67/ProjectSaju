@@ -19,6 +19,12 @@ interface MenuItem {
   disabled?: boolean;
 }
 
+// 드롭다운 항목이 위→아래로 순서대로 나타나는 시간차(stagger) 간격.
+const STAGGER_STEP_MS = 28;
+function staggerDelay(index: number) {
+  return { animationDelay: `${index * STAGGER_STEP_MS}ms` };
+}
+
 const MENU_ITEMS: MenuItem[] = [
   { label: '세이프티', icon: 'shield', disabled: true },
   { to: '/my-saju', label: '내 사주', icon: 'crystalball' },
@@ -80,7 +86,10 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
 
   return (
     <div className="flex flex-col gap-3 p-3.5">
-      <div className="flex items-center gap-2.5">
+      <div
+        className="animate-dropdown-item-in flex items-center gap-2.5"
+        style={staggerDelay(0)}
+      >
         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-950">
           <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-5.5 w-5.5" />
         </span>
@@ -90,7 +99,10 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-2xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-neutral-900 px-3.5 py-3">
+      <div
+        className="animate-dropdown-item-in flex items-center justify-between rounded-2xl border border-violet-900/50 bg-gradient-to-br from-violet-950 to-neutral-900 px-3.5 py-3"
+        style={staggerDelay(1)}
+      >
         <div className="flex flex-col">
           <span className="text-[11px] text-violet-300">보유 크레딧</span>
           <span className="text-lg font-bold text-white">
@@ -107,11 +119,12 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
       </div>
 
       <nav className="flex flex-col divide-y divide-neutral-800 rounded-2xl border border-neutral-800 bg-neutral-900">
-        {MENU_ITEMS.map((item) =>
+        {MENU_ITEMS.map((item, i) =>
           item.disabled ? (
             <span
               key={item.label}
-              className="flex items-center justify-between px-3.5 py-2.5 text-sm text-neutral-600"
+              className="animate-dropdown-item-in flex items-center justify-between px-3.5 py-2.5 text-sm text-neutral-600"
+              style={staggerDelay(2 + i)}
             >
               <span className="flex items-center gap-2">
                 <Emoji name={item.icon} className="h-4.5 w-4.5" />
@@ -126,7 +139,8 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
               key={item.to}
               to={item.to!}
               onClick={onNavigate}
-              className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-neutral-100"
+              className="animate-dropdown-item-in flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-neutral-100"
+              style={staggerDelay(2 + i)}
             >
               <Emoji name={item.icon} className="h-4.5 w-4.5" />
               {item.label}
@@ -139,7 +153,8 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
         <Link
           to="/admin"
           onClick={onNavigate}
-          className="rounded-full bg-violet-600 py-2.5 text-center text-sm font-semibold text-white"
+          className="animate-dropdown-item-in rounded-full bg-violet-600 py-2.5 text-center text-sm font-semibold text-white"
+          style={staggerDelay(2 + MENU_ITEMS.length)}
         >
           관리자 화면
         </Link>
@@ -147,7 +162,8 @@ export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProp
 
       <button
         type="button"
-        className="flex items-center gap-2 rounded-2xl border border-neutral-800 px-3.5 py-2.5 text-sm font-semibold text-red-400"
+        className="animate-dropdown-item-in flex items-center gap-2 rounded-2xl border border-neutral-800 px-3.5 py-2.5 text-sm font-semibold text-red-400"
+        style={staggerDelay(2 + MENU_ITEMS.length + (user.isAdmin ? 1 : 0))}
         onClick={() => {
           void logout();
           setUser(null);
