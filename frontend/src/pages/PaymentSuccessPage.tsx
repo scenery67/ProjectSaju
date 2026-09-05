@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import Emoji from '../components/Emoji';
 import { confirmPurchase } from '../lib/billing';
 
 // 토스 결제창에서 성공적으로 돌아왔을 때의 착지 화면:
@@ -40,7 +41,7 @@ export default function PaymentSuccessPage() {
       )}
       {status === 'done' && (
         <>
-          <span className="text-4xl">✅</span>
+          <Emoji name="check" className="h-14 w-14" />
           <p className="text-sm font-bold text-white">
             {creditAmount?.toLocaleString('ko-KR')} 크레딧이 충전됐어요!
           </p>
@@ -48,7 +49,7 @@ export default function PaymentSuccessPage() {
       )}
       {status === 'failed' && (
         <>
-          <span className="text-4xl">⚠️</span>
+          <Emoji name="warning" className="h-14 w-14" />
           <p className="text-sm font-bold text-white">결제 확인에 실패했어요.</p>
           <p className="text-xs text-neutral-400">
             결제는 됐는데 크레딧 반영이 안 됐다면, 마이페이지 결제내역을 확인해주세요.

@@ -5,6 +5,8 @@ import {
   requestBreakupReading,
   requestCoupleCompatibilityReading,
 } from '../api/sajuApi';
+import type { EmojiName } from '../assets/emoji';
+import Emoji from '../components/Emoji';
 import PersonInputForm from '../components/PersonInputForm';
 import { findPersonaById } from '../data/personas';
 import { getAuthToken } from '../lib/auth';
@@ -36,7 +38,7 @@ const TRIVIA_TIPS = [
   '대운은 10년 단위로 바뀌는 인생의 큰 흐름을 보여줘요.',
 ];
 
-const PROGRESS_ICONS = ['🔮', '✨', '🌙', '🕯️'];
+const PROGRESS_ICONS: EmojiName[] = ['crystalball', 'sparkles', 'moon', 'candle'];
 
 // 실제 진행률을 알 방법이 없는 단일 API 호출이라(서버가 단계를 보고해주지
 // 않음), 시간이 지날수록 증가폭을 줄여가며 95%에서 멈추는 방식으로 "진행되고
@@ -179,7 +181,7 @@ export default function PersonaDetailPage() {
 
       {submitting ? (
         <section className="flex flex-1 flex-col items-center justify-center gap-4 rounded-3xl border border-neutral-800 bg-neutral-900 p-8 text-center">
-          <span className="text-4xl">{icon}</span>
+          <Emoji name={icon} className="h-10 w-10" />
           <div className="w-full max-w-xs">
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-neutral-800">
               <div
@@ -204,8 +206,9 @@ export default function PersonaDetailPage() {
           </div>
 
           <div className="w-full max-w-xs rounded-2xl bg-neutral-800/60 p-3.5 text-left">
-            <p className="text-[11px] font-bold text-neutral-300">
-              💡 알고 계셨나요?
+            <p className="flex items-center gap-1.5 text-[11px] font-bold text-neutral-300">
+              <Emoji name="bulb" className="h-3.5 w-3.5" />
+              알고 계셨나요?
             </p>
             <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
               {tip}

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import type { EmojiName } from '../assets/emoji';
 import { fetchBalance } from '../lib/billing';
 import { AVATAR_EMOJI, fetchCurrentUser, getAuthToken, logout, type CurrentUser } from '../lib/auth';
+import Emoji from './Emoji';
 
 const PROVIDER_LABEL: Record<string, string> = {
   KAKAO: '카카오',
@@ -13,31 +15,37 @@ const PROVIDER_LABEL: Record<string, string> = {
 interface MenuItem {
   to?: string;
   label: string;
-  icon: string;
+  icon: EmojiName;
   disabled?: boolean;
 }
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: '세이프티', icon: '🛡️', disabled: true },
-  { to: '/my-saju', label: '내 사주', icon: '🔮' },
-  { to: '/consultations', label: '내 상담', icon: '💬' },
-  { to: '/shop', label: '상점', icon: '🛒' },
-  { to: '/rewards', label: '보상', icon: '🎁' },
-  { to: '/payments', label: '결제내역', icon: '💳' },
-  { to: '/settings', label: '설정', icon: '⚙️' },
+  { label: '세이프티', icon: 'shield', disabled: true },
+  { to: '/my-saju', label: '내 사주', icon: 'crystalball' },
+  { to: '/consultations', label: '내 상담', icon: 'speech' },
+  { to: '/shop', label: '상점', icon: 'cart' },
+  { to: '/rewards', label: '보상', icon: 'gift' },
+  { to: '/payments', label: '결제내역', icon: 'card' },
+  { to: '/settings', label: '설정', icon: 'gear' },
 ];
 
 interface AccountMenuProps {
   /** 드롭다운으로 쓸 때, 항목을 누르면 드롭다운을 닫기 위한 콜백 */
   onNavigate?: () => void;
+  /**
+   * 헤더가 이미 불러와 둔 사용자 정보 — 넘겨주면 드롭다운을 열 때 "확인
+   * 중..."이 뜨지 않고 바로 메뉴가 보인다(FoxBunny처럼 즉시 열림). 헤더 없이
+   * 단독 페이지(마이페이지)로 쓸 때는 안 넘어오니 이 컴포넌트가 직접 조회한다.
+   */
+  initialUser?: CurrentUser | null;
 }
 
 // 마이페이지(하단 탭)와 헤더 계정 버튼(드롭다운) 둘 다 같은 메뉴 구성을
 // 보여준다 — 참고 사이트(foxbunny.io/saju)의 계정 드롭다운 구조.
-export default function AccountMenu({ onNavigate }: AccountMenuProps) {
+export default function AccountMenu({ onNavigate, initialUser }: AccountMenuProps) {
   const navigate = useNavigate();
   const [user, setUser] = useState<CurrentUser | null | undefined>(() =>
-    getAuthToken() ? undefined : null,
+    initialUser !== undefined ? initialUser : getAuthToken() ? undefined : null,
   );
   const [creditBalance, setCreditBalance] = useState<number | null>(null);
 
@@ -73,8 +81,8 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-950 text-2xl">
-          {AVATAR_EMOJI[user.avatarKey]}
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-950">
+          <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-6 w-6" />
         </span>
         <div className="flex flex-col">
           <span className="text-sm font-bold text-white">{user.nickname || '(닉네임 없음)'}</span>
@@ -106,7 +114,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
               className="flex items-center justify-between px-4 py-3 text-sm text-neutral-600"
             >
               <span className="flex items-center gap-2">
-                <span className="text-base">{item.icon}</span>
+                <Emoji name={item.icon} className="h-4.5 w-4.5" />
                 {item.label}
               </span>
               <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-500">
@@ -120,7 +128,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
               onClick={onNavigate}
               className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-neutral-100"
             >
-              <span className="text-base">{item.icon}</span>
+              <Emoji name={item.icon} className="h-4.5 w-4.5" />
               {item.label}
             </Link>
           ),
@@ -150,7 +158,7 @@ export default function AccountMenu({ onNavigate }: AccountMenuProps) {
           navigate('/');
         }}
       >
-        <span>🚪</span>
+        <Emoji name="door" className="h-4.5 w-4.5" />
         로그아웃
       </button>
     </div>

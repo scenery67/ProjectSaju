@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import Emoji from '../components/Emoji';
 import { findPersonaById } from '../data/personas';
 import { getAuthToken } from '../lib/auth';
 import { ConsultationApiError, createConsultationSession } from '../lib/consultation';
@@ -290,7 +291,7 @@ export default function ResultPage() {
           }}
         >
           <div className="flex items-center gap-2">
-            <span className="text-lg">🔓</span>
+            <Emoji name="unlocked" className="h-4.5 w-4.5" />
             <p className="text-sm font-bold text-white">
               {persona.characterName}에게 더 물어볼 수 있어요
             </p>
@@ -317,7 +318,7 @@ export default function ResultPage() {
       )}
       {!getAuthToken() && (
         <section className="flex flex-col items-center gap-2 rounded-3xl border border-dashed border-neutral-700 bg-neutral-900/60 p-5 text-center">
-          <span className="text-lg">🔒</span>
+          <Emoji name="locked" className="h-4.5 w-4.5" />
           <p className="text-sm font-bold text-white">
             로그인하면 {persona.characterName}에게 더 물어볼 수 있어요
           </p>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Emoji from '../components/Emoji';
 import { getAuthToken } from '../lib/auth';
 import { fetchPaymentHistory, type PaymentHistoryEntry, type PaymentStatus } from '../lib/billing';
 
@@ -42,7 +43,7 @@ export default function PaymentHistoryPage() {
 
       {payments?.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-neutral-800 bg-neutral-900 p-10 text-center">
-          <span className="text-4xl text-neutral-600">🛒</span>
+          <Emoji name="cart" className="h-10 w-10 opacity-60" />
           <p className="text-sm font-bold text-white">결제내역이 없습니다</p>
           <p className="text-xs text-neutral-500">크레딧을 충전하고 캐릭터와 대화를 나눠보세요!</p>
           <Link

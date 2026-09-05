@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Emoji from '../components/Emoji';
 import {
   AVATAR_EMOJI,
   fetchCurrentUser,
@@ -83,8 +84,8 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-3 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-950 text-2xl">
-                {AVATAR_EMOJI[user.avatarKey]}
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-950">
+                <Emoji name={AVATAR_EMOJI[user.avatarKey]} className="h-7 w-7" />
               </span>
               <div className="flex flex-col">
                 <span className="text-sm font-bold text-white">{user.nickname}</span>
@@ -121,11 +122,11 @@ export default function SettingsPage() {
                       key={key}
                       type="button"
                       onClick={() => setDraftAvatar(key)}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full text-lg ${
+                      className={`flex h-9 w-9 items-center justify-center rounded-full ${
                         draftAvatar === key ? 'bg-violet-600' : 'bg-neutral-800'
                       }`}
                     >
-                      {AVATAR_EMOJI[key]}
+                      <Emoji name={AVATAR_EMOJI[key]} className="h-5 w-5" />
                     </button>
                   ))}
                 </div>
@@ -203,7 +204,8 @@ export default function SettingsPage() {
           navigate('/');
         }}
       >
-        🚪 로그아웃
+        <Emoji name="door" className="h-4.5 w-4.5" />
+        로그아웃
       </button>
     </main>
   );

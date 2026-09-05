@@ -3,13 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 import { AVATAR_EMOJI, fetchCurrentUser, getAuthToken, type CurrentUser } from '../lib/auth';
 import { fetchUnreadCount } from '../lib/notifications';
 import AccountMenu from './AccountMenu';
+import Emoji from './Emoji';
 
 // 참고 사이트(foxbunny.io/saju)처럼 로고(좌) + 알림/계정(우) 구조 —
 // 계정 버튼을 누르면 바로 마이페이지로 가지 않고 드롭다운 메뉴가 뜬다.
 export default function Header() {
   const loggedIn = Boolean(getAuthToken());
   const location = useLocation();
-  const [user, setUser] = useState<CurrentUser | null>(null);
+  // undefined = 아직 서버 확인 전(로그인은 돼있음), null = 비로그인.
+  // AccountMenu에 그대로 넘겨서, 드롭다운을 열 때 이미 불러온 값이 있으면
+  // 다시 "확인 중..."을 보여주지 않고 바로 열리게 한다(참고 사이트처럼 즉시 열림).
+  const [user, setUser] = useState<CurrentUser | null | undefined>(() =>
+    loggedIn ? undefined : null,
+  );
   const [unreadCount, setUnreadCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -38,17 +44,17 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/90 px-4 py-3.5 backdrop-blur">
-      <Link to="/" className="text-lg font-extrabold tracking-tight text-white">
+    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/90 px-4 py-2.5 backdrop-blur">
+      <Link to="/" className="text-base font-extrabold tracking-tight text-white">
         사주 서비스
       </Link>
-      <div className="flex items-center gap-3">
-        <Link to="/" aria-label="홈" className="text-lg text-neutral-400">
-          🔍
+      <div className="flex items-center gap-2.5">
+        <Link to="/" aria-label="홈" className="text-neutral-400">
+          <Emoji name="search" className="h-4.5 w-4.5" />
         </Link>
         {loggedIn && (
-          <Link to="/notifications" aria-label="알림" className="relative text-lg text-neutral-400">
-            ✉️
+          <Link to="/notifications" aria-label="알림" className="relative text-neutral-400">
+            <Emoji name="mail" className="h-4.5 w-4.5" />
             {unreadCount > 0 && (
               <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -62,13 +68,13 @@ export default function Header() {
               type="button"
               aria-label="계정 메뉴"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-violet-700 bg-violet-950 text-base"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-700 bg-violet-950"
             >
-              {user ? AVATAR_EMOJI[user.avatarKey] : '👤'}
+              <Emoji name={user ? AVATAR_EMOJI[user.avatarKey] : 'person'} className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-11 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
-                <AccountMenu onNavigate={() => setMenuOpen(false)} />
+              <div className="absolute right-0 top-10 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl">
+                <AccountMenu onNavigate={() => setMenuOpen(false)} initialUser={user} />
               </div>
             )}
           </div>

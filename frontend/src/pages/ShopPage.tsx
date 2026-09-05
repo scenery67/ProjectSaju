@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Emoji from '../components/Emoji';
 import { getAuthToken } from '../lib/auth';
 import {
   fetchBalance,
@@ -138,7 +139,10 @@ export default function ShopPage() {
       </ul>
 
       <section className="flex flex-col gap-2 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
-        <h4 className="text-xs font-bold text-white">📋 유의사항</h4>
+        <h4 className="flex items-center gap-1.5 text-xs font-bold text-white">
+          <Emoji name="clipboard" className="h-4 w-4" />
+          유의사항
+        </h4>
         <ul className="flex flex-col gap-1.5 text-[11px] leading-relaxed text-neutral-500">
           <li>상기 결제 금액은 VAT가 포함된 금액입니다.</li>
           <li>답변 품질과 같은 주관적인 사유로는 환불이 불가합니다.</li>

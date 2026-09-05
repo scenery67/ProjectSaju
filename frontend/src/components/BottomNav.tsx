@@ -1,10 +1,12 @@
 import { NavLink } from 'react-router-dom';
+import type { EmojiName } from '../assets/emoji';
+import Emoji from './Emoji';
 
-const TABS = [
-  { to: '/', label: '홈', icon: '🏠' },
-  { to: '/my-saju', label: '내 사주', icon: '🔮' },
-  { to: '/consultations', label: '상담', icon: '💬' },
-  { to: '/mypage', label: '마이페이지', icon: '👤' },
+const TABS: { to: string; label: string; icon: EmojiName }[] = [
+  { to: '/', label: '홈', icon: 'house' },
+  { to: '/my-saju', label: '내 사주', icon: 'crystalball' },
+  { to: '/consultations', label: '상담', icon: 'speech' },
+  { to: '/mypage', label: '마이페이지', icon: 'person' },
 ];
 
 // Sticky bottom tab bar — the primary nav pattern on small screens.
@@ -23,7 +25,7 @@ export default function BottomNav() {
             }`
           }
         >
-          <span className="text-xl leading-none">{tab.icon}</span>
+          <Emoji name={tab.icon} className="h-5 w-5" />
           {tab.label}
         </NavLink>
       ))}

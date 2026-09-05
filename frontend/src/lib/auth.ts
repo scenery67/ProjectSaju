@@ -61,19 +61,21 @@ export async function logout(): Promise<void> {
   clearAuthToken();
 }
 
+import type { EmojiName } from '../assets/emoji';
+
 export type AvatarKey = 'FOX' | 'RABBIT' | 'BEAR' | 'CAT' | 'TIGER' | 'PANDA' | 'DOG' | 'OWL';
 
-// 백엔드 AvatarPreset과 1:1로 맞춘 표시용 이모지 — 실제 사진 업로드 대신
+// 백엔드 AvatarPreset과 1:1로 맞춘 표시용 아이콘 — 실제 사진 업로드 대신
 // 고정된 프리셋 중에서만 고르게 해서 저장/노출 리스크를 없앤다.
-export const AVATAR_EMOJI: Record<AvatarKey, string> = {
-  FOX: '🦊',
-  RABBIT: '🐰',
-  BEAR: '🐻',
-  CAT: '🐱',
-  TIGER: '🐯',
-  PANDA: '🐼',
-  DOG: '🐶',
-  OWL: '🦉',
+export const AVATAR_EMOJI: Record<AvatarKey, EmojiName> = {
+  FOX: 'fox',
+  RABBIT: 'rabbit',
+  BEAR: 'bear',
+  CAT: 'cat',
+  TIGER: 'tiger',
+  PANDA: 'panda',
+  DOG: 'dog',
+  OWL: 'owl',
 };
 
 export interface CurrentUser {

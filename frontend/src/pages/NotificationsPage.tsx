@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { EmojiName } from '../assets/emoji';
 import { getAuthToken } from '../lib/auth';
 import {
   fetchNotifications,
   markAllNotificationsRead,
   type NotificationEntry,
 } from '../lib/notifications';
+import Emoji from '../components/Emoji';
 
-const TYPE_ICON: Record<NotificationEntry['type'], string> = {
-  PAYMENT_COMPLETED: '💳',
-  ATTENDANCE_BONUS: '🎁',
-  ADMIN_ANNOUNCEMENT: '📣',
+const TYPE_ICON: Record<NotificationEntry['type'], EmojiName> = {
+  PAYMENT_COMPLETED: 'card',
+  ATTENDANCE_BONUS: 'gift',
+  ADMIN_ANNOUNCEMENT: 'megaphone',
 };
 
 function formatDate(iso: string): string {
@@ -76,8 +78,8 @@ export default function NotificationsPage() {
       {notifications === null && <p className="text-xs text-neutral-400">불러오는 중...</p>}
 
       {notifications !== null && visible.length === 0 && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-3xl border border-neutral-800 bg-neutral-900 p-10 text-center">
-          <span className="text-3xl">📭</span>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-3xl bg-white/[0.03] p-10 text-center">
+          <Emoji name="mailbox" className="h-9 w-9" />
           <p className="text-sm font-bold text-white">
             {tab === 'unread' ? '읽지 않은 알림이 없습니다' : '읽은 알림이 없습니다'}
           </p>
@@ -92,8 +94,8 @@ export default function NotificationsPage() {
               key={n.id}
               className="flex gap-3 rounded-2xl border border-neutral-800 bg-neutral-900 p-4"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-950 text-base">
-                {TYPE_ICON[n.type]}
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-950">
+                <Emoji name={TYPE_ICON[n.type]} className="h-4.5 w-4.5" />
               </span>
               <div className="flex flex-1 flex-col gap-1">
                 <div className="flex items-center justify-between">
